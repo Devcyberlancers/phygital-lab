@@ -274,25 +274,120 @@ function openDomain(id) {
 }
 
 function renderDomainVisual(domain) {
-  const scene = {
-    airport: ["AIR", "plane"],
-    hospital: ["+", "pulse"],
-    metro: ["METRO", "train"],
-    "power-grid": ["GRID", "spark"],
-    "water-treatment": ["H2O", "wave"],
-    industry: ["PLC", "factory"],
-    banking: ["BANK", "scan"],
-    "toll-plaza": ["TOLL", "gate"],
-    "data-center": ["DATA", "server"],
-    "stock-market": ["LIVE", "chart"],
-    warehouse: ["BOX", "warehouse"]
-  }[domain.id] || [domain.title, "generic"];
-  return `
-    <div class="visual-orbit"></div>
-    <div class="visual-core visual-${scene[1]}">${scene[0]}</div>
-    <div class="visual-line line-a"></div>
-    <div class="visual-line line-b"></div>
-    <div class="visual-dots"><span></span><span></span><span></span></div>`;
+  const scenes = {
+    airport: `
+      <svg class="scene-svg airport-scene" viewBox="0 0 360 210" role="img" aria-label="Animated airport model">
+        <rect class="scene-ground" x="0" y="150" width="360" height="60" rx="8"></rect>
+        <rect class="runway" x="26" y="172" width="308" height="22" rx="4"></rect>
+        <g class="runway-lines">
+          <rect x="44" y="181" width="28" height="4"></rect><rect x="100" y="181" width="28" height="4"></rect>
+          <rect x="156" y="181" width="28" height="4"></rect><rect x="212" y="181" width="28" height="4"></rect>
+          <rect x="268" y="181" width="28" height="4"></rect>
+        </g>
+        <g class="terminal">
+          <rect x="38" y="104" width="92" height="42" rx="6"></rect>
+          <rect x="52" y="114" width="14" height="12"></rect><rect x="76" y="114" width="14" height="12"></rect><rect x="100" y="114" width="14" height="12"></rect>
+          <path d="M130 126h40v20h-40z"></path>
+        </g>
+        <path class="flight-path" d="M46 88 C100 18 250 12 310 72 C354 116 272 142 214 112 C154 80 92 112 46 88"></path>
+        <g class="flying-plane">
+          <path d="M0 0 L54 13 L0 26 L9 15 L-22 15 L-22 11 L9 11 Z"></path>
+          <path d="M7 11 L-8 -7 L11 9 Z"></path>
+          <path d="M7 15 L-8 33 L11 17 Z"></path>
+        </g>
+        <g class="cloud cloud-one"><ellipse cx="0" cy="0" rx="22" ry="9"></ellipse><ellipse cx="18" cy="-4" rx="14" ry="10"></ellipse></g>
+        <g class="cloud cloud-two"><ellipse cx="0" cy="0" rx="18" ry="8"></ellipse><ellipse cx="15" cy="-4" rx="12" ry="9"></ellipse></g>
+      </svg>`,
+    hospital: `
+      <svg class="scene-svg hospital-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="154" width="360" height="56" rx="8"></rect>
+        <g class="hospital-building-2d">
+          <rect x="118" y="42" width="124" height="110" rx="8"></rect>
+          <rect x="154" y="18" width="52" height="44" rx="6"></rect>
+          <path d="M176 28h8v12h12v8h-12v12h-8V48h-12v-8h12z"></path>
+          <rect x="138" y="72" width="18" height="18"></rect><rect x="172" y="72" width="18" height="18"></rect><rect x="206" y="72" width="18" height="18"></rect>
+          <rect x="138" y="106" width="18" height="18"></rect><rect x="172" y="106" width="18" height="18"></rect><rect x="206" y="106" width="18" height="18"></rect>
+        </g>
+        <path class="ecg-line" d="M38 44 H88 L98 28 L116 70 L132 38 L146 44 H318"></path>
+        <g class="ambulance">
+          <rect x="0" y="0" width="80" height="30" rx="5"></rect><rect x="52" y="-18" width="28" height="20" rx="4"></rect>
+          <path d="M14 8h8v-8h8v8h8v8h-8v8h-8v-8h-8z"></path>
+          <circle cx="18" cy="32" r="7"></circle><circle cx="64" cy="32" r="7"></circle>
+        </g>
+      </svg>`,
+    metro: `
+      <svg class="scene-svg metro-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="156" width="360" height="54" rx="8"></rect>
+        <rect class="station" x="42" y="70" width="276" height="72" rx="8"></rect>
+        <path class="track" d="M28 166 H332"></path><path class="track track-two" d="M28 184 H332"></path>
+        <g class="metro-train">
+          <rect x="0" y="0" width="138" height="42" rx="13"></rect>
+          <rect x="18" y="9" width="26" height="14" rx="2"></rect><rect x="56" y="9" width="26" height="14" rx="2"></rect><rect x="94" y="9" width="26" height="14" rx="2"></rect>
+          <circle cx="30" cy="43" r="6"></circle><circle cx="108" cy="43" r="6"></circle>
+        </g>
+      </svg>`,
+    "water-treatment": `
+      <svg class="scene-svg water-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <g class="tank tank-a"><rect x="54" y="62" width="78" height="96" rx="14"></rect><path class="tank-water" d="M58 124 Q76 112 94 124 T130 124 V154 H58z"></path></g>
+        <g class="tank tank-b"><rect x="218" y="42" width="84" height="116" rx="14"></rect><path class="tank-water" d="M222 110 Q242 96 260 110 T298 110 V154 H222z"></path></g>
+        <path class="pipe-flow" d="M132 116 H218"></path><circle class="pump-wheel" cx="176" cy="116" r="20"></circle>
+      </svg>`,
+    industry: `
+      <svg class="scene-svg industry-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <path class="factory-body" d="M48 150 V90 L92 62 V90 L136 62 V90 L180 62 V150z"></path>
+        <rect class="chimney" x="218" y="52" width="34" height="98" rx="3"></rect>
+        <g class="smoke"><circle cx="235" cy="38" r="8"></circle><circle cx="250" cy="24" r="11"></circle><circle cx="268" cy="12" r="7"></circle></g>
+        <rect class="conveyor" x="52" y="166" width="256" height="14" rx="7"></rect>
+        <rect class="box-moving" x="0" y="140" width="32" height="26" rx="3"></rect>
+      </svg>`,
+    banking: `
+      <svg class="scene-svg bank-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <g class="bank-building"><path d="M68 78 L180 24 L292 78 Z"></path><rect x="82" y="78" width="196" height="78" rx="4"></rect>
+        <rect x="104" y="92" width="18" height="56"></rect><rect x="152" y="92" width="18" height="56"></rect><rect x="200" y="92" width="18" height="56"></rect><rect x="248" y="92" width="18" height="56"></rect></g>
+        <g class="coin"><circle cx="0" cy="0" r="16"></circle><text x="-5" y="6">$</text></g>
+      </svg>`,
+    "power-grid": `
+      <svg class="scene-svg grid-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <path class="tower-one" d="M78 154 L124 42 L170 154 M100 98 H148 M88 126 H160"></path>
+        <path class="tower-two" d="M202 154 L246 58 L290 154 M220 106 H272 M210 132 H282"></path>
+        <path class="power-line line-one" d="M124 44 C160 76 210 82 246 60"></path>
+        <path class="power-line line-two" d="M102 98 C158 126 212 130 270 106"></path>
+        <path class="bolt" d="M178 72 L158 112 H180 L162 150 L214 94 H188 Z"></path>
+      </svg>`,
+    "toll-plaza": `
+      <svg class="scene-svg toll-scene" viewBox="0 0 360 210">
+        <rect class="road" x="0" y="122" width="360" height="88" rx="8"></rect>
+        <rect class="booth" x="148" y="48" width="64" height="72" rx="6"></rect>
+        <rect class="gate-arm" x="210" y="82" width="110" height="8" rx="4"></rect>
+        <g class="toll-car"><rect x="0" y="0" width="76" height="28" rx="14"></rect><circle cx="18" cy="29" r="6"></circle><circle cx="58" cy="29" r="6"></circle></g>
+      </svg>`,
+    "data-center": `
+      <svg class="scene-svg dc-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <g class="server-racks"><rect x="70" y="42" width="58" height="116" rx="6"></rect><rect x="151" y="42" width="58" height="116" rx="6"></rect><rect x="232" y="42" width="58" height="116" rx="6"></rect></g>
+        <g class="server-lights"><circle cx="92" cy="66" r="4"></circle><circle cx="173" cy="92" r="4"></circle><circle cx="254" cy="120" r="4"></circle></g>
+        <path class="data-flow" d="M92 66 C130 22 210 22 254 120"></path>
+      </svg>`,
+    "stock-market": `
+      <svg class="scene-svg market-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <polyline class="market-line" points="40,132 78,102 118,116 158,70 204,86 252,44 320,64"></polyline>
+        <g class="bars"><rect x="62" y="112" width="28" height="46"></rect><rect x="130" y="86" width="28" height="72"></rect><rect x="198" y="98" width="28" height="60"></rect><rect x="266" y="58" width="28" height="100"></rect></g>
+        <text class="ticker-text" x="42" y="42">LIVE MARKET</text>
+      </svg>`,
+    warehouse: `
+      <svg class="scene-svg warehouse-scene" viewBox="0 0 360 210">
+        <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
+        <path class="warehouse-building" d="M52 150 V82 L180 34 L308 82 V150 Z"></path>
+        <g class="boxes"><rect x="92" y="118" width="34" height="32"></rect><rect x="130" y="98" width="34" height="52"></rect><rect x="168" y="124" width="34" height="26"></rect></g>
+        <g class="forklift"><rect x="0" y="0" width="58" height="28" rx="5"></rect><path d="M58 4 H82 V9 H64 V36 H58z"></path><circle cx="15" cy="30" r="6"></circle><circle cx="45" cy="30" r="6"></circle></g>
+      </svg>`
+  };
+  return scenes[domain.id] || `<div class="visual-generic">${domain.title}</div>`;
 }
 
 function switchTab(tabName) {
