@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/static/images/favicon-192.png">
+  <title>CDAC Phygital Lab Platform - Smart Infrastructure Training Portal</title>
+  <meta name="description" content="CDAC Phygital Lab portal for airport, water treatment, industry, hospital, banking, power grid, toll plaza, data center, stock market, metro, and warehouse infrastructure models.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/ctf-db.css">
+</head>
+<body>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <nav id="main-nav" aria-label="Main Navigation">
+    <button class="nav-brand" type="button" data-page="home" aria-label="Go to home">
+      <img class="nav-logo-img" src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
+    </button>
+
+    <ul class="nav-links" id="nav-links">
+      <li><button class="nav-btn active" data-page="home">Home</button></li>
+      <li><button class="nav-btn" data-page="domains">Models</button></li>
+      <li><button class="nav-btn" data-page="cyber">Cyber Range</button></li>
+      <li><a class="nav-btn" href="http://172.16.17.219/">Wiki</a></li>
+      <li><a class="nav-btn" href="/faq">FAQ</a></li>
+      <li><a class="nav-btn" href="/admin.html">Admin</a></li>
+    </ul>
+    <button class="nav-menu-toggle" id="menu-toggle" aria-label="Toggle navigation">Menu</button>
+  </nav>
+
+  <main>
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-inner">
+          <p class="hero-kicker">Cyber Lancers - Smart Infrastructure Demonstration Platform</p>
+          <h1>Phygital Lab</h1>
+          <p>
+            A training and documentation portal for physical-digital infrastructure models,
+            cyber-physical simulations, monitoring workflows, and lab operations.
+          </p>
+          <div class="hero-actions">
+            <button class="primary-action" data-page="domains">Explore Models</button>
+            <a class="secondary-action" href="http://172.16.17.219/">Open Wiki</a>
+          </div>
+        </div>
+        <div class="hero-panel" aria-label="Lab summary">
+          <div class="status-row">
+            <span>Domains</span>
+            <strong>10</strong>
+          </div>
+          <div class="status-row">
+            <span>Training Areas</span>
+            <strong>Cyber + OT + Simulation</strong>
+          </div>
+          <div class="status-row">
+            <span>Photo Library</span>
+            <strong>Ready</strong>
+          </div>
+        </div>
+      </div>
+
+      <section class="overview-band">
+        <div class="overview-copy">
+          <p class="section-kicker">Platform Scope</p>
+          <h2>One portal for model demos, technical notes, cyber exercises, and daily lab use.</h2>
+        </div>
+        <div class="overview-grid">
+          <article>
+            <h3>Infrastructure Models</h3>
+            <p>Airport, hospital, power grid, metro, data center, banking, toll, warehouse, industry, stock market, and water treatment scenarios.</p>
+          </article>
+          <article>
+            <h3>Cybersecurity</h3>
+            <p>Red Team and Blue Team activities for OT, IoT, SCADA, network, application, and monitoring workflows.</p>
+          </article>
+          <article>
+            <h3>Operations Wiki</h3>
+            <p>Architecture, devices, networking, logs, simulations, operating procedures, and maintenance notes for students and lab users.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="page-domains">
+      <div class="page-head">
+        <p class="section-kicker">Choose A Model</p>
+        <h2>Phygital Infrastructure Domains</h2>
+        <p>Each model area includes project overview, walkthrough, cybersecurity scope, digital twin simulation use cases, and a photo/demo placeholder.</p>
+      </div>
+      <div class="filter-bar" id="filter-bar" aria-label="Domain filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="transport">Transport</button>
+        <button class="filter-btn" data-filter="critical">Critical Infra</button>
+        <button class="filter-btn" data-filter="enterprise">Enterprise</button>
+        <button class="filter-btn" data-filter="urban">Urban</button>
+      </div>
+      <div class="domain-grid" id="domain-grid"></div>
+    </section>
+
+    <section class="page" id="page-detail">
+      <div class="detail-banner" id="detail-banner">
+        <button class="back-btn" data-page="domains">Back to Models</button>
+        <div class="detail-title-block">
+          <p class="section-kicker" id="detail-category">Domain</p>
+          <h2 id="detail-title">Domain Title</h2>
+          <p id="detail-summary">Domain summary</p>
+        </div>
+        <div class="domain-visual" id="detail-visual" aria-hidden="true"></div>
+      </div>
+      <div class="detail-body">
+        <nav class="tab-nav" aria-label="Domain sections">
+          <button class="tab-btn active" data-tab="about">About</button>
+          <button class="tab-btn" data-tab="walkthrough">Walk Through</button>
+          <button class="tab-btn" data-tab="cybersecurity">Cybersecurity</button>
+          <button class="tab-btn" data-tab="simulation">Digital Twin / Simulation</button>
+          <button class="tab-btn" data-tab="photos">Photos</button>
+        </nav>
+
+        <section class="tab-content active" id="tab-about">
+          <div class="content-card">
+            <h3>Project Overview</h3>
+            <p id="detail-overview"></p>
+          </div>
+          <div class="feature-grid" id="detail-features"></div>
+        </section>
+
+        <section class="tab-content" id="tab-walkthrough">
+          <div class="content-card">
+            <h3>System Walk Through</h3>
+            <div class="steps" id="detail-steps"></div>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-cybersecurity">
+          <div class="cyber-duo">
+            <article class="cyber-card red">
+              <span>Red Team</span>
+              <h3>Attack Surface Training</h3>
+              <p id="detail-red"></p>
+            </article>
+            <article class="cyber-card blue">
+              <span>Blue Team</span>
+              <h3>Monitoring And Response</h3>
+              <p id="detail-blue"></p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-simulation">
+          <div class="metric-grid">
+            <div><strong>Digital Twin</strong><span id="detail-twin"></span></div>
+            <div><strong>Analytics</strong><span id="detail-analytics"></span></div>
+            <div><strong>Simulation</strong><span id="detail-simulation"></span></div>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-photos">
+          <div class="photo-board">
+            <div class="photo-placeholder">
+              <span id="photo-icon">Model</span>
+              <strong id="photo-title">Photo slots ready</strong>
+              <p>Place your photos in <code>static/images/</code> and I can connect them to this section.</p>
+            </div>
+            <div class="photo-notes">
+              <h3>Suggested Photos</h3>
+              <ul id="photo-list"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="page" id="page-cyber">
+      <div class="page-head">
+        <p class="section-kicker">Cyber Range</p>
+        <h2>Red Team / Blue Team Exercises</h2>
+        <p>Manage scenario-based CTF exercises for every Phygital Lab model, from IoT sensors and SCADA links to web dashboards and identity systems.</p>
+      </div>
+      <div class="cyber-scope-grid" id="cyber-scope-grid"></div>
+    </section>
+  </main>
+
+  <div id="ctf-modal-overlay" class="phygital-ctf-modal" role="dialog" aria-modal="true" aria-labelledby="ctf-modal-title">
+    <div class="ctf-modal">
+      <div class="ctf-modal-head">
+        <div class="ctf-modal-title-group">
+          <div class="ctf-modal-icon" aria-hidden="true">CTF</div>
+          <div>
+            <div class="ctf-modal-title" id="ctf-modal-title">CTF Challenges</div>
+            <div class="ctf-modal-subtitle" id="ctf-modal-subtitle">Phygital Lab Cyber Exercise</div>
+          </div>
+        </div>
+        <button class="ctf-modal-close" id="ctf-modal-close-btn" type="button" aria-label="Close CTF modal">x</button>
+      </div>
+      <div class="ctf-modal-body">
+        <div id="ctf-domain-board"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/ctf.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

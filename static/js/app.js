@@ -1,0 +1,438 @@
+const domains = [
+  {
+    id: "airport",
+    title: "Airport",
+    icon: "Airport",
+    group: "transport",
+    accent: "rgba(77,216,255,0.9)",
+    summary: "Runway, terminal, passenger, baggage, fire, surveillance, and airside operation model.",
+    overview: "The Airport model demonstrates how passenger movement, baggage handling, runway lighting, surveillance, access control, emergency response, and IoT monitoring can be represented in a phygital training setup.",
+    features: ["Runway and terminal monitoring", "Baggage and passenger flow", "Access control and CCTV", "Emergency and fire response"],
+    steps: ["Sensor and camera events are generated from terminal, runway, and restricted zones.", "Gateway nodes forward events to the operations dashboard.", "Rules detect congestion, intrusion, equipment fault, or unsafe movement.", "Operators respond through SOPs, alerts, and cyber-physical incident drills."],
+    red: "Test weak access control, exposed cameras, IoT device credentials, spoofed sensor events, and dashboard injection paths.",
+    blue: "Monitor CCTV logs, gate access, alert timelines, unusual device traffic, and SIEM dashboards for airport operations.",
+    twin: "Terminal, runway, vehicle, and passenger flow representation.",
+    analytics: "Crowd density, baggage delay, intrusion, fire, and operational incident analytics.",
+    simulation: "Runway closure, unauthorized access, baggage jam, evacuation, and camera outage scenarios.",
+    photos: ["Full airport model overview", "Runway lighting and aircraft zone", "Terminal and passenger area", "Control dashboard screen"]
+  },
+  {
+    id: "water-treatment",
+    title: "Water Treatment",
+    icon: "Water",
+    group: "critical",
+    accent: "rgba(77,216,255,0.9)",
+    summary: "Treatment plant flow with tanks, pumps, level sensors, dosing, SCADA, and water quality monitoring.",
+    overview: "The Water Treatment model covers intake, filtration, tank levels, pump control, quality sensing, dosing workflow, and SCADA-style monitoring for safe plant operation.",
+    features: ["Tank level monitoring", "Pump and valve control", "Water quality parameters", "SCADA/OT dashboard"],
+    steps: ["Raw water enters monitored intake and tank stages.", "Sensors measure level, flow, pH, turbidity, and pump status.", "Controller logic triggers valves, pumps, and alarms.", "Dashboard and logs support maintenance, troubleshooting, and security exercises."],
+    red: "Explore Modbus/SCADA misuse, pump command tampering, sensor spoofing, default credentials, and exposed HMI panels.",
+    blue: "Track pump events, abnormal flow, tank alarms, unauthorized control commands, and OT network logs.",
+    twin: "Intake, treatment, tank, pump, and distribution stages.",
+    analytics: "Pump efficiency, tank thresholds, quality drift, leak indicators, and anomaly alerts.",
+    simulation: "Low tank, pump failure, chemical dosing fault, sensor spoofing, and communication loss.",
+    photos: ["Treatment plant full model", "Tank and pump section", "Water quality sensor area", "SCADA display"]
+  },
+  {
+    id: "industry",
+    title: "Industry",
+    icon: "Factory",
+    group: "critical",
+    accent: "rgba(240,182,74,0.9)",
+    summary: "Industrial automation, PLC workflow, process safety, production line monitoring, and OT security.",
+    overview: "The Industry model demonstrates a smart factory environment with PLC-style control, conveyor or process stations, safety monitoring, production visibility, and IT/OT cybersecurity exercises.",
+    features: ["PLC and actuator logic", "Production line status", "Safety interlocks", "OT network monitoring"],
+    steps: ["Machines and sensors generate process status.", "Controller logic manages actuators and safety interlocks.", "Production metrics are shown on dashboards.", "Cyber drills validate segmentation, access control, and alerting."],
+    red: "Test PLC command abuse, engineering workstation exposure, weak segmentation, unsafe setpoint changes, and fake telemetry.",
+    blue: "Monitor PLC traffic, workstation login events, operator actions, production anomalies, and safety alarms.",
+    twin: "Process line, controllers, actuators, and safety zones.",
+    analytics: "Downtime, throughput, temperature, vibration, unsafe states, and maintenance trends.",
+    simulation: "Conveyor stoppage, overheat, emergency stop, rogue command, and network isolation.",
+    photos: ["Industrial model overview", "PLC/controller panel", "Production line area", "Operator dashboard"]
+  },
+  {
+    id: "hospital",
+    title: "Hospital",
+    icon: "Hospital",
+    group: "urban",
+    accent: "rgba(120,213,111,0.9)",
+    summary: "Smart hospital operations with patient zones, emergency systems, asset tracking, and safety monitoring.",
+    overview: "The Hospital model represents patient care zones, emergency response, fire safety, restricted areas, medical asset tracking, environmental sensing, and cyber resilience for healthcare infrastructure.",
+    features: ["Patient and ward monitoring", "Emergency alerts", "Medical asset tracking", "Fire and access safety"],
+    steps: ["Sensors report ward occupancy, environmental status, and emergency triggers.", "Access and safety events are correlated with dashboard alerts.", "Operators follow emergency SOPs.", "Cyber exercises test resilience of healthcare systems."],
+    red: "Assess weak IoT devices, unauthorized access, exposed dashboards, spoofed emergency alerts, and privacy-sensitive data paths.",
+    blue: "Monitor access logs, patient-zone events, asset movement, emergency alarms, and network anomalies.",
+    twin: "Wards, emergency area, restricted rooms, assets, and safety systems.",
+    analytics: "Occupancy, response time, equipment availability, air quality, and abnormal events.",
+    simulation: "Fire alert, asset missing, ward overload, network outage, and unauthorized entry.",
+    photos: ["Hospital model overview", "Ward and emergency zone", "Fire and safety system", "Healthcare dashboard"]
+  },
+  {
+    id: "banking",
+    title: "Banking",
+    icon: "Bank",
+    group: "enterprise",
+    accent: "rgba(124,167,255,0.9)",
+    summary: "Branch, ATM, vault, queue, transaction, surveillance, and fraud detection training model.",
+    overview: "The Banking model combines branch operations, ATM monitoring, vault security, customer queue visibility, transaction events, surveillance, and cyber-fraud exercises.",
+    features: ["ATM status", "Vault and access control", "Transaction alerts", "Branch security"],
+    steps: ["Branch and ATM events are collected from physical and logical devices.", "Access control and transaction telemetry are processed.", "Dashboards flag suspicious operations.", "Students investigate incidents through logs and exercises."],
+    red: "Test ATM interface abuse, weak branch network controls, access bypass, transaction manipulation, and phishing-style entry points.",
+    blue: "Monitor ATM health, access logs, transaction anomalies, suspicious authentication, and SIEM alerts.",
+    twin: "Branch lobby, ATM, vault, counters, and surveillance zones.",
+    analytics: "Queue time, ATM uptime, suspicious transaction patterns, and access attempts.",
+    simulation: "ATM downtime, vault access alert, transaction spike, card fraud, and CCTV failure.",
+    photos: ["Banking model overview", "ATM and customer zone", "Vault/security area", "Transaction dashboard"]
+  },
+  {
+    id: "power-grid",
+    title: "Power Grid",
+    icon: "Grid",
+    group: "critical",
+    accent: "rgba(255,109,97,0.9)",
+    summary: "Generation, substation, transmission, distribution, load monitoring, and grid cybersecurity.",
+    overview: "The Power Grid model demonstrates generation, substation switching, transmission, load balancing, fault detection, safety interlocks, and cyber-physical grid incident response.",
+    features: ["Substation monitoring", "Load and fault indicators", "Breaker and relay workflow", "Grid OT security"],
+    steps: ["Generation and load telemetry enters the control view.", "Substation events and breaker states are monitored.", "Fault rules detect overload or abnormal switching.", "Operators respond using isolation and recovery SOPs."],
+    red: "Investigate relay misoperation, false data injection, unauthorized breaker commands, exposed protocols, and weak segmentation.",
+    blue: "Monitor relay logs, load changes, breaker operations, event timelines, and grid control network traffic.",
+    twin: "Generation, transmission, substation, feeders, and consumer load.",
+    analytics: "Load forecast, outage detection, relay event correlation, and power quality.",
+    simulation: "Overload, feeder fault, breaker trip, renewable fluctuation, and control network attack.",
+    photos: ["Power grid model overview", "Substation section", "Transmission line area", "Grid monitoring dashboard"]
+  },
+  {
+    id: "toll-plaza",
+    title: "Toll Plaza",
+    icon: "Toll",
+    group: "transport",
+    accent: "rgba(240,182,74,0.9)",
+    summary: "Lane sensors, FASTag/RFID, vehicle count, barrier control, congestion, and payment security.",
+    overview: "The Toll Plaza model shows lane automation, RFID/FASTag style detection, barrier control, vehicle classification, queue monitoring, transaction events, and cybersecurity for transport infrastructure.",
+    features: ["Lane and barrier status", "RFID/vehicle detection", "Traffic flow analytics", "Payment event security"],
+    steps: ["Vehicles trigger lane sensors and RFID reads.", "Barrier and payment events are processed.", "Dashboard tracks queue, violations, and lane availability.", "Cyber exercises investigate spoofing and transaction misuse."],
+    red: "Test RFID replay, lane controller abuse, weak payment APIs, barrier tampering, and camera/feed manipulation.",
+    blue: "Monitor lane events, abnormal barrier cycles, transaction mismatches, vehicle counts, and security alerts.",
+    twin: "Toll booths, lanes, barriers, vehicle sensors, and camera zones.",
+    analytics: "Throughput, lane wait time, failed payment, violation, and barrier health.",
+    simulation: "Lane blockage, payment failure, RFID spoof, barrier fault, and traffic surge.",
+    photos: ["Toll plaza model overview", "Lane and barrier section", "RFID/payment area", "Traffic dashboard"]
+  },
+  {
+    id: "data-center",
+    title: "Data Center",
+    icon: "DC",
+    group: "enterprise",
+    accent: "rgba(77,216,255,0.9)",
+    summary: "Server racks, cooling, power, access control, network monitoring, and incident response.",
+    overview: "The Data Center model focuses on rack health, cooling, power backup, access control, network status, environmental sensing, and incident response for digital infrastructure.",
+    features: ["Rack and server health", "Cooling and power status", "Access control", "Network monitoring"],
+    steps: ["Rack, temperature, power, and access events are collected.", "Dashboard correlates thermal, electrical, and network state.", "Alerts identify abnormal conditions.", "Operators practice troubleshooting and cyber response."],
+    red: "Assess exposed admin panels, weak remote access, rogue device insertion, alert suppression, and network pivot paths.",
+    blue: "Monitor access events, rack temperature, UPS logs, network flows, failed logins, and service availability.",
+    twin: "Racks, cooling, UPS, fire suppression, and network segments.",
+    analytics: "Thermal trends, power load, uptime, capacity, and anomalous access.",
+    simulation: "Cooling failure, UPS switchover, unauthorized access, DDoS, and server outage.",
+    photos: ["Data center model overview", "Rack and cooling section", "UPS/power area", "NOC dashboard"]
+  },
+  {
+    id: "stock-market",
+    title: "Stock Market",
+    icon: "Market",
+    group: "enterprise",
+    accent: "rgba(120,213,111,0.9)",
+    summary: "Trading floor, market feeds, order flow, risk alerts, fraud patterns, and cyber monitoring.",
+    overview: "The Stock Market model demonstrates market data flow, trading terminal events, order lifecycle, risk monitoring, fraud detection, availability, and cybersecurity in financial systems.",
+    features: ["Market feed visualization", "Order event monitoring", "Risk and fraud rules", "Availability tracking"],
+    steps: ["Market and order events are generated by the model.", "Risk checks and transaction rules process activity.", "Dashboards show volatility, failures, and suspicious patterns.", "Cyber exercises test manipulation and resilience."],
+    red: "Test API misuse, feed tampering, credential attacks, transaction replay, and dashboard manipulation.",
+    blue: "Monitor order anomalies, feed integrity, login patterns, latency, and incident alerts.",
+    twin: "Trading terminals, market feed, broker gateway, and risk engine.",
+    analytics: "Volume spikes, failed orders, abnormal trades, latency, and fraud indicators.",
+    simulation: "Flash movement, feed delay, suspicious order burst, API abuse, and terminal outage.",
+    photos: ["Stock market model overview", "Trading terminal area", "Market feed screen", "Risk dashboard"]
+  },
+  {
+    id: "metro",
+    title: "Metro",
+    icon: "Metro",
+    group: "transport",
+    accent: "rgba(124,167,255,0.9)",
+    summary: "Train movement, station safety, ticketing, signaling, power, passenger flow, and control room operations.",
+    overview: "The Metro model demonstrates station and train movement, signaling, track occupancy, ticketing gates, passenger safety, power supply, and control room workflows.",
+    features: ["Train and track status", "Station safety", "Ticketing gates", "Signaling and power"],
+    steps: ["Train, track, gate, and station events are collected.", "Control logic tracks occupancy, signals, and movement.", "Dashboard surfaces safety or timing incidents.", "Students practice operations and cyber response."],
+    red: "Test ticketing bypass, signal spoofing concepts, dashboard abuse, exposed cameras, and network segmentation gaps.",
+    blue: "Monitor train events, gate logs, station alerts, signal status, and unusual network traffic.",
+    twin: "Stations, tracks, train units, ticket gates, and control room.",
+    analytics: "Passenger flow, schedule adherence, gate exceptions, track occupancy, and safety alerts.",
+    simulation: "Train delay, platform crowding, gate fault, signal alert, and power interruption.",
+    photos: ["Metro model overview", "Station platform", "Train and track area", "Metro control dashboard"]
+  },
+  {
+    id: "warehouse",
+    title: "Warehouse",
+    icon: "Warehouse",
+    group: "urban",
+    accent: "rgba(240,182,74,0.9)",
+    summary: "Inventory, loading dock, asset tracking, robotics, fire safety, access control, and logistics analytics.",
+    overview: "The Warehouse model covers inventory movement, loading dock events, asset tracking, robotics or conveyor flow, access control, fire safety, and logistics monitoring.",
+    features: ["Inventory and asset tracking", "Dock operations", "Conveyor/robot workflow", "Fire and access safety"],
+    steps: ["Packages, assets, and dock events are captured.", "Movement and stock data updates the dashboard.", "Rules detect delays, missing assets, or unsafe conditions.", "Cyber exercises test logistics system resilience."],
+    red: "Test RFID spoofing, inventory API misuse, access bypass, camera tampering, and rogue device entry.",
+    blue: "Monitor asset movement, dock events, inventory mismatches, access logs, and safety alarms.",
+    twin: "Storage racks, dock, conveyor/robot area, and access zones.",
+    analytics: "Inventory accuracy, dock time, asset movement, exception rate, and safety events.",
+    simulation: "Missing asset, dock congestion, conveyor stop, fire alert, and inventory tampering.",
+    photos: ["Warehouse model overview", "Storage rack area", "Loading dock section", "Inventory dashboard"]
+  }
+];
+
+const pages = document.querySelectorAll(".page");
+const navLinks = document.getElementById("nav-links");
+let currentDomain = domains[0];
+
+function showPage(pageName) {
+  pages.forEach((page) => page.classList.toggle("active", page.id === `page-${pageName}`));
+  document.querySelectorAll(".nav-btn[data-page]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.page === pageName);
+  });
+  navLinks.classList.remove("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderDomains(filter = "all") {
+  const grid = document.getElementById("domain-grid");
+  grid.innerHTML = "";
+  domains
+    .filter((domain) => filter === "all" || domain.group === filter)
+    .forEach((domain) => {
+      const card = document.createElement("article");
+      card.className = "domain-card reveal";
+      card.style.setProperty("--accent", domain.accent);
+      card.style.setProperty("--reveal-delay", `${Math.min(grid.children.length * 55, 420)}ms`);
+      card.tabIndex = 0;
+      card.innerHTML = `
+        <div class="domain-icon">${domain.icon}</div>
+        <h3>${domain.title}</h3>
+        <p>${domain.summary}</p>
+        <div class="tag-row">
+          <span>About</span><span>Walk Through</span><span>Cybersecurity</span><span>Simulation</span>
+        </div>
+        <div class="card-action">Open Model</div>
+      `;
+      card.addEventListener("click", () => openDomain(domain.id));
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") openDomain(domain.id);
+      });
+      card.addEventListener("pointermove", handleCardTilt);
+      card.addEventListener("pointerleave", resetCardTilt);
+      grid.appendChild(card);
+    });
+  observeReveals(grid);
+}
+
+function openDomain(id) {
+  currentDomain = domains.find((domain) => domain.id === id) || domains[0];
+  document.getElementById("detail-banner").style.setProperty("--detail-accent", currentDomain.accent.replace("0.9", "0.32"));
+  document.getElementById("detail-category").textContent = currentDomain.group.replace("-", " ");
+  document.getElementById("detail-title").textContent = currentDomain.title;
+  document.getElementById("detail-summary").textContent = currentDomain.summary;
+  const visual = document.getElementById("detail-visual");
+  visual.className = `domain-visual visual-${currentDomain.id}`;
+  visual.innerHTML = renderDomainVisual(currentDomain);
+  document.getElementById("detail-overview").textContent = currentDomain.overview;
+  document.getElementById("detail-red").textContent = currentDomain.red;
+  document.getElementById("detail-blue").textContent = currentDomain.blue;
+  document.getElementById("detail-twin").textContent = currentDomain.twin;
+  document.getElementById("detail-analytics").textContent = currentDomain.analytics;
+  document.getElementById("detail-simulation").textContent = currentDomain.simulation;
+  document.getElementById("photo-icon").textContent = currentDomain.icon;
+  document.getElementById("photo-title").textContent = `${currentDomain.title} photo slots ready`;
+
+  document.getElementById("detail-features").innerHTML = currentDomain.features.map((feature) => `
+    <article class="feature-item reveal">
+      <h4>${feature}</h4>
+      <p>Mapped to physical model signals, dashboard readings, training observations, and documentation notes.</p>
+    </article>
+  `).join("");
+
+  document.getElementById("detail-steps").innerHTML = currentDomain.steps.map((step, index) => `
+    <div class="step">
+      <div class="step-num">${String(index + 1).padStart(2, "0")}</div>
+      <div>
+        <h4>${["Input Capture", "Data Processing", "Dashboard View", "Response Workflow"][index] || "Lab Activity"}</h4>
+        <p>${step}</p>
+      </div>
+    </div>
+  `).join("");
+
+  document.getElementById("photo-list").innerHTML = currentDomain.photos.map((photo) => `<li>${photo}</li>`).join("");
+  observeReveals(document.getElementById("page-detail"));
+  switchTab("about");
+  showPage("detail");
+}
+
+function renderDomainVisual(domain) {
+  const scene = {
+    airport: ["AIR", "plane"],
+    hospital: ["+", "pulse"],
+    metro: ["METRO", "train"],
+    "power-grid": ["GRID", "spark"],
+    "water-treatment": ["H2O", "wave"],
+    industry: ["PLC", "factory"],
+    banking: ["BANK", "scan"],
+    "toll-plaza": ["TOLL", "gate"],
+    "data-center": ["DATA", "server"],
+    "stock-market": ["LIVE", "chart"],
+    warehouse: ["BOX", "warehouse"]
+  }[domain.id] || [domain.title, "generic"];
+  return `
+    <div class="visual-orbit"></div>
+    <div class="visual-core visual-${scene[1]}">${scene[0]}</div>
+    <div class="visual-line line-a"></div>
+    <div class="visual-line line-b"></div>
+    <div class="visual-dots"><span></span><span></span><span></span></div>`;
+}
+
+function switchTab(tabName) {
+  document.querySelectorAll(".tab-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === tabName));
+  document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.toggle("active", tab.id === `tab-${tabName}`));
+}
+
+function renderCyberScope() {
+  const grid = document.getElementById("cyber-scope-grid");
+  grid.innerHTML = domains.map((domain) => `
+    <article class="cyber-scope-card reveal">
+      <strong>${domain.icon}</strong>
+      <h3>${domain.title}</h3>
+      <p>${domain.red}</p>
+      <div class="cyber-actions">
+        <button class="primary-action" type="button" onclick="openCtfBoard('${domain.id}')">Open CTF</button>
+      </div>
+    </article>
+  `).join("");
+  [...grid.children].forEach((card, index) => card.style.setProperty("--reveal-delay", `${Math.min(index * 50, 400)}ms`));
+  observeReveals(grid);
+}
+
+function handleCardTilt(event) {
+  const card = event.currentTarget;
+  const rect = card.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width - 0.5) * 7;
+  const y = ((event.clientY - rect.top) / rect.height - 0.5) * -7;
+  card.style.setProperty("--tilt-x", `${x}deg`);
+  card.style.setProperty("--tilt-y", `${y}deg`);
+}
+
+function resetCardTilt(event) {
+  event.currentTarget.style.setProperty("--tilt-x", "0deg");
+  event.currentTarget.style.setProperty("--tilt-y", "0deg");
+}
+
+function observeReveals(root = document) {
+  const targets = [...root.querySelectorAll(".reveal:not(.visible)")];
+  if (!targets.length) return;
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach((target) => target.classList.add("visible"));
+    return;
+  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("visible");
+      obs.unobserve(entry.target);
+    });
+  }, { threshold: 0.12 });
+  targets.forEach((target) => observer.observe(target));
+}
+
+function openCtfBoard(domainId) {
+  const domain = domains.find((item) => item.id === domainId) || domains[0];
+  const overlay = document.getElementById("ctf-modal-overlay");
+  document.getElementById("ctf-modal-title").textContent = `${domain.title} CTF Challenges`;
+  document.getElementById("ctf-modal-subtitle").textContent = "Red Team / Blue Team training exercise";
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+  CTF.renderBoard(domain.id, "ctf-domain-board");
+}
+
+function closeCtfBoard() {
+  const overlay = document.getElementById("ctf-modal-overlay");
+  overlay.classList.remove("open");
+  document.body.style.overflow = "";
+  document.getElementById("ctf-domain-board").innerHTML = "";
+}
+
+function drawCanvas() {
+  const canvas = document.getElementById("bg-canvas");
+  const ctx = canvas.getContext("2d");
+  const resize = () => {
+    canvas.width = window.innerWidth * window.devicePixelRatio;
+    canvas.height = window.innerHeight * window.devicePixelRatio;
+    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+  };
+  resize();
+  window.addEventListener("resize", resize);
+  let tick = 0;
+  const animate = () => {
+    tick += 0.006;
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.strokeStyle = "rgba(77,216,255,0.12)";
+    ctx.lineWidth = 1;
+    const gap = 44;
+    for (let x = -gap; x < window.innerWidth + gap; x += gap) {
+      ctx.beginPath();
+      ctx.moveTo(x + Math.sin(tick + x * 0.01) * 10, 0);
+      ctx.lineTo(x + Math.cos(tick + x * 0.01) * 10, window.innerHeight);
+      ctx.stroke();
+    }
+    for (let y = -gap; y < window.innerHeight + gap; y += gap) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + Math.cos(tick + y * 0.01) * 10);
+      ctx.lineTo(window.innerWidth, y + Math.sin(tick + y * 0.01) * 10);
+      ctx.stroke();
+    }
+    requestAnimationFrame(animate);
+  };
+  animate();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderDomains();
+  renderCyberScope();
+  drawCanvas();
+  document.querySelectorAll(".overview-grid article, .hero-panel, .content-card, .feature-item, .cyber-card, .metric-grid div, .photo-placeholder, .photo-notes").forEach((el, index) => {
+    el.classList.add("reveal");
+    el.style.setProperty("--reveal-delay", `${Math.min(index * 45, 360)}ms`);
+  });
+  observeReveals(document);
+
+  document.querySelectorAll("[data-page]").forEach((item) => {
+    item.addEventListener("click", () => showPage(item.dataset.page));
+  });
+
+  document.querySelectorAll(".filter-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderDomains(button.dataset.filter);
+    });
+  });
+
+  document.querySelectorAll(".tab-btn").forEach((button) => {
+    button.addEventListener("click", () => switchTab(button.dataset.tab));
+  });
+
+  document.getElementById("menu-toggle").addEventListener("click", () => {
+    navLinks.classList.toggle("open");
+  });
+
+  document.getElementById("ctf-modal-close-btn").addEventListener("click", closeCtfBoard);
+  document.getElementById("ctf-modal-overlay").addEventListener("click", (event) => {
+    if (event.target.id === "ctf-modal-overlay") closeCtfBoard();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeCtfBoard();
+  });
+});

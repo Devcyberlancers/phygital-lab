@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <title>FAQ - CDAC Phygital Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <style>
+    .faq-shell { position: relative; z-index: 1; width: min(1080px, calc(100% - 2rem)); margin: 0 auto; padding: calc(var(--nav-h) + 4rem) 0 5rem; }
+    .faq-shell h1 { font-family: "DM Serif Display", serif; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; margin: 0.5rem 0 1rem; }
+    .faq-shell > p { color: var(--muted); max-width: 760px; line-height: 1.75; }
+    .faq-layout { display: grid; grid-template-columns: 0.45fr 1fr; gap: 2rem; margin-top: 3rem; }
+    details { border: 1px solid var(--line); border-radius: 8px; background: rgba(16,23,34,0.78); padding: 1rem 1.2rem; margin-bottom: 0.8rem; }
+    summary { cursor: pointer; font-weight: 800; }
+    details p { color: var(--muted); line-height: 1.7; margin-top: 0.75rem; }
+    @media (max-width: 800px) { .faq-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav id="main-nav" aria-label="Main Navigation">
+    <a class="nav-brand" href="/index.html">
+      <img class="nav-logo-img" src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
+    </a>
+    <ul class="nav-links">
+      <li><a class="nav-btn" href="/index.html">Home</a></li>
+      <li><a class="nav-btn" href="http://172.16.17.219/">Wiki</a></li>
+      <li><a class="nav-btn active" href="/faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <main class="faq-shell">
+    <p class="section-kicker">Lab Guide</p>
+    <h1>FAQ - Maintenance And Troubleshooting</h1>
+    <p>Basic rules and quick checks for students and lab users working with the Phygital Lab models.</p>
+
+    <section class="faq-layout">
+      <div>
+        <p class="section-kicker">Maintenance</p>
+        <h2>Daily Lab Care</h2>
+      </div>
+      <div>
+        <details open>
+          <summary>Can models or buildings be moved?</summary>
+          <p>No. Do not move model structures, tracks, tanks, racks, buildings, vehicles, or wiring without approval from the responsible team.</p>
+        </details>
+        <details>
+          <summary>Can we connect new devices to switches or controllers?</summary>
+          <p>No. Unknown hardware must not be connected to PoE switches, controllers, Raspberry Pi boards, PLC panels, or lab networks without approval.</p>
+        </details>
+        <details>
+          <summary>Can credentials be shared with students?</summary>
+          <p>No. Dashboard, server, controller, Wi-Fi, and admin credentials must not be shared casually. Use approved student accounts or demo accounts.</p>
+        </details>
+        <details>
+          <summary>How should the lab be cleaned?</summary>
+          <p>Use gentle dry cleaning or a vacuum around the table. Keep food, drinks, dust, and loose objects away from electronics and moving parts.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="faq-layout">
+      <div>
+        <p class="section-kicker">Troubleshooting</p>
+        <h2>When A Scenario Stops</h2>
+      </div>
+      <div>
+        <details open>
+          <summary>Dashboard is not opening. What should I check?</summary>
+          <p>Confirm the system is on the lab network, check server power, verify the IP address, and test reachability using <code>ping &lt;device-ip&gt;</code>.</p>
+        </details>
+        <details>
+          <summary>A model is not responding. What next?</summary>
+          <p>Check power, MCB status, network cable, controller status, and whether the correct scenario flow is running. Record the issue in the wiki/log notes.</p>
+        </details>
+        <details>
+          <summary>Moving parts are stuck or running too fast. What should I do?</summary>
+          <p>Stop the scenario from the control dashboard if available. Do not physically force train, barrier, conveyor, turbine, or gate movement.</p>
+        </details>
+        <details>
+          <summary>Before changing hardware or software, what is required?</summary>
+          <p>Consult the responsible team and update the wiki with date, change details, device names, IP addresses, and rollback notes.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

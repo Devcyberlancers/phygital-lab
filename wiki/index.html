@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <title>Wiki - CDAC Phygital Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <style>
+    .wiki-shell { position: relative; z-index: 1; width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: calc(var(--nav-h) + 4rem) 0 5rem; }
+    .wiki-shell h1 { font-family: "DM Serif Display", serif; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; margin: 0.5rem 0 1rem; }
+    .wiki-shell > p { color: var(--muted); max-width: 760px; line-height: 1.75; }
+    .wiki-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .wiki-card { border: 1px solid var(--line); border-radius: 8px; background: rgba(16,23,34,0.78); padding: 1.25rem; }
+    .wiki-card h2 { margin-bottom: 0.5rem; }
+    .wiki-card p { color: var(--muted); line-height: 1.65; }
+    @media (max-width: 900px) { .wiki-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 620px) { .wiki-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav id="main-nav" aria-label="Main Navigation">
+    <a class="nav-brand" href="/index.html">
+      <img class="nav-logo-img" src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
+    </a>
+    <ul class="nav-links">
+      <li><a class="nav-btn" href="/index.html">Home</a></li>
+      <li><a class="nav-btn active" href="http://172.16.17.219/">Wiki</a></li>
+      <li><a class="nav-btn" href="/faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <main class="wiki-shell">
+    <p class="section-kicker">Documentation</p>
+    <h1>Phygital Lab Wiki</h1>
+    <p>Central documentation area for architecture, device inventory, networking, logs, simulations, operating procedures, and model-specific maintenance notes.</p>
+
+    <section class="wiki-grid">
+      <article class="wiki-card">
+        <h2>Architecture</h2>
+        <p>Physical model layout, logical services, dashboards, sensors, controllers, and data flow diagrams.</p>
+      </article>
+      <article class="wiki-card">
+        <h2>Device List</h2>
+        <p>Raspberry Pi boards, controllers, cameras, pumps, motors, switches, sensors, and network equipment.</p>
+      </article>
+      <article class="wiki-card">
+        <h2>Networking</h2>
+        <p>IP address plan, VLANs, switch ports, Wi-Fi details, service URLs, firewall notes, and access rules.</p>
+      </article>
+      <article class="wiki-card">
+        <h2>Logs</h2>
+        <p>Daily status, incidents, model faults, cyber range activity, troubleshooting records, and repair notes.</p>
+      </article>
+      <article class="wiki-card">
+        <h2>Simulations</h2>
+        <p>Scenario list for airport, metro, power grid, hospital, data center, banking, water, toll, industry, stock, and warehouse models.</p>
+      </article>
+      <article class="wiki-card">
+        <h2>Operations Manual</h2>
+        <p>Startup, shutdown, student demo flow, safety rules, escalation process, and maintenance checklist.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
