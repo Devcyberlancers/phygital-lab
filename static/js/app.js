@@ -277,36 +277,70 @@ function renderDomainVisual(domain) {
   const scenes = {
     airport: `
       <svg class="scene-svg airport-scene" viewBox="0 0 360 210" role="img" aria-label="Animated airport model">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#122940"></stop>
+            <stop offset="1" stop-color="#071018"></stop>
+          </linearGradient>
+          <linearGradient id="runwayGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#2f3742"></stop>
+            <stop offset=".5" stop-color="#555f6c"></stop>
+            <stop offset="1" stop-color="#252d37"></stop>
+          </linearGradient>
+          <linearGradient id="planeGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffffff"></stop>
+            <stop offset=".55" stop-color="#cfeeff"></stop>
+            <stop offset="1" stop-color="#4dd8ff"></stop>
+          </linearGradient>
+          <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000000" flood-opacity=".38"></feDropShadow>
+          </filter>
+        </defs>
+        <rect class="scene-sky" x="0" y="0" width="360" height="210" rx="10" fill="url(#skyGrad)"></rect>
+        <circle class="sun-glow" cx="302" cy="42" r="26"></circle>
         <rect class="scene-ground" x="0" y="150" width="360" height="60" rx="8"></rect>
-        <rect class="runway" x="26" y="172" width="308" height="22" rx="4"></rect>
+        <rect class="runway" x="26" y="172" width="308" height="22" rx="4" fill="url(#runwayGrad)"></rect>
         <g class="runway-lines">
           <rect x="44" y="181" width="28" height="4"></rect><rect x="100" y="181" width="28" height="4"></rect>
           <rect x="156" y="181" width="28" height="4"></rect><rect x="212" y="181" width="28" height="4"></rect>
           <rect x="268" y="181" width="28" height="4"></rect>
         </g>
         <g class="terminal">
-          <rect x="38" y="104" width="92" height="42" rx="6"></rect>
-          <rect x="52" y="114" width="14" height="12"></rect><rect x="76" y="114" width="14" height="12"></rect><rect x="100" y="114" width="14" height="12"></rect>
-          <path d="M130 126h40v20h-40z"></path>
+          <rect x="36" y="102" width="96" height="44" rx="6"></rect>
+          <rect class="glass" x="50" y="112" width="15" height="14"></rect><rect class="glass" x="75" y="112" width="15" height="14"></rect><rect class="glass" x="100" y="112" width="15" height="14"></rect>
+          <path class="jetbridge" d="M132 126h42v20h-42z"></path>
+          <path class="tower" d="M198 144 V84 h22 v60 M192 84 h34 l-8-18 h-18z"></path>
         </g>
         <path class="flight-path" d="M46 88 C100 18 250 12 310 72 C354 116 272 142 214 112 C154 80 92 112 46 88"></path>
-        <g class="flying-plane">
+        <g class="flying-plane" filter="url(#softShadow)">
           <path d="M0 0 L54 13 L0 26 L9 15 L-22 15 L-22 11 L9 11 Z"></path>
           <path d="M7 11 L-8 -7 L11 9 Z"></path>
           <path d="M7 15 L-8 33 L11 17 Z"></path>
+          <circle cx="30" cy="13" r="2.2"></circle>
         </g>
         <g class="cloud cloud-one"><ellipse cx="0" cy="0" rx="22" ry="9"></ellipse><ellipse cx="18" cy="-4" rx="14" ry="10"></ellipse></g>
         <g class="cloud cloud-two"><ellipse cx="0" cy="0" rx="18" ry="8"></ellipse><ellipse cx="15" cy="-4" rx="12" ry="9"></ellipse></g>
       </svg>`,
     hospital: `
       <svg class="scene-svg hospital-scene" viewBox="0 0 360 210">
+        <defs>
+          <linearGradient id="hospitalWall" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f7ffff"></stop>
+            <stop offset="1" stop-color="#9fd8c5"></stop>
+          </linearGradient>
+          <filter id="hospitalShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity=".32"></feDropShadow>
+          </filter>
+        </defs>
+        <rect class="scene-sky hospital-sky" x="0" y="0" width="360" height="210" rx="10"></rect>
         <rect class="scene-ground" x="0" y="154" width="360" height="56" rx="8"></rect>
         <g class="hospital-building-2d">
-          <rect x="118" y="42" width="124" height="110" rx="8"></rect>
+          <rect x="118" y="42" width="124" height="110" rx="8" filter="url(#hospitalShadow)"></rect>
           <rect x="154" y="18" width="52" height="44" rx="6"></rect>
           <path d="M176 28h8v12h12v8h-12v12h-8V48h-12v-8h12z"></path>
           <rect x="138" y="72" width="18" height="18"></rect><rect x="172" y="72" width="18" height="18"></rect><rect x="206" y="72" width="18" height="18"></rect>
           <rect x="138" y="106" width="18" height="18"></rect><rect x="172" y="106" width="18" height="18"></rect><rect x="206" y="106" width="18" height="18"></rect>
+          <rect class="hospital-door" x="169" y="126" width="22" height="26" rx="4"></rect>
         </g>
         <path class="ecg-line" d="M38 44 H88 L98 28 L116 70 L132 38 L146 44 H318"></path>
         <g class="ambulance">

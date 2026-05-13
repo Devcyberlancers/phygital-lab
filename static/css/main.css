@@ -323,36 +323,64 @@ code { font-family: "IBM Plex Mono", monospace; color: var(--cyan); }
   border-bottom: 1px solid var(--line);
 }
 .domain-visual {
-  position: absolute;
-  right: max(1rem, calc((100vw - 1180px) / 2));
-  bottom: 2.2rem;
-  width: min(330px, 34vw);
-  height: 190px;
+  position: fixed;
+  right: -70px;
+  bottom: 24px;
+  width: min(760px, 58vw);
+  height: min(460px, 54vh);
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.26;
+  filter: saturate(1.2) blur(0.1px);
+  mix-blend-mode: screen;
 }
 .scene-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 10px;
-  background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015));
-  box-shadow: inset 0 0 44px rgba(77,216,255,0.08), 0 24px 70px rgba(0,0,0,0.24);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
-.scene-svg .scene-ground { fill: rgba(255,255,255,0.055); }
+.detail-banner,
+.detail-body {
+  position: relative;
+  z-index: 2;
+}
+#page-detail::after {
+  content: "";
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 58vw;
+  height: 58vh;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 58% 58%, rgba(77,216,255,0.10), transparent 58%);
+}
+.scene-sky { fill: #0a1826; }
+.sun-glow { fill: rgba(240,182,74,0.5); filter: blur(5px); animation: sunBreathe 4s ease-in-out infinite; }
+.scene-svg .scene-ground { fill: rgba(29,54,43,0.74); }
 .runway,.road { fill: rgba(255,255,255,0.16); }
 .runway-lines rect { fill: rgba(255,255,255,0.72); animation: runwayDash 1.2s linear infinite; }
 .terminal rect,.terminal path,.station,.booth,.warehouse-building,.factory-body { fill: rgba(77,216,255,0.14); stroke: rgba(77,216,255,0.42); stroke-width: 2; }
-.flight-path { fill: none; stroke: rgba(77,216,255,0.22); stroke-dasharray: 8 8; }
-.flying-plane { fill: var(--cyan); animation: airplaneRealFlight 5.8s ease-in-out infinite; transform-origin: center; }
+.terminal .glass { fill: rgba(196,238,255,0.68); animation: terminalLights 1.8s ease-in-out infinite alternate; }
+.terminal .jetbridge { fill: rgba(145,168,180,0.5); }
+.terminal .tower { fill: rgba(77,216,255,0.12); stroke: rgba(196,238,255,0.42); }
+.flight-path { fill: none; stroke: rgba(77,216,255,0.22); stroke-dasharray: 8 8; animation: pathFlow 1.8s linear infinite; }
+.flying-plane { fill: url(#planeGrad); animation: airplaneRealFlight 7.2s cubic-bezier(.42,0,.58,1) infinite; transform-origin: center; }
+.flying-plane circle { fill: rgba(2,8,14,0.55); }
 .cloud { fill: rgba(255,255,255,0.18); animation: cloudSlide 7s linear infinite; }
 .cloud-one { transform: translate(260px, 42px); }
 .cloud-two { transform: translate(210px, 86px); animation-delay: -2.5s; }
-.hospital-building-2d rect { fill: rgba(120,213,111,0.13); stroke: rgba(120,213,111,0.42); stroke-width: 2; }
+.hospital-sky { fill: #09201d; }
+.hospital-building-2d rect { fill: url(#hospitalWall); stroke: rgba(120,213,111,0.38); stroke-width: 2; }
+.hospital-building-2d rect:not(:first-child):not(.hospital-door) { fill: rgba(15,42,47,0.58); animation: hospitalWindow 1.7s ease-in-out infinite alternate; }
+.hospital-building-2d .hospital-door { fill: rgba(12,32,34,0.8); }
 .hospital-building-2d path { fill: var(--green); animation: lightPulse 1.4s ease-in-out infinite alternate; }
 .ecg-line { fill: none; stroke: var(--green); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 360; animation: ecgMove 2s linear infinite; }
-.ambulance { fill: #f3f7f7; animation: ambulanceMove 3.8s ease-in-out infinite; transform: translate(24px, 142px); }
+.ambulance { fill: #f3f7f7; animation: ambulanceMove 4.4s cubic-bezier(.45,0,.2,1) infinite; transform: translate(24px, 142px); filter: drop-shadow(0 8px 8px rgba(0,0,0,.3)); }
 .ambulance path { fill: var(--red); }
 .metro-train,.toll-car,.forklift { fill: var(--blue); animation: vehicleLoop 4s ease-in-out infinite; transform: translate(36px, 126px); }
 .toll-car { fill: var(--amber); transform: translate(18px, 148px); }
@@ -754,7 +782,7 @@ code { font-family: "IBM Plex Mono", monospace; color: var(--cyan); }
   .hero { padding-top: 2rem; }
   .hero-inner h1 { font-size: clamp(3.2rem, 18vw, 5rem); }
   .detail-banner { min-height: 280px; }
-  .domain-visual { position: relative; right: auto; bottom: auto; width: 100%; max-width: 320px; height: 150px; }
+  .domain-visual { right: -120px; bottom: 8vh; width: 520px; height: 320px; opacity: 0.16; }
 }
 
 @keyframes navDrop {
@@ -797,11 +825,13 @@ code { font-family: "IBM Plex Mono", monospace; color: var(--cyan); }
   to { transform: translate3d(1.5%, 1%, 0) rotate(3deg); }
 }
 @keyframes airplaneRealFlight {
-  0% { transform: translate(44px, 82px) rotate(-18deg) scale(.86); }
-  25% { transform: translate(144px, 28px) rotate(-6deg) scale(.92); }
-  50% { transform: translate(284px, 70px) rotate(18deg) scale(1); }
-  75% { transform: translate(194px, 116px) rotate(196deg) scale(.92); }
-  100% { transform: translate(44px, 82px) rotate(342deg) scale(.86); }
+  0% { transform: translate(36px, 92px) rotate(-17deg) scale(.82); opacity: .9; }
+  18% { transform: translate(105px, 42px) rotate(-10deg) scale(.9); opacity: 1; }
+  38% { transform: translate(222px, 32px) rotate(5deg) scale(1); }
+  55% { transform: translate(306px, 82px) rotate(24deg) scale(.96); }
+  72% { transform: translate(228px, 126px) rotate(188deg) scale(.86); }
+  88% { transform: translate(96px, 118px) rotate(208deg) scale(.78); opacity: .88; }
+  100% { transform: translate(36px, 92px) rotate(343deg) scale(.82); opacity: .9; }
 }
 @keyframes cloudSlide { from { opacity: .2; translate: 28px 0; } to { opacity: .65; translate: -80px 0; } }
 @keyframes runwayDash { from { translate: 70px 0; } to { translate: -70px 0; } }
@@ -819,6 +849,10 @@ code { font-family: "IBM Plex Mono", monospace; color: var(--cyan); }
 @keyframes barBeat { from { transform: scaleY(.62); } to { transform: scaleY(1); } }
 @keyframes boxBob { from { transform: translateY(0); } to { transform: translateY(-8px); } }
 @keyframes lightPulse { from { opacity: .35; filter: brightness(.8); } to { opacity: 1; filter: brightness(1.35); } }
+@keyframes sunBreathe { 0%,100% { opacity: .35; transform: scale(.95); } 50% { opacity: .65; transform: scale(1.08); } }
+@keyframes terminalLights { from { opacity: .52; } to { opacity: .95; } }
+@keyframes pathFlow { to { stroke-dashoffset: -32; } }
+@keyframes hospitalWindow { from { opacity: .58; } to { opacity: .98; } }
 
 @media (prefers-reduced-motion: reduce) {
   *,
