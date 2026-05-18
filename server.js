@@ -419,5 +419,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`CDAC Phygital Lab running at http://localhost:${port}`);
+  console.log(`Phygital Lab running at http://localhost:${port}`);
 });
