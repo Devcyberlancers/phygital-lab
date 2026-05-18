@@ -493,6 +493,28 @@ function closeCtfBoard() {
   document.getElementById("ctf-domain-board").innerHTML = "";
 }
 
+function openDemoVideo() {
+  const overlay = document.getElementById("video-modal-overlay");
+  const video = document.getElementById("demo-video-player");
+  const fallback = document.getElementById("demo-video-fallback");
+  fallback.classList.remove("visible");
+  video.src = "/static/videos/phygital-lab-demo.mp4";
+  video.load();
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+  video.play().catch(() => {});
+}
+
+function closeDemoVideo() {
+  const overlay = document.getElementById("video-modal-overlay");
+  const video = document.getElementById("demo-video-player");
+  video.pause();
+  video.removeAttribute("src");
+  video.load();
+  overlay.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
 function drawCanvas() {
   const canvas = document.getElementById("bg-canvas");
   const ctx = canvas.getContext("2d");
@@ -564,4 +586,20 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeCtfBoard();
   });
+
+  document.getElementById("open-demo-btn").addEventListener("click", openDemoVideo);
+  document.getElementById("video-modal-close-btn").addEventListener("click", closeDemoVideo);
+  document.getElementById("demo-video-player").addEventListener("error", () => {
+    document.getElementById("demo-video-fallback").classList.add("visible");
+  });
+  document.getElementById("video-modal-overlay").addEventListener("click", (event) => {
+    if (event.target.id === "video-modal-overlay") closeDemoVideo();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDemoVideo();
+  });
+
+  const hashPage = window.location.hash.replace("#", "");
+  if (hashPage === "models") showPage("domains");
+  if (hashPage === "cyber") showPage("cyber");
 });

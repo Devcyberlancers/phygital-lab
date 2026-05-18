@@ -16,7 +16,7 @@ Then open:
 Default admin password:
 
 ```text
-cdac@admin
+cyberlancers@admin
 ```
 
 ## CTF Domains
@@ -34,3 +34,13 @@ cdac@admin
 - Warehouse
 
 Runtime CTF data is generated locally in `data/phygital_ctf.json` and is intentionally ignored by Git.
+
+## Offline Demo Video
+
+Place the authorized MP4 demo video here:
+
+```text
+static/videos/phygital-lab-demo.mp4
+```
+
+The Home page `Demo` button plays this local file, so it works without internet.

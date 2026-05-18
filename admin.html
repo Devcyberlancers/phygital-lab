@@ -7,12 +7,12 @@
   <title>Phygital Lab CTF Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root { --bg:#07090d; --panel:#101722; --panel2:#172232; --line:rgba(255,255,255,.11); --text:#eff6f6; --muted:#9fb0b5; --cyan:#4dd8ff; --green:#78d56f; --red:#ff6d61; --amber:#f0b64a; }
     * { box-sizing:border-box; margin:0; padding:0; }
     html, body { overflow-x:hidden; }
-    body { min-height:100vh; background:linear-gradient(135deg,#07090d,#0d1622); color:var(--text); font-family:Syne,system-ui,sans-serif; }
+    body { min-height:100vh; background:linear-gradient(135deg,#07090d,#0d1622); color:var(--text); font-family:Inter,system-ui,sans-serif; }
     body::before { content:""; position:fixed; inset:-20%; pointer-events:none; background:radial-gradient(circle at 18% 20%,rgba(77,216,255,.10),transparent 26%),radial-gradient(circle at 82% 18%,rgba(255,109,97,.08),transparent 24%),radial-gradient(circle at 65% 80%,rgba(120,213,111,.08),transparent 25%); animation:adminAmbient 16s ease-in-out infinite alternate; }
     button,input,textarea,select { font:inherit; }
     button { cursor:pointer; }
@@ -30,7 +30,7 @@
     .btn.primary { background:var(--cyan); color:#041018; border-color:var(--cyan); }
     .btn.danger { background:rgba(255,109,97,.12); border-color:rgba(255,109,97,.35); color:var(--red); }
     .btn.ok { background:rgba(120,213,111,.12); border-color:rgba(120,213,111,.35); color:var(--green); }
-    .err { color:var(--red); min-height:1.3rem; margin-top:.6rem; font-family:"IBM Plex Mono",monospace; font-size:.8rem; }
+    .err { color:var(--red); min-height:1.3rem; margin-top:.6rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8rem; }
     #admin-app { display:none; }
     header { min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.65rem max(1rem,calc((100vw - 1180px)/2)); background:#fff; color:#111827; border-bottom:1px solid rgba(0,0,0,.12); position:sticky; top:0; z-index:10; animation:adminNav .55s ease both; }
     .brand { display:flex; align-items:center; gap:.8rem; font-weight:900; min-width:0; }
@@ -50,17 +50,17 @@
     .card h2,.card h3 { margin-bottom:.7rem; font-size:1.15rem; }
     .form-grid { display:grid; grid-template-columns:1fr 160px; gap:.8rem; }
     .full { grid-column:1 / -1; }
-    label { display:block; color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
+    label { display:block; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.35rem; }
     .actions { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:.9rem; }
     header .actions { margin-top:0; justify-content:flex-end; }
     .stats { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
-    .pill { border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:999px; padding:.45rem .7rem; color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.78rem; }
+    .pill { border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:999px; padding:.45rem .7rem; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; }
     .q-card,.student-card { border:1px solid var(--line); background:rgba(255,255,255,.035); border-radius:8px; padding:1rem; margin-bottom:.8rem; overflow-wrap:anywhere; animation:panelIn .35s ease both; transition:transform .2s ease, border-color .2s ease, background .2s ease; }
     .q-card:hover,.student-card:hover { transform:translateY(-3px); border-color:rgba(120,213,111,.24); background:rgba(255,255,255,.055); }
     .q-card-head { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
     .q-card h3 { margin:0; font-size:1rem; }
     .q-card p { color:var(--muted); line-height:1.6; margin:.65rem 0; }
-    .flag { color:var(--green); font-family:"IBM Plex Mono",monospace; overflow-wrap:anywhere; }
+    .flag { color:var(--green); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-wrap:anywhere; }
     .hint { color:var(--amber); font-size:.9rem; }
     .modal-wrap { display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:30; align-items:center; justify-content:center; padding:1rem; }
     .modal-wrap.open { display:flex; animation:modalShade .2s ease both; }
@@ -96,7 +96,7 @@
       <input class="login-field" type="password" id="login-pass" placeholder="Enter admin password" autocomplete="current-password">
       <button class="btn primary" onclick="doLogin()">Login</button>
       <div class="err" id="login-err"></div>
-      <p class="muted">Default password: <code>cdac@admin</code></p>
+      <p class="muted">Default password: <code>cyberlancers@admin</code></p>
     </div>
   </section>
 
@@ -167,7 +167,7 @@
   <script src="/static/js/ctf.js"></script>
   <script>
     const PASS_KEY = "cdac_admin_pass";
-    const DEFAULT_PASS = "cdac@admin";
+    const DEFAULT_PASS = "cyberlancers@admin";
     let domains = [];
     let questions = {};
     let active = "";

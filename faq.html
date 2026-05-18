@@ -7,16 +7,19 @@
   <title>FAQ - Phygital Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/main.css">
   <style>
     .faq-shell { position: relative; z-index: 1; width: min(1080px, calc(100% - 2rem)); margin: 0 auto; padding: calc(var(--nav-h) + 4rem) 0 5rem; }
-    .faq-shell h1 { font-family: "DM Serif Display", serif; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; margin: 0.5rem 0 1rem; }
+    .faq-shell h1 { font-family: "Inter", system-ui, sans-serif; font-size: clamp(2.7rem, 7vw, 5.4rem); font-weight: 900; line-height: 0.96; margin: 0.5rem 0 1rem; letter-spacing: -0.03em; }
     .faq-shell > p { color: var(--muted); max-width: 760px; line-height: 1.75; }
     .faq-layout { display: grid; grid-template-columns: 0.45fr 1fr; gap: 2rem; margin-top: 3rem; }
     details { border: 1px solid var(--line); border-radius: 8px; background: rgba(16,23,34,0.78); padding: 1rem 1.2rem; margin-bottom: 0.8rem; }
     summary { cursor: pointer; font-weight: 800; }
-    details p { color: var(--muted); line-height: 1.7; margin-top: 0.75rem; }
+    details p, details li { color: var(--muted); line-height: 1.7; }
+    details p { margin-top: 0.75rem; }
+    details ul { list-style: disc; padding-left: 1.25rem; margin-top: 0.75rem; }
+    .faq-note { border: 1px solid rgba(77,216,255,0.18); border-radius: 8px; background: rgba(77,216,255,0.06); padding: 1rem 1.2rem; color: var(--muted); line-height: 1.7; }
     @media (max-width: 800px) { .faq-layout { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -27,8 +30,11 @@
     </a>
     <ul class="nav-links">
       <li><a class="nav-btn" href="/index.html">Home</a></li>
+      <li><a class="nav-btn" href="/index.html#models">Models</a></li>
+      <li><a class="nav-btn" href="/index.html#cyber">Cybersecurity</a></li>
       <li><a class="nav-btn" href="http://172.16.17.219/">Wiki</a></li>
       <li><a class="nav-btn active" href="/faq">FAQ</a></li>
+      <li><a class="nav-btn" href="/admin.html">Admin</a></li>
     </ul>
   </nav>
 
@@ -39,51 +45,81 @@
 
     <section class="faq-layout">
       <div>
-        <p class="section-kicker">Maintenance</p>
+        <p class="section-kicker">Maintenance Of The Lab</p>
         <h2>Daily Lab Care</h2>
       </div>
       <div>
         <details open>
-          <summary>Can models or buildings be moved?</summary>
-          <p>No. Do not move model structures, tracks, tanks, racks, buildings, vehicles, or wiring without approval from the responsible team.</p>
+          <summary>How should the lab table and room be maintained?</summary>
+          <ul>
+            <li>Regularly clean the table using a vacuum cleaner to prevent dust accumulation.</li>
+            <li>Maintain cleanliness in the lab room.</li>
+            <li>Avoid dirty shoes and construction dust near the model area.</li>
+            <li>Use a vacuum cleaner for regular cleaning.</li>
+          </ul>
         </details>
         <details>
-          <summary>Can we connect new devices to switches or controllers?</summary>
-          <p>No. Unknown hardware must not be connected to PoE switches, controllers, Raspberry Pi boards, PLC panels, or lab networks without approval.</p>
+          <summary>Which water levels should be monitored?</summary>
+          <ul>
+            <li>Sewage Treatment tank.</li>
+            <li>Data Center coolant tank.</li>
+          </ul>
         </details>
         <details>
-          <summary>Can credentials be shared with students?</summary>
-          <p>No. Dashboard, server, controller, Wi-Fi, and admin credentials must not be shared casually. Use approved student accounts or demo accounts.</p>
+          <summary>What actions should be avoided?</summary>
+          <ul>
+            <li>Disconnecting or connecting wires without consulting the team and documenting changes on the wiki.</li>
+            <li>Plugging incompatible hardware into the PoE switch.</li>
+            <li>Changing the IP address of any hardware without documentation.</li>
+            <li>Eating or drinking on the table.</li>
+            <li>Physically moving buildings on the model.</li>
+            <li>Operating moving parts, such as metro or turbines, at high speed or stopping them by force.</li>
+            <li>Sharing credentials with users or students, to prevent unauthorized resetting or reprogramming.</li>
+          </ul>
         </details>
         <details>
-          <summary>How should the lab be cleaned?</summary>
-          <p>Use gentle dry cleaning or a vacuum around the table. Keep food, drinks, dust, and loose objects away from electronics and moving parts.</p>
+          <summary>What should be done before hardware or software changes?</summary>
+          <p>Consult the responsible team first, then document the change details on the wiki. Include date, device name, IP address if applicable, reason for change, and rollback notes.</p>
         </details>
       </div>
     </section>
 
     <section class="faq-layout">
       <div>
-        <p class="section-kicker">Troubleshooting</p>
+        <p class="section-kicker">Basic Troubleshooting</p>
         <h2>When A Scenario Stops</h2>
       </div>
       <div>
         <details open>
-          <summary>Dashboard is not opening. What should I check?</summary>
-          <p>Confirm the system is on the lab network, check server power, verify the IP address, and test reachability using <code>ping &lt;device-ip&gt;</code>.</p>
+          <summary>Dashboard access issues</summary>
+          <p>Confirm that the system is connected to the lab network. Refer to the lab network connection step or network documentation before checking the dashboard URL again.</p>
         </details>
         <details>
-          <summary>A model is not responding. What next?</summary>
-          <p>Check power, MCB status, network cable, controller status, and whether the correct scenario flow is running. Record the issue in the wiki/log notes.</p>
+          <summary>Non-responsive scenarios</summary>
+          <ul>
+            <li>Check the device IP address.</li>
+            <li>Check the physical power status in the panel.</li>
+            <li>Ping the IP address using command-line tools to confirm connectivity.</li>
+          </ul>
         </details>
         <details>
-          <summary>Moving parts are stuck or running too fast. What should I do?</summary>
-          <p>Stop the scenario from the control dashboard if available. Do not physically force train, barrier, conveyor, turbine, or gate movement.</p>
+          <summary>Specific hardware issues</summary>
+          <ul>
+            <li><strong>Toll Plaza Arduino Freeze:</strong> Use the reset buttons near the toll plaza. It takes around 30 seconds to reboot.</li>
+            <li><strong>Raspberry Pi Malfunction:</strong> Reboot by toggling the MCB in the corresponding panel.</li>
+            <li><strong>Sewage Treatment Pumps:</strong> Ensure the water level is above 20%.</li>
+            <li><strong>Data Center Coolant Pumps:</strong> Check that the water level is above the lower sensor.</li>
+            <li><strong>Sorting Belt Pushers:</strong> Inspect for obstructions in the servo and pusher mechanisms.</li>
+            <li><strong>Fire Sensors Triggering:</strong> Cover the sensors or disable them in the Node-RED flow.</li>
+          </ul>
         </details>
         <details>
-          <summary>Before changing hardware or software, what is required?</summary>
-          <p>Consult the responsible team and update the wiki with date, change details, device names, IP addresses, and rollback notes.</p>
+          <summary>How do I ping a device?</summary>
+          <p>Use a command-line tool and run <code>ping &lt;device-ip&gt;</code>. If replies are received, the device is reachable. If not, check power, network cable, IP address, and panel status.</p>
         </details>
+        <div class="faq-note">
+          <strong>Additional Note:</strong> For unresolved issues, contact the Cyberange Team for assistance.
+        </div>
       </div>
     </section>
   </main>

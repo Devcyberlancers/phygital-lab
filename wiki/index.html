@@ -7,11 +7,11 @@
   <title>Wiki - Phygital Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/main.css">
   <style>
     .wiki-shell { position: relative; z-index: 1; width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: calc(var(--nav-h) + 4rem) 0 5rem; }
-    .wiki-shell h1 { font-family: "DM Serif Display", serif; font-size: clamp(3rem, 8vw, 6rem); line-height: 0.9; margin: 0.5rem 0 1rem; }
+    .wiki-shell h1 { font-family: "Inter", system-ui, sans-serif; font-size: clamp(2.7rem, 7vw, 5.4rem); font-weight: 900; line-height: 0.96; margin: 0.5rem 0 1rem; letter-spacing: -0.03em; }
     .wiki-shell > p { color: var(--muted); max-width: 760px; line-height: 1.75; }
     .wiki-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
     .wiki-card { border: 1px solid var(--line); border-radius: 8px; background: rgba(16,23,34,0.78); padding: 1.25rem; }
@@ -28,8 +28,11 @@
     </a>
     <ul class="nav-links">
       <li><a class="nav-btn" href="/index.html">Home</a></li>
+      <li><a class="nav-btn" href="/index.html#models">Models</a></li>
+      <li><a class="nav-btn" href="/index.html#cyber">Cybersecurity</a></li>
       <li><a class="nav-btn active" href="http://172.16.17.219/">Wiki</a></li>
       <li><a class="nav-btn" href="/faq">FAQ</a></li>
+      <li><a class="nav-btn" href="/admin.html">Admin</a></li>
     </ul>
   </nav>
 
@@ -53,7 +56,7 @@
       </article>
       <article class="wiki-card">
         <h2>Logs</h2>
-        <p>Daily status, incidents, model faults, cyber range activity, troubleshooting records, and repair notes.</p>
+        <p>Daily status, incidents, model faults, cybersecurity activity, troubleshooting records, and repair notes.</p>
       </article>
       <article class="wiki-card">
         <h2>Simulations</h2>
