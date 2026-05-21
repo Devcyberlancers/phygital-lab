@@ -14,6 +14,7 @@ const domains = [
     twin: "Terminal, runway, vehicle, and passenger flow representation.",
     analytics: "Crowd density, baggage delay, intrusion, fire, and operational incident analytics.",
     simulation: "Runway closure, unauthorized access, baggage jam, evacuation, and camera outage scenarios.",
+    image: "static/images/Airport.jpg",
     photos: ["Full airport model overview", "Runway lighting and aircraft zone", "Terminal and passenger area", "Control dashboard screen"]
   },
   {
@@ -31,6 +32,7 @@ const domains = [
     twin: "Intake, treatment, tank, pump, and distribution stages.",
     analytics: "Pump efficiency, tank thresholds, quality drift, leak indicators, and anomaly alerts.",
     simulation: "Low tank, pump failure, chemical dosing fault, sensor spoofing, and communication loss.",
+    image: "static/images/water.jpg",
     photos: ["Treatment plant full model", "Tank and pump section", "Water quality sensor area", "SCADA display"]
   },
   {
@@ -82,6 +84,7 @@ const domains = [
     twin: "Branch lobby, ATM, vault, counters, and surveillance zones.",
     analytics: "Queue time, ATM uptime, suspicious transaction patterns, and access attempts.",
     simulation: "ATM downtime, vault access alert, transaction spike, card fraud, and CCTV failure.",
+    image: "static/images/Bank.jpg",
     photos: ["Banking model overview", "ATM and customer zone", "Vault/security area", "Transaction dashboard"]
   },
   {
@@ -99,6 +102,7 @@ const domains = [
     twin: "Generation, transmission, substation, feeders, and consumer load.",
     analytics: "Load forecast, outage detection, relay event correlation, and power quality.",
     simulation: "Overload, feeder fault, breaker trip, renewable fluctuation, and control network attack.",
+    image: "static/images/Grid.jpg",
     photos: ["Power grid model overview", "Substation section", "Transmission line area", "Grid monitoring dashboard"]
   },
   {
@@ -167,6 +171,7 @@ const domains = [
     twin: "Stations, tracks, train units, ticket gates, and control room.",
     analytics: "Passenger flow, schedule adherence, gate exceptions, track occupancy, and safety alerts.",
     simulation: "Train delay, platform crowding, gate fault, signal alert, and power interruption.",
+    image: "static/images/Metro.jpg",
     photos: ["Metro model overview", "Station platform", "Train and track area", "Metro control dashboard"]
   },
   {
@@ -247,9 +252,6 @@ function openDomain(id) {
   document.getElementById("detail-twin").textContent = currentDomain.twin;
   document.getElementById("detail-analytics").textContent = currentDomain.analytics;
   document.getElementById("detail-simulation").textContent = currentDomain.simulation;
-  document.getElementById("photo-icon").textContent = currentDomain.icon;
-  document.getElementById("photo-title").textContent = `${currentDomain.title} photo slots ready`;
-
   document.getElementById("detail-features").innerHTML = currentDomain.features.map((feature) => `
     <article class="feature-item reveal">
       <h4>${feature}</h4>
@@ -267,10 +269,35 @@ function openDomain(id) {
     </div>
   `).join("");
 
-  document.getElementById("photo-list").innerHTML = currentDomain.photos.map((photo) => `<li>${photo}</li>`).join("");
+  renderPhotoPanel(currentDomain);
   observeReveals(document.getElementById("page-detail"));
   switchTab("about");
   showPage("detail");
+}
+
+function renderPhotoPanel(domain) {
+  const preview = document.getElementById("photo-preview");
+  const list = document.getElementById("photo-list");
+  if (!preview || !list) return;
+
+  preview.classList.toggle("has-photo", Boolean(domain.image));
+  if (domain.image) {
+    preview.innerHTML = `
+      <img class="model-photo" src="${domain.image}" alt="${domain.title} phygital lab model photo">
+      <div class="photo-caption">
+        <span>${domain.group.replace("-", " ")}</span>
+        <strong>${domain.title} Scenario</strong>
+      </div>
+    `;
+  } else {
+    preview.innerHTML = `
+      <span id="photo-icon">${domain.icon}</span>
+      <strong id="photo-title">${domain.title} photo slots ready</strong>
+      <p>Place your photos in <code>static/images/</code> and I can connect them to this section.</p>
+    `;
+  }
+
+  list.innerHTML = domain.photos.map((photo) => `<li>${photo}</li>`).join("");
 }
 
 function renderDomainVisual(domain) {
