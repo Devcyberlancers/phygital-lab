@@ -472,7 +472,6 @@ function renderCyberScope() {
   const grid = document.getElementById("cyber-scope-grid");
   grid.innerHTML = domains.map((domain) => `
     <article class="cyber-scope-card reveal">
-      <strong>${domain.group.replace("-", " ")}</strong>
       <h3>${domain.title}</h3>
       <p>${domain.red}</p>
       <div class="cyber-actions">
