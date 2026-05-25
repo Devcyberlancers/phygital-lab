@@ -14,7 +14,7 @@ const domains = [
     twin: "Terminal, runway, vehicle, and passenger flow representation.",
     analytics: "Crowd density, baggage delay, intrusion, fire, and operational incident analytics.",
     simulation: "Runway closure, unauthorized access, baggage jam, evacuation, and camera outage scenarios.",
-    image: "static/images/Airport.jpg",
+    image: "static/images/airport.jpeg",
     photos: ["Full airport model overview", "Runway lighting and aircraft zone", "Terminal and passenger area", "Control dashboard screen"]
   },
   {
@@ -50,6 +50,7 @@ const domains = [
     twin: "Process line, controllers, actuators, and safety zones.",
     analytics: "Downtime, throughput, temperature, vibration, unsafe states, and maintenance trends.",
     simulation: "Conveyor stoppage, overheat, emergency stop, rogue command, and network isolation.",
+    image: "static/images/industry.jpeg",
     photos: ["Industrial model overview", "PLC/controller panel", "Production line area", "Operator dashboard"]
   },
   {
@@ -67,6 +68,7 @@ const domains = [
     twin: "Wards, emergency area, restricted rooms, assets, and safety systems.",
     analytics: "Occupancy, response time, equipment availability, air quality, and abnormal events.",
     simulation: "Fire alert, asset missing, ward overload, network outage, and unauthorized entry.",
+    image: "static/images/hospital.jpeg",
     photos: ["Hospital model overview", "Ward and emergency zone", "Fire and safety system", "Healthcare dashboard"]
   },
   {
@@ -102,7 +104,7 @@ const domains = [
     twin: "Generation, transmission, substation, feeders, and consumer load.",
     analytics: "Load forecast, outage detection, relay event correlation, and power quality.",
     simulation: "Overload, feeder fault, breaker trip, renewable fluctuation, and control network attack.",
-    image: "static/images/Grid.jpg",
+    image: "static/images/power plant.jpeg",
     photos: ["Power grid model overview", "Substation section", "Transmission line area", "Grid monitoring dashboard"]
   },
   {
@@ -137,6 +139,7 @@ const domains = [
     twin: "Racks, cooling, UPS, fire suppression, and network segments.",
     analytics: "Thermal trends, power load, uptime, capacity, and anomalous access.",
     simulation: "Cooling failure, UPS switchover, unauthorized access, DDoS, and server outage.",
+    image: "static/images/datacenter.jpeg",
     photos: ["Data center model overview", "Rack and cooling section", "UPS/power area", "NOC dashboard"]
   },
   {
@@ -171,7 +174,7 @@ const domains = [
     twin: "Stations, tracks, train units, ticket gates, and control room.",
     analytics: "Passenger flow, schedule adherence, gate exceptions, track occupancy, and safety alerts.",
     simulation: "Train delay, platform crowding, gate fault, signal alert, and power interruption.",
-    image: "static/images/Metro.jpg",
+    image: "static/images/metro.jpeg",
     photos: ["Metro model overview", "Station platform", "Train and track area", "Metro control dashboard"]
   },
   {
@@ -189,6 +192,7 @@ const domains = [
     twin: "Storage racks, dock, conveyor/robot area, and access zones.",
     analytics: "Inventory accuracy, dock time, asset movement, exception rate, and safety events.",
     simulation: "Missing asset, dock congestion, conveyor stop, fire alert, and inventory tampering.",
+    image: "static/images/ware house.jpeg",
     photos: ["Warehouse model overview", "Storage rack area", "Loading dock section", "Inventory dashboard"]
   }
 ];
@@ -218,7 +222,6 @@ function renderDomains(filter = "all") {
       card.style.setProperty("--reveal-delay", `${Math.min(grid.children.length * 55, 420)}ms`);
       card.tabIndex = 0;
       card.innerHTML = `
-        <div class="domain-icon">${domain.icon}</div>
         <h3>${domain.title}</h3>
         <p>${domain.summary}</p>
         <div class="tag-row">
@@ -239,10 +242,13 @@ function renderDomains(filter = "all") {
 
 function openDomain(id) {
   currentDomain = domains.find((domain) => domain.id === id) || domains[0];
+  const currentIndex = domains.findIndex((domain) => domain.id === currentDomain.id);
+  const nextDomain = domains[(currentIndex + 1) % domains.length];
   document.getElementById("detail-banner").style.setProperty("--detail-accent", currentDomain.accent.replace("0.9", "0.32"));
   document.getElementById("detail-category").textContent = currentDomain.group.replace("-", " ");
   document.getElementById("detail-title").textContent = currentDomain.title;
   document.getElementById("detail-summary").textContent = currentDomain.summary;
+  document.getElementById("next-model-btn").textContent = `Next: ${nextDomain.title}`;
   const visual = document.getElementById("detail-visual");
   visual.className = `domain-visual visual-${currentDomain.id}`;
   visual.innerHTML = renderDomainVisual(currentDomain);
@@ -273,6 +279,12 @@ function openDomain(id) {
   observeReveals(document.getElementById("page-detail"));
   switchTab("about");
   showPage("detail");
+}
+
+function openNextDomain() {
+  const currentIndex = domains.findIndex((domain) => domain.id === currentDomain.id);
+  const nextDomain = domains[(currentIndex + 1) % domains.length];
+  openDomain(nextDomain.id);
 }
 
 function renderPhotoPanel(domain) {
@@ -460,7 +472,7 @@ function renderCyberScope() {
   const grid = document.getElementById("cyber-scope-grid");
   grid.innerHTML = domains.map((domain) => `
     <article class="cyber-scope-card reveal">
-      <strong>${domain.icon}</strong>
+      <strong>${domain.group.replace("-", " ")}</strong>
       <h3>${domain.title}</h3>
       <p>${domain.red}</p>
       <div class="cyber-actions">
@@ -601,6 +613,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".tab-btn").forEach((button) => {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
   });
+
+  document.getElementById("next-model-btn").addEventListener("click", openNextDomain);
 
   document.getElementById("menu-toggle").addEventListener("click", () => {
     navLinks.classList.toggle("open");
