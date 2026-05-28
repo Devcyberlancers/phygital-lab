@@ -122,6 +122,7 @@ const domains = [
     twin: "Toll booths, lanes, barriers, vehicle sensors, and camera zones.",
     analytics: "Throughput, lane wait time, failed payment, violation, and barrier health.",
     simulation: "Lane blockage, payment failure, RFID spoof, barrier fault, and traffic surge.",
+    image: "static/images/toll plaza.jpeg",
     photos: ["Toll plaza model overview", "Lane and barrier section", "RFID/payment area", "Traffic dashboard"]
   },
   {
@@ -157,6 +158,7 @@ const domains = [
     twin: "Trading terminals, market feed, broker gateway, and risk engine.",
     analytics: "Volume spikes, failed orders, abnormal trades, latency, and fraud indicators.",
     simulation: "Flash movement, feed delay, suspicious order burst, API abuse, and terminal outage.",
+    image: "static/images/stock exchange.jpeg",
     photos: ["Stock market model overview", "Trading terminal area", "Market feed screen", "Risk dashboard"]
   },
   {
