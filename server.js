@@ -22,6 +22,16 @@ const domains = [
 ];
 
 const domainIds = domains.map(([id]) => id);
+const legacyIndustryChallengeIds = new Set([
+  "industry_001",
+  "industry_002",
+  "industry_003",
+  "industry_mqtt_001",
+  "industry_mqtt_002",
+  "industry_mqtt_003",
+  "industry_blue_001",
+  "industry_blue_002"
+]);
 
 const seedChallenges = Object.fromEntries(domains.map(([id, label]) => [id, [
   {
@@ -52,6 +62,72 @@ const seedChallenges = Object.fromEntries(domains.map(([id, label]) => [id, [
     hint: "Sort events by time and compare failed access, command, and alarm entries."
   }
 ]]));
+
+seedChallenges.industry = [
+  {
+    id: "industry_room_001",
+    category: "industry",
+    title: "Task 1 - Room Briefing",
+    description: "You are investigating an Industry phygital model where sensor gauges can be manipulated through MQTT telemetry. Open the Industry Red Team scenario page, identify the dashboard used for observation, and submit the room-start flag.",
+    points: 50,
+    flag: "FLAG{industry_room_started}",
+    hint: "Start from Industry > Cybersecurity > Attack Surface Training. The scenario page links the live dashboard."
+  },
+  {
+    id: "industry_room_002",
+    category: "industry",
+    title: "Task 2 - Broker Discovery",
+    description: "Inspect the training script configuration and identify the MQTT broker IP used by the Industry simulation. This is the broker the attacker machine publishes to during the lab.",
+    points: 100,
+    flag: "FLAG{industry_mqtt_broker_172_16_17_207}",
+    hint: "Check the broker_address value used by the Industry training scripts."
+  },
+  {
+    id: "industry_room_003",
+    category: "industry",
+    title: "Task 3 - Single Sensor Target",
+    description: "The single.py simulation represents a focused attacker changing only one sensor stream. Identify the MQTT topic targeted by single.py.",
+    points: 150,
+    flag: "FLAG{industry_no2_topic_spoofed}",
+    hint: "Open single.py and look for the topic variable."
+  },
+  {
+    id: "industry_room_004",
+    category: "industry",
+    title: "Task 4 - Fake Value Injection",
+    description: "The all.py simulation represents broad telemetry spoofing. It scans visible MQTT topics and then publishes the same fake value repeatedly. Identify that fake value.",
+    points: 150,
+    flag: "FLAG{industry_all_topics_999}",
+    hint: "Look for the attack_value variable in all.py."
+  },
+  {
+    id: "industry_room_005",
+    category: "industry",
+    title: "Task 5 - Dashboard Impact",
+    description: "Run the approved lab simulation and observe the Industry dashboard. Identify what kind of event the Blue Team should classify this as when multiple gauges jump to impossible values.",
+    points: 200,
+    flag: "FLAG{industry_fake_telemetry_incident}",
+    hint: "The event is not a physical sensor failure. It is fake telemetry being published to MQTT topics."
+  },
+  {
+    id: "industry_room_006",
+    category: "industry",
+    title: "Task 6 - Containment",
+    description: "The Blue Team sees fake telemetry changing live. Identify the first safe containment action to stop the running lab simulation on the Kali machine.",
+    points: 200,
+    flag: "FLAG{industry_ctrl_c_containment}",
+    hint: "The Blue Team page explains how to stop the running script on the Kali machine."
+  },
+  {
+    id: "industry_room_007",
+    category: "industry",
+    title: "Task 7 - Hardening Plan",
+    description: "After containment, propose the controls that would prevent unauthorized MQTT publishing in the Industry model: authentication, anonymous publish disablement, topic ACLs, port restriction, and alert thresholds.",
+    points: 250,
+    flag: "FLAG{industry_mqtt_acl_hardening}",
+    hint: "Look for MQTT authentication, anonymous publish, topic ACLs, port restriction, and Node-RED alerts in the mitigation checklist."
+  }
+];
 
 const types = {
   ".html": "text/html; charset=utf-8",
@@ -95,6 +171,24 @@ function readDb() {
   db.submissions ||= [];
   db.solves ||= [];
   db.hints ||= [];
+  let changed = false;
+  const removedLegacyIndustry = db.challenges.filter((challenge) => legacyIndustryChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  if (removedLegacyIndustry.length) {
+    const removed = new Set(removedLegacyIndustry);
+    db.challenges = db.challenges.filter((challenge) => !removed.has(challenge.id));
+    db.submissions = db.submissions.filter((item) => !removed.has(item.challengeId));
+    db.solves = db.solves.filter((item) => !removed.has(item.challengeId));
+    db.hints = db.hints.filter((item) => !removed.has(item.challengeId));
+    changed = true;
+  }
+  const existingChallenges = new Set(db.challenges.map((challenge) => challenge.id));
+  for (const item of Object.values(seedChallenges).flat()) {
+    if (!existingChallenges.has(item.id)) {
+      db.challenges.push({ ...item, createdAt: nowIso(), updatedAt: nowIso() });
+      changed = true;
+    }
+  }
+  if (changed) writeDb(db);
   return db;
 }
 

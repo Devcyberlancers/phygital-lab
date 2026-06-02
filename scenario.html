@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <title>Cybersecurity Scenario - Phygital Lab</title>
+</head>
+<body class="scenario-page">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <nav id="main-nav" aria-label="Main Navigation">
+    <a class="nav-brand" href="/index.html" aria-label="Go to home">
+      <img class="nav-logo-img" src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
+    </a>
+    <ul class="nav-links">
+      <li><a class="nav-btn" href="/index.html">Home</a></li>
+      <li><a class="nav-btn" href="/index.html#models">Models</a></li>
+      <li><a class="nav-btn active" href="/index.html#cyber">Cybersecurity</a></li>
+      <li><a class="nav-btn" href="http://172.16.17.219/">Wiki</a></li>
+    </ul>
+  </nav>
+
+  <main class="scenario-shell">
+    <section class="scenario-hero content-card">
+      <p class="section-kicker" id="scenario-kicker">Scenario</p>
+      <h1 id="scenario-title">Cybersecurity Scenario</h1>
+      <p id="scenario-summary"></p>
+      <div class="scenario-badges" id="scenario-badges"></div>
+      <div class="scenario-links" id="scenario-links"></div>
+    </section>
+
+    <section class="scenario-grid">
+      <article class="scenario-block">
+        <h2>How Students Run The Drill</h2>
+        <ol id="scenario-steps"></ol>
+      </article>
+
+      <article class="scenario-block">
+        <h2 id="scenario-action-title">Kali Commands</h2>
+        <pre id="scenario-commands"></pre>
+        <p class="scenario-note" id="scenario-command-note">Scripts should be placed in <code>/home/kali/documents</code> on the Kali machine.</p>
+      </article>
+    </section>
+
+    <section class="content-card scenario-code-section" id="scenario-code-section">
+      <div class="scenario-code-head">
+        <div>
+          <p class="section-kicker">Optional Code View</p>
+          <h2>Show Python Code</h2>
+        </div>
+        <div class="scenario-code-actions">
+          <button class="secondary-action" type="button" data-code-target="single">Show single.py</button>
+          <button class="secondary-action" type="button" data-code-target="all">Show all.py</button>
+        </div>
+      </div>
+      <pre class="scenario-code-view" id="scenario-code-view">Select a script to view its code.</pre>
+    </section>
+  </main>
+
+  <script src="/static/js/scenario.js"></script>
+</body>
+</html>

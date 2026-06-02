@@ -166,6 +166,9 @@ window.CTF = (function () {
   }
 
   function shuffleForBrowser(items, category) {
+    if (category === 'industry') {
+      return items.slice().sort((a, b) => a.id.localeCompare(b.id));
+    }
     const list = items.slice();
     const random = seededRandom(getShuffleSeed(category));
     for (let i = list.length - 1; i > 0; i -= 1) {
@@ -238,8 +241,10 @@ window.CTF = (function () {
       const solvedCount = challenges.filter(c => c.solved).length;
       const total = challenges.reduce((s, c) => s + c.points, 0);
       const pct = total ? Math.round((score / total) * 100) : 0;
+      const isIndustryRoom = category === 'industry';
 
       container.innerHTML = `
+        ${isIndustryRoom ? renderIndustryRoomHeader(challenges, solvedCount, total) : ''}
         ${renderStudentStrip(student)}
         ${renderLeaderboard(board)}
         <div class="ctf-scorebar">
@@ -252,8 +257,8 @@ window.CTF = (function () {
           </div>
           <div class="ctf-sb-solved">${solvedCount} / ${challenges.length} solved</div>
         </div>
-        <div class="ctf-challenges">
-          ${challenges.map(renderChallenge).join('')}
+        <div class="ctf-challenges ${isIndustryRoom ? 'ctf-room-tasks' : ''}">
+          ${challenges.map((challenge, index) => renderChallenge(challenge, index, isIndustryRoom)).join('')}
         </div>`;
 
       bindBoard(container, category, containerId);
@@ -345,11 +350,35 @@ window.CTF = (function () {
       </div>`;
   }
 
-  function renderChallenge(ch) {
+  function renderIndustryRoomHeader(challenges, solvedCount, total) {
+    return `
+      <div class="ctf-room-hero">
+        <div>
+          <span class="ctf-room-kicker">Guided CTF Room</span>
+          <h3>Industry MQTT Telemetry Intrusion</h3>
+          <p>Investigate a phygital Industry model where a Kali machine can spoof MQTT sensor values and mislead the live Node-RED dashboard. Complete the Red Team discovery tasks, then finish with Blue Team containment and hardening.</p>
+          <div class="ctf-room-tags">
+            <span>Beginner friendly</span>
+            <span>MQTT</span>
+            <span>IoT / OT</span>
+            <span>Red + Blue Team</span>
+          </div>
+        </div>
+        <div class="ctf-room-statbox">
+          <strong>${solvedCount}/${challenges.length}</strong>
+          <span>Tasks solved</span>
+          <em>${total} total pts</em>
+        </div>
+      </div>`;
+  }
+
+  function renderChallenge(ch, index = 0, roomStyle = false) {
     const solved = !!ch.solved;
     const attempts = ch.attempts || 0;
+    const taskNo = String(index + 1).padStart(2, '0');
     return `
-      <div class="ctf-card ${solved ? 'ctf-card-solved' : ''}" id="ctf-card-${ch.id}">
+      <div class="ctf-card ${roomStyle ? 'ctf-room-card' : ''} ${solved ? 'ctf-card-solved' : ''}" id="ctf-card-${ch.id}">
+        ${roomStyle ? `<div class="ctf-room-step ${solved ? 'done' : ''}">${solved ? 'OK' : taskNo}</div>` : ''}
         <div class="ctf-card-head">
           <div class="ctf-card-title-row">
             <span class="ctf-card-title">${ch.title}</span>

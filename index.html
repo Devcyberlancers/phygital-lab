@@ -91,7 +91,7 @@
       <div class="page-head">
         <p class="section-kicker">Choose A Model</p>
         <h2>Phygital Infrastructure Domains</h2>
-        <p>Each model area includes project overview, walkthrough, cybersecurity scope, digital twin simulation use cases, and a photo/demo placeholder.</p>
+        <p>Each model area includes project overview, cybersecurity scope, digital twin simulation use cases, and a photo/demo placeholder.</p>
       </div>
       <div class="filter-bar" id="filter-bar" aria-label="Domain filters">
         <button class="filter-btn active" data-filter="all">All</button>
@@ -119,7 +119,6 @@
       <div class="detail-body">
         <nav class="tab-nav" aria-label="Domain sections">
           <button class="tab-btn active" data-tab="about">About</button>
-          <button class="tab-btn" data-tab="walkthrough">Walk Through</button>
           <button class="tab-btn" data-tab="cybersecurity">Cybersecurity</button>
           <button class="tab-btn" data-tab="simulation">Digital Twin / Simulation</button>
           <button class="tab-btn" data-tab="photos">Photos</button>
@@ -133,25 +132,18 @@
           <div class="feature-grid" id="detail-features"></div>
         </section>
 
-        <section class="tab-content" id="tab-walkthrough">
-          <div class="content-card">
-            <h3>System Walk Through</h3>
-            <div class="steps" id="detail-steps"></div>
-          </div>
-        </section>
-
         <section class="tab-content" id="tab-cybersecurity">
           <div class="cyber-duo">
-            <article class="cyber-card red">
+            <button class="cyber-card red cyber-mode-btn" id="cyber-red-btn" type="button" data-cyber-mode="red">
               <span>Red Team</span>
-              <h3>Attack Surface Training</h3>
-              <p id="detail-red"></p>
-            </article>
-            <article class="cyber-card blue">
+              <strong>Attack Surface Training</strong>
+              <small id="detail-red"></small>
+            </button>
+            <button class="cyber-card blue cyber-mode-btn" id="cyber-blue-btn" type="button" data-cyber-mode="blue">
               <span>Blue Team</span>
-              <h3>Monitoring And Response</h3>
-              <p id="detail-blue"></p>
-            </article>
+              <strong>Monitoring And Response</strong>
+              <small id="detail-blue"></small>
+            </button>
           </div>
         </section>
 
