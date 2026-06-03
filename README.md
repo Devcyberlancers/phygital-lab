@@ -13,12 +13,6 @@ Then open:
 - Site: http://localhost:5000/index.html
 - Admin: http://localhost:5000/admin.html
 
-Default admin password:
-
-```text
-cyberlancers@admin
-```
-
 ## CTF Domains
 
 - Airport

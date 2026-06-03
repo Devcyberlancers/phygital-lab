@@ -28,7 +28,6 @@
       <li><button class="nav-btn" data-page="cyber">Cybersecurity</button></li>
       <li><a class="nav-btn" href="http://172.16.17.219/">Wiki</a></li>
       <li><a class="nav-btn" href="/faq">FAQ</a></li>
-      <li><a class="nav-btn" href="/admin.html">Admin</a></li>
     </ul>
     <button class="nav-menu-toggle" id="menu-toggle" aria-label="Toggle navigation">Menu</button>
   </nav>
@@ -44,9 +43,9 @@
             cyber-physical simulations, monitoring workflows, and lab operations.
           </p>
           <div class="hero-actions">
-            <button class="primary-action" data-page="domains">Explore Models</button>
-            <a class="secondary-action" href="http://172.16.17.219/">Open Wiki</a>
-            <button class="secondary-action" type="button" id="open-demo-btn">Demo</button>
+            <button class="primary-action" data-page="domains" data-icon="models">Explore Models</button>
+            <a class="secondary-action" href="http://172.16.17.219/" data-icon="wiki">Open Wiki</a>
+            <button class="secondary-action" type="button" id="open-demo-btn" data-icon="play">Demo</button>
           </div>
         </div>
         <div class="hero-panel" aria-label="Lab summary">
@@ -106,8 +105,8 @@
     <section class="page" id="page-detail">
       <div class="detail-banner" id="detail-banner">
         <div class="detail-actions">
-          <button class="back-btn" data-page="domains">Back to Models</button>
-          <button class="next-model-btn" id="next-model-btn" type="button">Next Model</button>
+          <button class="back-btn" data-page="domains" data-icon="back">Back to Models</button>
+          <button class="next-model-btn" id="next-model-btn" type="button" data-icon="next">Next Model</button>
         </div>
         <div class="detail-title-block">
           <p class="section-kicker" id="detail-category">Domain</p>

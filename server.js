@@ -6,6 +6,8 @@ const root = __dirname;
 const port = Number(process.env.PORT || 5000);
 const dataDir = path.join(root, "data");
 const dbPath = path.join(dataDir, "phygital_ctf.json");
+const adminPassword = process.env.ADMIN_PASSWORD || "cyberlancers@admin";
+const adminSessions = new Set();
 
 const domains = [
   ["airport", "Airport"],
@@ -31,6 +33,11 @@ const legacyIndustryChallengeIds = new Set([
   "industry_mqtt_003",
   "industry_blue_001",
   "industry_blue_002"
+]);
+const legacyDataCenterChallengeIds = new Set([
+  "data-center_001",
+  "data-center_002",
+  "data-center_003"
 ]);
 
 const seedChallenges = Object.fromEntries(domains.map(([id, label]) => [id, [
@@ -129,6 +136,72 @@ seedChallenges.industry = [
   }
 ];
 
+seedChallenges["data-center"] = [
+  {
+    id: "data_center_room_001",
+    category: "data-center",
+    title: "Task 1 - HVAC Room Briefing",
+    description: "You are investigating a Data Center HVAC model where coolant and ventilation can be controlled through a Modbus TCP PLC. Open the Data Center Red Team scenario page and identify the dashboard used for observation.",
+    points: 50,
+    flag: "FLAG{data_center_hvac_room_started}",
+    hint: "Start from Data Center > Cybersecurity > Attack Surface Training. The scenario page links the live Data Center dashboard."
+  },
+  {
+    id: "data_center_room_002",
+    category: "data-center",
+    title: "Task 2 - Modbus Port Discovery",
+    description: "Run the approved lab port scan against the Data Center PLC and identify which TCP port exposes Modbus Application Protocol.",
+    points: 100,
+    flag: "FLAG{data_center_modbus_tcp_502}",
+    hint: "The scan command targets only one port on 172.16.17.126."
+  },
+  {
+    id: "data_center_room_003",
+    category: "data-center",
+    title: "Task 3 - PLC Target Identification",
+    description: "Identify the PLC IP address used by the Data Center HVAC Modbus drill.",
+    points: 100,
+    flag: "FLAG{data_center_plc_172_16_17_126}",
+    hint: "Look at the RHOSTS value in the Modbus client commands."
+  },
+  {
+    id: "data_center_room_004",
+    category: "data-center",
+    title: "Task 4 - Register Mapping",
+    description: "The attacker discovers two important Modbus register addresses. Identify which register address controls the coolant.",
+    points: 150,
+    flag: "FLAG{data_center_coolant_register_0}",
+    hint: "The scenario notes say data_address 0 controls coolant and data_address 1 controls the ventilation fan."
+  },
+  {
+    id: "data_center_room_005",
+    category: "data-center",
+    title: "Task 5 - Coolant OFF Command",
+    description: "In the lab simulation, the attacker writes a value that turns the HVAC coolant OFF and can make the Data Center heat up. Identify that value.",
+    points: 200,
+    flag: "FLAG{data_center_coolant_off_333}",
+    hint: "Check the write_register command used for coolant OFF."
+  },
+  {
+    id: "data_center_room_006",
+    category: "data-center",
+    title: "Task 6 - Safe Recovery Value",
+    description: "After containment, Blue Team must restore the HVAC coolant to a safe ON state. Identify the value used to turn coolant ON.",
+    points: 200,
+    flag: "FLAG{data_center_coolant_on_111}",
+    hint: "The recovery command writes the coolant ON value."
+  },
+  {
+    id: "data_center_room_007",
+    category: "data-center",
+    title: "Task 7 - Modbus Hardening Plan",
+    description: "Recommend the key protection that limits unauthorized Modbus writes to the PLC: restrict TCP/502 to trusted HMI/SCADA hosts, segment the PLC network, and alert on write_register operations.",
+    points: 250,
+    flag: "FLAG{data_center_modbus_write_protection}",
+    hint: "The Blue Team scenario lists the hardening checklist for TCP/502 and write_register monitoring."
+  }
+];
+
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -173,8 +246,10 @@ function readDb() {
   db.hints ||= [];
   let changed = false;
   const removedLegacyIndustry = db.challenges.filter((challenge) => legacyIndustryChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
-  if (removedLegacyIndustry.length) {
-    const removed = new Set(removedLegacyIndustry);
+  const removedLegacyDataCenter = db.challenges.filter((challenge) => legacyDataCenterChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter];
+  if (removedLegacy.length) {
+    const removed = new Set(removedLegacy);
     db.challenges = db.challenges.filter((challenge) => !removed.has(challenge.id));
     db.submissions = db.submissions.filter((item) => !removed.has(item.challengeId));
     db.solves = db.solves.filter((item) => !removed.has(item.challengeId));
@@ -200,6 +275,16 @@ function writeDb(db) {
 function sendJson(res, status, payload) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify(payload));
+}
+
+function makeToken() {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+}
+
+function isAdminRequest(req) {
+  const auth = String(req.headers.authorization || "");
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  return Boolean(token && adminSessions.has(token));
 }
 
 function readBody(req) {
@@ -371,6 +456,19 @@ async function handleApi(req, res, url) {
     const studentId = Number(url.searchParams.get("studentId") || 0);
     if (!category) return sendJson(res, 400, { ok: false, msg: "Invalid category." });
     return sendJson(res, 200, leaderboard(db, category, studentId));
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/admin/login") {
+    const payload = await readBody(req);
+    const password = String(payload.password || "");
+    if (password !== adminPassword) return sendJson(res, 401, { ok: false, msg: "Incorrect password." });
+    const token = makeToken();
+    adminSessions.add(token);
+    return sendJson(res, 200, { ok: true, token });
+  }
+
+  if (url.pathname.startsWith("/api/admin/") && !isAdminRequest(req)) {
+    return sendJson(res, 401, { ok: false, msg: "Admin login required." });
   }
 
   if (req.method === "GET" && url.pathname === "/api/admin/challenges") {

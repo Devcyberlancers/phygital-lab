@@ -166,7 +166,7 @@ window.CTF = (function () {
   }
 
   function shuffleForBrowser(items, category) {
-    if (category === 'industry') {
+    if (category === 'industry' || category === 'data-center') {
       return items.slice().sort((a, b) => a.id.localeCompare(b.id));
     }
     const list = items.slice();
@@ -241,10 +241,10 @@ window.CTF = (function () {
       const solvedCount = challenges.filter(c => c.solved).length;
       const total = challenges.reduce((s, c) => s + c.points, 0);
       const pct = total ? Math.round((score / total) * 100) : 0;
-      const isIndustryRoom = category === 'industry';
+      const isGuidedRoom = category === 'industry' || category === 'data-center';
 
       container.innerHTML = `
-        ${isIndustryRoom ? renderIndustryRoomHeader(challenges, solvedCount, total) : ''}
+        ${isGuidedRoom ? renderGuidedRoomHeader(category, challenges, solvedCount, total) : ''}
         ${renderStudentStrip(student)}
         ${renderLeaderboard(board)}
         <div class="ctf-scorebar">
@@ -257,8 +257,8 @@ window.CTF = (function () {
           </div>
           <div class="ctf-sb-solved">${solvedCount} / ${challenges.length} solved</div>
         </div>
-        <div class="ctf-challenges ${isIndustryRoom ? 'ctf-room-tasks' : ''}">
-          ${challenges.map((challenge, index) => renderChallenge(challenge, index, isIndustryRoom)).join('')}
+        <div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
+          ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
         </div>`;
 
       bindBoard(container, category, containerId);
@@ -350,18 +350,28 @@ window.CTF = (function () {
       </div>`;
   }
 
-  function renderIndustryRoomHeader(challenges, solvedCount, total) {
+  function renderGuidedRoomHeader(category, challenges, solvedCount, total) {
+    const rooms = {
+      industry: {
+        title: 'Industry MQTT Telemetry Intrusion',
+        description: 'Investigate a phygital Industry model where a Kali machine can spoof MQTT sensor values and mislead the live Node-RED dashboard. Complete the Red Team discovery tasks, then finish with Blue Team containment and hardening.',
+        tags: ['Beginner friendly', 'MQTT', 'IoT / OT', 'Red + Blue Team']
+      },
+      'data-center': {
+        title: 'Data Center HVAC Modbus Intrusion',
+        description: 'Investigate a Data Center HVAC PLC where exposed Modbus TCP can be used to read and write coolant or ventilation registers. Complete discovery, register mapping, safe recovery, and Blue Team hardening tasks.',
+        tags: ['Modbus TCP', 'PLC', 'HVAC', 'Red + Blue Team']
+      }
+    };
+    const room = rooms[category] || rooms.industry;
     return `
       <div class="ctf-room-hero">
         <div>
           <span class="ctf-room-kicker">Guided CTF Room</span>
-          <h3>Industry MQTT Telemetry Intrusion</h3>
-          <p>Investigate a phygital Industry model where a Kali machine can spoof MQTT sensor values and mislead the live Node-RED dashboard. Complete the Red Team discovery tasks, then finish with Blue Team containment and hardening.</p>
+          <h3>${room.title}</h3>
+          <p>${room.description}</p>
           <div class="ctf-room-tags">
-            <span>Beginner friendly</span>
-            <span>MQTT</span>
-            <span>IoT / OT</span>
-            <span>Red + Blue Team</span>
+            ${room.tags.map((tag) => `<span>${tag}</span>`).join('')}
           </div>
         </div>
         <div class="ctf-room-statbox">

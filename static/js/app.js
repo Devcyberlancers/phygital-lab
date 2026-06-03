@@ -472,7 +472,7 @@ function renderCyberScope() {
       <h3>${domain.title}</h3>
       <p>${domain.red}</p>
       <div class="cyber-actions">
-        <button class="primary-action" type="button" onclick="openCtfBoard('${domain.id}')">Open CTF</button>
+        <button class="primary-action" type="button" data-icon="ctf" onclick="openCtfBoard('${domain.id}')">Open CTF</button>
       </div>
     </article>
   `).join("");

@@ -96,7 +96,7 @@
       <input class="login-field" type="password" id="login-pass" placeholder="Enter admin password" autocomplete="current-password">
       <button class="btn primary" onclick="doLogin()">Login</button>
       <div class="err" id="login-err"></div>
-      <p class="muted">Default password: <code>cyberlancers@admin</code></p>
+      <p class="muted">Authorized lab administrators only.</p>
     </div>
   </section>
 
@@ -166,30 +166,43 @@
 
   <script src="/static/js/ctf.js"></script>
   <script>
-    const PASS_KEY = "cdac_admin_pass";
-    const DEFAULT_PASS = "cyberlancers@admin";
+    const ADMIN_TOKEN_KEY = "phygital_admin_token";
     let domains = [];
     let questions = {};
     let active = "";
 
     async function api(path, options) {
-      const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...(options || {}) });
+      const token = sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
+      const headers = { "Content-Type": "application/json", ...((options && options.headers) || {}) };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const res = await fetch(path, { ...(options || {}), headers });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+        document.getElementById("admin-app").style.display = "none";
+        document.getElementById("login-screen").style.display = "flex";
+      }
       if (!res.ok || data.ok === false) throw new Error(data.msg || "Request failed");
       return data;
     }
 
-    function getPass() { return localStorage.getItem(PASS_KEY) || DEFAULT_PASS; }
-    function doLogin() {
-      if (document.getElementById("login-pass").value !== getPass()) {
-        document.getElementById("login-err").textContent = "Incorrect password.";
-        return;
+    async function doLogin() {
+      document.getElementById("login-err").textContent = "";
+      try {
+        const data = await api("/api/admin/login", {
+          method: "POST",
+          body: JSON.stringify({ password: document.getElementById("login-pass").value })
+        });
+        sessionStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("admin-app").style.display = "block";
+        init();
+      } catch (e) {
+        document.getElementById("login-err").textContent = e.message;
       }
-      document.getElementById("login-screen").style.display = "none";
-      document.getElementById("admin-app").style.display = "block";
-      init();
     }
     function doLogout() {
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
       document.getElementById("admin-app").style.display = "none";
       document.getElementById("login-screen").style.display = "flex";
     }
@@ -375,7 +388,7 @@
     }
 
     async function exportData() {
-      const payload = await fetch("/api/admin/export").then((r) => r.json());
+      const payload = await api("/api/admin/export");
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
