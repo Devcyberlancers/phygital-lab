@@ -166,7 +166,7 @@ window.CTF = (function () {
   }
 
   function shuffleForBrowser(items, category) {
-    if (category === 'industry' || category === 'data-center') {
+    if (category === 'industry' || category === 'data-center' || category === 'water-treatment') {
       return items.slice().sort((a, b) => a.id.localeCompare(b.id));
     }
     const list = items.slice();
@@ -241,7 +241,7 @@ window.CTF = (function () {
       const solvedCount = challenges.filter(c => c.solved).length;
       const total = challenges.reduce((s, c) => s + c.points, 0);
       const pct = total ? Math.round((score / total) * 100) : 0;
-      const isGuidedRoom = category === 'industry' || category === 'data-center';
+      const isGuidedRoom = category === 'industry' || category === 'data-center' || category === 'water-treatment';
 
       container.innerHTML = `
         ${isGuidedRoom ? renderGuidedRoomHeader(category, challenges, solvedCount, total) : ''}
@@ -361,6 +361,11 @@ window.CTF = (function () {
         title: 'Data Center HVAC Modbus Intrusion',
         description: 'Investigate a Data Center HVAC PLC where exposed Modbus TCP can be used to read and write coolant or ventilation registers. Complete discovery, register mapping, safe recovery, and Blue Team hardening tasks.',
         tags: ['Modbus TCP', 'PLC', 'HVAC', 'Red + Blue Team']
+      },
+      'water-treatment': {
+        title: 'Water Treatment Moxa Modbus RTU Intrusion',
+        description: 'Investigate a Water Treatment model where a Moxa serial gateway exposes Modbus RTU-over-TCP control paths for filtration and pump behavior. Complete recon, command analysis, dashboard impact, recovery, and Blue Team hardening tasks.',
+        tags: ['Moxa NPort', 'Modbus RTU', 'TCP/4001', 'Red + Blue Team']
       }
     };
     const room = rooms[category] || rooms.industry;

@@ -39,6 +39,11 @@ const legacyDataCenterChallengeIds = new Set([
   "data-center_002",
   "data-center_003"
 ]);
+const legacyWaterTreatmentChallengeIds = new Set([
+  "water-treatment_001",
+  "water-treatment_002",
+  "water-treatment_003"
+]);
 
 const seedChallenges = Object.fromEntries(domains.map(([id, label]) => [id, [
   {
@@ -202,6 +207,81 @@ seedChallenges["data-center"] = [
   }
 ];
 
+seedChallenges["water-treatment"] = [
+  {
+    id: "water_treatment_room_001",
+    category: "water-treatment",
+    title: "Task 1 - Water Plant Room Briefing",
+    description: "You are investigating a Water Treatment model where dashboard controls start the physical plant and a Moxa serial gateway can pass Modbus RTU commands. Open the Water Treatment Red Team scenario page and identify the dashboard used for observation.",
+    points: 50,
+    flag: "FLAG{water_treatment_room_started}",
+    hint: "Start from Water Treatment > Cybersecurity > Attack Surface Training. The scenario page links the live Water Treatment dashboard."
+  },
+  {
+    id: "water_treatment_room_002",
+    category: "water-treatment",
+    title: "Task 2 - Moxa Gateway Discovery",
+    description: "Identify the vulnerable device type used in this Water Treatment drill. This device bridges network traffic to Modbus RTU serial control.",
+    points: 100,
+    flag: "FLAG{water_treatment_moxa_nport}",
+    hint: "The scenario brief names the vulnerable device as Moxa."
+  },
+  {
+    id: "water_treatment_room_003",
+    category: "water-treatment",
+    title: "Task 3 - Target Port Identification",
+    description: "Run the approved lab scan against the Water Treatment Moxa target and identify which TCP port is used for the Modbus RTU gateway connection.",
+    points: 100,
+    flag: "FLAG{water_treatment_tcp_4001}",
+    hint: "The scenario commands use MOXA_PORT=4001."
+  },
+  {
+    id: "water_treatment_room_004",
+    category: "water-treatment",
+    title: "Task 4 - Gateway Target IP",
+    description: "Identify the approved Moxa IP address documented for the Water Treatment Modbus RTU-over-TCP lab.",
+    points: 150,
+    flag: "FLAG{water_treatment_moxa_172_16_17_133}",
+    hint: "Look at the MOXA_IP value in the Water Treatment scenario commands."
+  },
+  {
+    id: "water_treatment_room_005",
+    category: "water-treatment",
+    title: "Task 5 - HEX Command Analysis",
+    description: "The lab uses a generated Modbus RTU command in HEX format to affect filtration. Identify the HEX payload shown in the scenario.",
+    points: 200,
+    flag: "FLAG{water_treatment_hex_01100000000102014D67F5}",
+    hint: "Copy only the bytes.fromhex value from the approved lab example."
+  },
+  {
+    id: "water_treatment_room_006",
+    category: "water-treatment",
+    title: "Task 6 - Dashboard Impact",
+    description: "Run only the approved lab command and observe the Water Treatment dashboard. Identify which plant function the example command is documented to stop.",
+    points: 200,
+    flag: "FLAG{water_treatment_stop_filtration}",
+    hint: "The scenario notes say the example command stops the filters/filtration."
+  },
+  {
+    id: "water_treatment_room_007",
+    category: "water-treatment",
+    title: "Task 7 - Blue Team Recovery",
+    description: "After containment, identify the safe recovery path Blue Team should use to restore filtration and pump behavior.",
+    points: 200,
+    flag: "FLAG{water_treatment_restore_from_dashboard}",
+    hint: "The Blue Team playbook says to restore safe plant operation using the approved dashboard controls."
+  },
+  {
+    id: "water_treatment_room_008",
+    category: "water-treatment",
+    title: "Task 8 - Moxa Hardening Plan",
+    description: "Recommend the key protection for this lab: restrict TCP/4001 to trusted HMI or engineering hosts, segment the Moxa gateway, log gateway sessions, and alert on unauthorized Modbus RTU write commands.",
+    points: 250,
+    flag: "FLAG{water_treatment_moxa_4001_hardening}",
+    hint: "Look for TCP/4001 restrictions, segmentation, gateway logging, and Modbus write alerts in the mitigation checklist."
+  }
+];
+
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -247,7 +327,8 @@ function readDb() {
   let changed = false;
   const removedLegacyIndustry = db.challenges.filter((challenge) => legacyIndustryChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
   const removedLegacyDataCenter = db.challenges.filter((challenge) => legacyDataCenterChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
-  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter];
+  const removedLegacyWaterTreatment = db.challenges.filter((challenge) => legacyWaterTreatmentChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter, ...removedLegacyWaterTreatment];
   if (removedLegacy.length) {
     const removed = new Set(removedLegacy);
     db.challenges = db.challenges.filter((challenge) => !removed.has(challenge.id));

