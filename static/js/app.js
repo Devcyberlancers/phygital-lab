@@ -584,10 +584,66 @@ function drawCanvas() {
   animate();
 }
 
+function drawHomeMatrix() {
+  const canvas = document.getElementById("home-matrix-canvas");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const glyphs = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&+-*/<>[]{}";
+  let columns = [];
+  let fontSize = 18;
+  let lastFrame = 0;
+
+  const resize = () => {
+    const ratio = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+    canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    fontSize = window.innerWidth < 720 ? 14 : 18;
+    const count = Math.ceil(rect.width / fontSize);
+    columns = Array.from({ length: count }, () => Math.random() * -rect.height);
+  };
+
+  const draw = (time) => {
+    const homeVisible = document.getElementById("page-home")?.classList.contains("active");
+    if (homeVisible && time - lastFrame > 38) {
+      lastFrame = time;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      ctx.fillStyle = "rgba(7, 9, 13, 0.18)";
+      ctx.fillRect(0, 0, width, height);
+      ctx.font = `${fontSize}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+      ctx.textBaseline = "top";
+
+      columns.forEach((y, index) => {
+        const x = index * fontSize;
+        const char = glyphs[Math.floor(Math.random() * glyphs.length)];
+        ctx.fillStyle = Math.random() > 0.92 ? "rgba(255,255,255,0.96)" : "rgba(226,236,240,0.7)";
+        ctx.shadowColor = "rgba(255,255,255,0.38)";
+        ctx.shadowBlur = 9;
+        ctx.fillText(char, x, y);
+
+        columns[index] = y + fontSize;
+        if (columns[index] > height + Math.random() * 260) {
+          columns[index] = Math.random() * -220;
+        }
+      });
+      ctx.shadowBlur = 0;
+    }
+    requestAnimationFrame(draw);
+  };
+
+  resize();
+  window.addEventListener("resize", resize);
+  requestAnimationFrame(draw);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   renderDomains();
   renderCyberScope();
   drawCanvas();
+  drawHomeMatrix();
   document.querySelectorAll(".overview-grid article, .hero-panel, .content-card, .feature-item, .cyber-card, .metric-grid div, .photo-placeholder, .photo-notes").forEach((el, index) => {
     el.classList.add("reveal");
     el.style.setProperty("--reveal-delay", `${Math.min(index * 45, 360)}ms`);

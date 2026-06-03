@@ -17,7 +17,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: auto; }
 body {
   min-height: 100vh;
   overflow-x: hidden;
@@ -132,6 +132,38 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
 }
 .page.active { display: block; }
 .page.active { animation: pageIn 0.45s ease both; }
+
+#page-home {
+  overflow: hidden;
+}
+.home-matrix-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: min(100vh, 920px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.48;
+  mix-blend-mode: screen;
+  transform: translateZ(0);
+  contain: paint;
+}
+#page-home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 35% 40%, rgba(77,216,255,0.12), transparent 32%),
+    radial-gradient(circle at 72% 46%, rgba(120,213,111,0.11), transparent 30%),
+    linear-gradient(90deg, rgba(7,9,13,0.88), rgba(7,9,13,0.4) 45%, rgba(7,9,13,0.86));
+}
+.hero,
+.overview-band {
+  position: relative;
+  z-index: 1;
+}
 
 .hero {
   min-height: 100vh;
@@ -1325,6 +1357,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
   from { transform: translate3d(-1.5%, -1%, 0) rotate(0deg); }
   to { transform: translate3d(1.5%, 1%, 0) rotate(3deg); }
 }
+
 @keyframes airplaneRealFlight {
   0% { transform: translate(36px, 92px) rotate(-17deg) scale(.82); opacity: .9; }
   18% { transform: translate(105px, 42px) rotate(-10deg) scale(.9); opacity: 1; }
