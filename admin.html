@@ -66,6 +66,12 @@
     .modal-wrap.open { display:flex; animation:modalShade .2s ease both; }
     .modal { width:min(720px,100%); padding:1.2rem; max-height:90vh; overflow:auto; animation:adminFloatIn .35s cubic-bezier(.18,.9,.22,1) both; }
     .student-grid { display:grid; gap:.8rem; }
+    .student-card h3 { margin-bottom:.25rem; }
+    .student-domain-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:.45rem; margin-top:.8rem; }
+    .student-domain-row { display:flex; align-items:center; justify-content:space-between; gap:.6rem; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,.035); padding:.55rem .65rem; }
+    .student-domain-row strong { font-size:.86rem; }
+    .student-domain-row span { color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; white-space:nowrap; }
+    .student-meta { color:var(--muted); font-size:.86rem; margin-top:.35rem; }
     .score-row { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.6rem; }
     #students-card { scroll-margin-top:90px; }
     @media (max-width:960px) {
@@ -104,7 +110,6 @@
     <header>
       <a class="brand" href="/index.html">
         <img src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
-        <span>CTF Admin</span>
       </a>
       <div class="actions">
         <a class="btn" href="/index.html">Back to Site</a>
@@ -119,7 +124,7 @@
           <h1>CTF Questions</h1>
         </div>
         <div class="actions">
-          <button class="btn" onclick="renderStudents()">Students</button>
+          <button class="btn" onclick="openStudentsPage()">Students</button>
           <button class="btn danger" onclick="resetProgress()">Reset Progress</button>
           <button class="btn danger" onclick="restoreDefaults()">Restore Defaults</button>
           <button class="btn" onclick="exportData()">Export JSON</button>
@@ -172,13 +177,13 @@
     let active = "";
 
     async function api(path, options) {
-      const token = sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY) || "";
       const headers = { "Content-Type": "application/json", ...((options && options.headers) || {}) };
       if (token) headers.Authorization = `Bearer ${token}`;
       const res = await fetch(path, { ...(options || {}), headers });
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) {
-        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
         document.getElementById("admin-app").style.display = "none";
         document.getElementById("login-screen").style.display = "flex";
       }
@@ -193,7 +198,7 @@
           method: "POST",
           body: JSON.stringify({ password: document.getElementById("login-pass").value })
         });
-        sessionStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("admin-app").style.display = "block";
         init();
@@ -202,11 +207,21 @@
       }
     }
     function doLogout() {
-      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-      document.getElementById("admin-app").style.display = "none";
-      document.getElementById("login-screen").style.display = "flex";
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      window.location.href = "/index.html";
     }
     document.getElementById("login-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem(ADMIN_TOKEN_KEY)) {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("admin-app").style.display = "block";
+        init();
+      }
+    });
+
+    function openStudentsPage() {
+      window.open("/admin-students.html", "_blank", "noopener");
+    }
 
     async function init() {
       const data = await api("/api/admin/challenges");
@@ -360,8 +375,13 @@
     async function renderStudents() {
       const data = await api("/api/admin/students");
       const students = data.students || [];
-      document.getElementById("students-card").style.display = "block";
-      document.getElementById("students-stats").innerHTML = `<span class="pill">${students.length} students</span><span class="pill">${students.reduce((s, st) => s + st.totalSolved, 0)} solves</span>`;
+      const card = document.getElementById("students-card");
+      card.style.display = "block";
+      document.getElementById("students-stats").innerHTML = `
+        <span class="pill">${students.length} students</span>
+        <span class="pill">${students.reduce((s, st) => s + st.totalScore, 0)} total points</span>
+        <span class="pill">${students.reduce((s, st) => s + st.totalSolved, 0)} solves</span>
+        <span class="pill">${students.reduce((s, st) => s + st.attempts, 0)} attempts</span>`;
       document.getElementById("students-list").innerHTML = students.length ? students.map((st) => `
         <article class="student-card">
           <h3>${escapeHtml(st.name)}</h3>
@@ -370,9 +390,34 @@
             <span class="pill">${st.totalScore} total points</span>
             <span class="pill">${st.totalSolved} solved</span>
             <span class="pill">${st.attempts} attempts</span>
+            <span class="pill">Last: ${formatDate(st.lastActivity)}</span>
+          </div>
+          <p class="student-meta">Per-model score and solved count</p>
+          <div class="student-domain-grid">
+            ${renderStudentDomainScores(st)}
           </div>
         </article>
       `).join("") : `<p class="muted">No students yet.</p>`;
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderStudentDomainScores(student) {
+      return domains.map((domain) => {
+        const score = Number((student.scores || {})[domain.id] || 0);
+        const solved = Number((student.solved || {})[domain.id] || 0);
+        return `
+          <div class="student-domain-row">
+            <strong>${escapeHtml(domain.title)}</strong>
+            <span>${score} pts / ${solved} solved</span>
+          </div>`;
+      }).join("");
+    }
+
+    function formatDate(value) {
+      if (!value) return "No activity";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "No activity";
+      return date.toLocaleString();
     }
 
     async function resetProgress() {

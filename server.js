@@ -12,7 +12,7 @@ const adminSessions = new Set();
 const domains = [
   ["airport", "Airport"],
   ["water-treatment", "Water Treatment"],
-  ["industry", "Industry"],
+  ["industry", "Industrial"],
   ["hospital", "Hospital"],
   ["banking", "Banking"],
   ["power-grid", "Power Grid"],
@@ -80,19 +80,19 @@ seedChallenges.industry = [
     id: "industry_room_001",
     category: "industry",
     title: "Task 1 - Room Briefing",
-    description: "You are investigating an Industry phygital model where sensor gauges can be manipulated through MQTT telemetry. Open the Industry Red Team scenario page, identify the dashboard used for observation, and submit the room-start flag.",
+    description: "You are investigating an Industrial phygital model where sensor gauges can be manipulated through MQTT telemetry. Open the Industrial Red Team scenario page, identify the dashboard used for observation, and submit the room-start flag.",
     points: 50,
     flag: "FLAG{industry_room_started}",
-    hint: "Start from Industry > Cybersecurity > Attack Surface Training. The scenario page links the live dashboard."
+    hint: "Start from Industrial > Cybersecurity > Attack Surface Training. The scenario page links the live dashboard."
   },
   {
     id: "industry_room_002",
     category: "industry",
     title: "Task 2 - Broker Discovery",
-    description: "Inspect the training script configuration and identify the MQTT broker IP used by the Industry simulation. This is the broker the attacker machine publishes to during the lab.",
+    description: "Inspect the training script configuration and identify the MQTT broker IP used by the Industrial simulation. This is the broker the attacker machine publishes to during the lab.",
     points: 100,
     flag: "FLAG{industry_mqtt_broker_172_16_17_207}",
-    hint: "Check the broker_address value used by the Industry training scripts."
+    hint: "Check the broker_address value used by the Industrial training scripts."
   },
   {
     id: "industry_room_003",
@@ -116,7 +116,7 @@ seedChallenges.industry = [
     id: "industry_room_005",
     category: "industry",
     title: "Task 5 - Dashboard Impact",
-    description: "Run the approved lab simulation and observe the Industry dashboard. Identify what kind of event the Blue Team should classify this as when multiple gauges jump to impossible values.",
+    description: "Run the approved lab simulation and observe the Industrial dashboard. Identify what kind of event the Blue Team should classify this as when multiple gauges jump to impossible values.",
     points: 200,
     flag: "FLAG{industry_fake_telemetry_incident}",
     hint: "The event is not a physical sensor failure. It is fake telemetry being published to MQTT topics."
@@ -134,10 +134,37 @@ seedChallenges.industry = [
     id: "industry_room_007",
     category: "industry",
     title: "Task 7 - Hardening Plan",
-    description: "After containment, propose the controls that would prevent unauthorized MQTT publishing in the Industry model: authentication, anonymous publish disablement, topic ACLs, port restriction, and alert thresholds.",
+    description: "After containment, propose the controls that would prevent unauthorized MQTT publishing in the Industrial model: authentication, anonymous publish disablement, topic ACLs, port restriction, and alert thresholds.",
     points: 250,
     flag: "FLAG{industry_mqtt_acl_hardening}",
     hint: "Look for MQTT authentication, anonymous publish, topic ACLs, port restriction, and Node-RED alerts in the mitigation checklist."
+  },
+  {
+    id: "industry_room_008",
+    category: "industry",
+    title: "Task 8 - Python Library Recon",
+    description: "Inspect the Industrial training scripts on the Kali machine. Identify the Python MQTT client library imported by both scripts.",
+    points: 100,
+    flag: "FLAG{industry_paho_mqtt_client}",
+    hint: "Look at the import line at the top of single.py or all.py."
+  },
+  {
+    id: "industry_room_009",
+    category: "industry",
+    title: "Task 9 - Topic Discovery Logic",
+    description: "In all.py, identify the MQTT subscription pattern used to discover visible topics before the broad spoofing loop begins.",
+    points: 150,
+    flag: "FLAG{industry_mqtt_wildcard_hash}",
+    hint: "Find the subscribe call in all.py. The wildcard subscribes to all visible topics."
+  },
+  {
+    id: "industry_room_010",
+    category: "industry",
+    title: "Task 10 - Spoofing Loop Timing",
+    description: "Inspect all.py and identify the variable that controls the delay between repeated fake-value publishes during the simulation.",
+    points: 150,
+    flag: "FLAG{industry_attack_delay}",
+    hint: "Look for the variable used inside time.sleep during the publish loop."
   }
 ];
 
@@ -627,7 +654,7 @@ async function handleApi(req, res, url) {
         lastActivity: db.submissions.filter((item) => item.studentId === student.id).map((item) => item.createdAt).sort().pop() || student.updatedAt
       };
     }).sort((a, b) => b.totalScore - a.totalScore || b.lastActivity.localeCompare(a.lastActivity));
-    return sendJson(res, 200, { ok: true, students });
+    return sendJson(res, 200, { ok: true, domains: domains.map(([id, title]) => ({ id, title })), students });
   }
 
   if (req.method === "POST" && url.pathname === "/api/admin/reset-progress") {

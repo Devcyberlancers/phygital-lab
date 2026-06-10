@@ -1,7 +1,7 @@
 const domainTitles = {
   airport: "Airport",
   "water-treatment": "Water Treatment",
-  industry: "Industry",
+  industry: "Industrial",
   hospital: "Hospital",
   banking: "Banking",
   "power-grid": "Power Grid",
@@ -84,12 +84,12 @@ finally:
 const industryScenarios = {
   red: {
     kicker: "Red Team Scenario",
-    title: "Industry Attack Surface Training",
-    summary: "Students simulate a lab-only MQTT sensor spoofing incident from a Kali machine and observe fake industrial values appearing live in the Industry dashboard.",
+    title: "Industrial Attack Surface Training",
+    summary: "Students simulate a lab-only MQTT sensor spoofing incident from a Kali machine and observe fake industrial values appearing live in the Industrial dashboard.",
     badges: ["Kali machine", "MQTT broker 172.16.17.207", "Node-RED dashboard"],
     steps: [
       "Connect Kali to the Phygital Lab network.",
-      "Open the Industry dashboard and keep it visible during the simulation.",
+      "Open the Industrial dashboard and keep it visible during the simulation.",
       "Run single.py first to spoof only the NO2 topic and watch one gauge change.",
       "Run all.py to scan visible MQTT topics and publish fake values to all discovered topics.",
       "Stop the script with Ctrl+C and record which values changed."
@@ -99,21 +99,21 @@ python3 -m pip install paho-mqtt
 python3 single.py
 python3 all.py`,
     links: [
-      { label: "Open Industry Dashboard", href: industryDashboardUrl }
+      { label: "Open Industrial Dashboard", href: industryDashboardUrl }
     ]
   },
   blue: {
     kicker: "Blue Team Scenario",
-    title: "Industry Mitigation And Response",
-    summary: "Students defend the Industry model by detecting MQTT spoofing, stopping the simulation safely, restoring trusted values, and documenting hardening steps.",
+    title: "Industrial Mitigation And Response",
+    summary: "Students defend the Industrial model by detecting MQTT spoofing, stopping the simulation safely, restoring trusted values, and documenting hardening steps.",
     badges: ["Detect", "Contain", "Recover", "Harden"],
     steps: [
-      "Detect: open the Industry dashboard and identify impossible or sudden values such as NO2, CO2, VOC, gas, or humidity spikes.",
+      "Detect: open the Industrial dashboard and identify impossible or sudden values such as NO2, CO2, VOC, gas, or humidity spikes.",
       "Confirm: compare dashboard readings with the physical model and normal operating range to confirm the values are fake.",
       "Contain: ask the Red Team/Kali operator to stop the running script with Ctrl+C. If the attacker machine is unknown, isolate the suspected Kali host from the lab network.",
       "Recover: wait for real sensor values to return, then refresh the dashboard and confirm gauges are stable.",
       "Document: record affected MQTT topics, fake values, time observed, suspected source IP, and recovery action.",
-      "Harden: recommend MQTT authentication, disable anonymous publish, apply topic ACLs, restrict port 1883, segment the Industry network, and add alert thresholds in Node-RED."
+      "Harden: recommend MQTT authentication, disable anonymous publish, apply topic ACLs, restrict port 1883, segment the Industrial network, and add alert thresholds in Node-RED."
     ],
     actionTitle: "Mitigation Steps",
     commands: `1. Stop the attack script on Kali:
@@ -123,7 +123,7 @@ python3 all.py`,
    Disconnect/isolate the suspicious Kali machine from the lab network
 
 3. Validate recovery:
-   Refresh the Industry dashboard
+   Refresh the Industrial dashboard
    Confirm sensor values return to normal
 
 4. Hardening checklist:
@@ -133,7 +133,7 @@ python3 all.py`,
    Restrict broker port 1883 to trusted hosts
    Add Node-RED alerts for impossible values`,
     links: [
-      { label: "Open Industry Dashboard", href: industryDashboardUrl }
+      { label: "Open Industrial Dashboard", href: industryDashboardUrl }
     ]
   }
 };
@@ -315,8 +315,7 @@ function renderScenario() {
   const params = new URLSearchParams(window.location.search);
   const domain = params.get("domain") || "industry";
   const mode = params.get("mode") || "red";
-  const isIndustry = domain === "industry";
-  const showPythonCode = isIndustry;
+  const showPythonCode = false;
   const scenario = getScenario(domain, mode);
 
   document.title = `${scenario.title} - Phygital Lab`;

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <title>CTF Students - Phygital Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#07090d; --panel:#101722; --panel2:#172232; --line:rgba(255,255,255,.11); --text:#eff6f6; --muted:#9fb0b5; --cyan:#4dd8ff; --green:#78d56f; --red:#ff6d61; --amber:#f0b64a; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { min-height:100vh; background:linear-gradient(135deg,#07090d,#0d1622); color:var(--text); font-family:Inter,system-ui,sans-serif; }
+    body::before { content:""; position:fixed; inset:-20%; pointer-events:none; background:radial-gradient(circle at 18% 20%,rgba(77,216,255,.10),transparent 26%),radial-gradient(circle at 82% 18%,rgba(255,109,97,.08),transparent 24%),radial-gradient(circle at 65% 80%,rgba(120,213,111,.08),transparent 25%); }
+    button,input { font:inherit; }
+    button { cursor:pointer; }
+    a { color:inherit; text-decoration:none; }
+    .login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1rem; }
+    .login-box,.card { border:1px solid var(--line); border-radius:8px; background:rgba(16,23,34,.92); box-shadow:0 24px 70px rgba(0,0,0,.35); }
+    .login-box { width:min(420px,100%); padding:2rem; }
+    .login-box h1 { font-size:2rem; margin-bottom:.5rem; }
+    .muted,.student-card p { color:var(--muted); line-height:1.6; }
+    .login-field { width:100%; border:1px solid var(--line); background:#0b111a; color:var(--text); border-radius:6px; padding:.68rem .8rem; font-size:.9rem; outline:none; margin:1rem 0; }
+    .btn { border:1px solid var(--line); background:var(--panel2); color:var(--text); border-radius:6px; padding:.58rem .78rem; font-size:.88rem; font-weight:800; transition:transform .18s ease, box-shadow .18s ease, filter .18s ease; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.22); filter:brightness(1.08); }
+    .btn.primary { background:var(--cyan); color:#041018; border-color:var(--cyan); }
+    .btn.danger { background:rgba(255,109,97,.12); border-color:rgba(255,109,97,.35); color:var(--red); }
+    .err { color:var(--red); min-height:1.3rem; margin-top:.6rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8rem; }
+    header { min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.65rem max(1rem,calc((100vw - 1180px)/2)); background:#fff; color:#111827; border-bottom:1px solid rgba(0,0,0,.12); position:sticky; top:0; z-index:10; }
+    .brand { display:flex; align-items:center; gap:.8rem; font-weight:900; min-width:0; }
+    .brand img { width:240px; max-width:34vw; height:48px; object-fit:contain; object-position:left center; }
+    .actions { display:flex; flex-wrap:wrap; gap:.6rem; justify-content:flex-end; }
+    .shell { position:relative; z-index:1; width:min(1180px,calc(100% - 2rem)); margin:0 auto; padding:1.55rem 0 4rem; }
+    .topline { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+    .topline h1 { font-size:clamp(2.2rem,5vw,4.3rem); line-height:.95; }
+    .stats,.score-row { display:flex; flex-wrap:wrap; gap:.5rem; margin:.8rem 0; }
+    .pill { border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:999px; padding:.45rem .7rem; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; }
+    .student-grid { display:grid; gap:.9rem; }
+    .student-card { border:1px solid var(--line); background:rgba(255,255,255,.035); border-radius:8px; padding:1rem; overflow-wrap:anywhere; }
+    .student-card h3 { font-size:1.15rem; margin-bottom:.25rem; }
+    .student-domain-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:.45rem; margin-top:.8rem; }
+    .student-domain-row { display:flex; align-items:center; justify-content:space-between; gap:.6rem; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,.035); padding:.55rem .65rem; }
+    .student-domain-row strong { font-size:.86rem; }
+    .student-domain-row span { color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; white-space:nowrap; }
+    .hidden { display:none!important; }
+    @media (max-width:760px) { header { flex-direction:column; align-items:flex-start; } .brand img { width:220px; max-width:76vw; } .topline { align-items:flex-start; flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="login-screen">
+    <div class="login-box">
+      <h1>CTF Students</h1>
+      <p class="muted">Enter the admin password to view student details and scores.</p>
+      <input class="login-field" type="password" id="login-pass" placeholder="Enter admin password" autocomplete="current-password">
+      <button class="btn primary" type="button" onclick="doLogin()">Login</button>
+      <div class="err" id="login-err"></div>
+    </div>
+  </section>
+
+  <section id="students-app" class="hidden">
+    <header>
+      <a class="brand" href="/admin.html">
+        <img src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
+        <span>CTF Students</span>
+      </a>
+      <div class="actions">
+        <a class="btn" href="/admin.html">Back to Admin</a>
+        <a class="btn" href="/index.html">Back to Site</a>
+        <button class="btn danger" type="button" onclick="doLogout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="shell">
+      <div class="topline">
+        <div>
+          <p class="muted">Phygital Lab Challenge Management</p>
+          <h1>Student Scores</h1>
+        </div>
+        <button class="btn" type="button" onclick="loadStudents()">Refresh</button>
+      </div>
+      <div class="stats" id="students-stats"></div>
+      <div class="student-grid" id="students-list"></div>
+    </main>
+  </section>
+
+  <script>
+    const ADMIN_TOKEN_KEY = "phygital_admin_token";
+    let domains = [];
+
+    async function api(path, options) {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY) || "";
+      const headers = { "Content-Type": "application/json", ...((options && options.headers) || {}) };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const res = await fetch(path, { ...(options || {}), headers });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        showLogin();
+      }
+      if (!res.ok || data.ok === false) throw new Error(data.msg || "Request failed");
+      return data;
+    }
+
+    async function doLogin() {
+      document.getElementById("login-err").textContent = "";
+      try {
+        const data = await api("/api/admin/login", {
+          method: "POST",
+          body: JSON.stringify({ password: document.getElementById("login-pass").value })
+        });
+        localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        await boot();
+      } catch (e) {
+        document.getElementById("login-err").textContent = e.message;
+      }
+    }
+
+    function doLogout() {
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      showLogin();
+    }
+
+    function showLogin() {
+      document.getElementById("login-screen").classList.remove("hidden");
+      document.getElementById("students-app").classList.add("hidden");
+    }
+
+    function showApp() {
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("students-app").classList.remove("hidden");
+    }
+
+    async function boot() {
+      showApp();
+      await loadStudents();
+    }
+
+    async function loadStudents() {
+      const data = await api("/api/admin/students");
+      domains = data.domains || domains;
+      const students = data.students || [];
+      document.getElementById("students-stats").innerHTML = `
+        <span class="pill">${students.length} students</span>
+        <span class="pill">${students.reduce((s, st) => s + st.totalScore, 0)} total points</span>
+        <span class="pill">${students.reduce((s, st) => s + st.totalSolved, 0)} solves</span>
+        <span class="pill">${students.reduce((s, st) => s + st.attempts, 0)} attempts</span>`;
+      document.getElementById("students-list").innerHTML = students.length ? students.map(renderStudent).join("") : `<p class="muted">No students yet.</p>`;
+    }
+
+    function renderStudent(st) {
+      return `
+        <article class="student-card">
+          <h3>${escapeHtml(st.name)}</h3>
+          <p>${escapeHtml(st.email)}</p>
+          <div class="score-row">
+            <span class="pill">${st.totalScore} total points</span>
+            <span class="pill">${st.totalSolved} solved</span>
+            <span class="pill">${st.attempts} attempts</span>
+            <span class="pill">Last: ${formatDate(st.lastActivity)}</span>
+          </div>
+          <div class="student-domain-grid">
+            ${domains.map((domain) => {
+              const score = Number((st.scores || {})[domain.id] || 0);
+              const solved = Number((st.solved || {})[domain.id] || 0);
+              return `<div class="student-domain-row"><strong>${escapeHtml(domain.title)}</strong><span>${score} pts / ${solved} solved</span></div>`;
+            }).join("")}
+          </div>
+        </article>`;
+    }
+
+    function formatDate(value) {
+      if (!value) return "No activity";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "No activity";
+      return date.toLocaleString();
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    }
+
+    document.getElementById("login-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem(ADMIN_TOKEN_KEY)) boot();
+    });
+  </script>
+</body>
+</html>

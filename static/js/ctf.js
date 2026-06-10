@@ -6,7 +6,7 @@ window.CTF = (function () {
   const LABELS = {
     "airport": "Airport",
     "water-treatment": "Water Treatment",
-    "industry": "Industry",
+    "industry": "Industrial",
     "hospital": "Hospital",
     "banking": "Banking",
     "power-grid": "Power Grid",
@@ -353,8 +353,8 @@ window.CTF = (function () {
   function renderGuidedRoomHeader(category, challenges, solvedCount, total) {
     const rooms = {
       industry: {
-        title: 'Industry MQTT Telemetry Intrusion',
-        description: 'Investigate a phygital Industry model where a Kali machine can spoof MQTT sensor values and mislead the live Node-RED dashboard. Complete the Red Team discovery tasks, then finish with Blue Team containment and hardening.',
+        title: 'Industrial MQTT Telemetry Intrusion',
+        description: 'Investigate a phygital Industrial model where a Kali machine can spoof MQTT sensor values and mislead the live Node-RED dashboard. Complete the Red Team discovery tasks, then finish with Blue Team containment and hardening.',
         tags: ['Beginner friendly', 'MQTT', 'IoT / OT', 'Red + Blue Team']
       },
       'data-center': {
