@@ -8,13 +8,13 @@ window.CTF = (function () {
     "water-treatment": "Water Treatment",
     "industry": "Industrial",
     "hospital": "Hospital",
-    "banking": "Banking",
+    "lift-house": "Lift House",
     "power-grid": "Power Grid",
     "toll-plaza": "Toll Plaza",
     "data-center": "Data Center",
     "stock-market": "Stock Market",
     "metro": "Metro",
-    "warehouse": "Warehouse"
+    "traffic-lights": "Traffic Lights"
   };
   const SEED = Object.fromEntries(Object.keys(LABELS).map((id) => [id, []]));
 
@@ -166,7 +166,7 @@ window.CTF = (function () {
   }
 
   function shuffleForBrowser(items, category) {
-    if (category === 'industry' || category === 'data-center' || category === 'water-treatment') {
+    if (category === 'airport' || category === 'hospital' || category === 'industry' || category === 'lift-house' || category === 'power-grid' || category === 'toll-plaza' || category === 'stock-market' || category === 'metro' || category === 'traffic-lights' || category === 'data-center' || category === 'water-treatment') {
       return items.slice().sort((a, b) => a.id.localeCompare(b.id));
     }
     const list = items.slice();
@@ -241,7 +241,7 @@ window.CTF = (function () {
       const solvedCount = challenges.filter(c => c.solved).length;
       const total = challenges.reduce((s, c) => s + c.points, 0);
       const pct = total ? Math.round((score / total) * 100) : 0;
-      const isGuidedRoom = category === 'industry' || category === 'data-center' || category === 'water-treatment';
+      const isGuidedRoom = category === 'airport' || category === 'hospital' || category === 'industry' || category === 'lift-house' || category === 'power-grid' || category === 'toll-plaza' || category === 'stock-market' || category === 'metro' || category === 'traffic-lights' || category === 'data-center' || category === 'water-treatment';
 
       container.innerHTML = `
         ${isGuidedRoom ? renderGuidedRoomHeader(category, challenges, solvedCount, total) : ''}
@@ -352,6 +352,46 @@ window.CTF = (function () {
 
   function renderGuidedRoomHeader(category, challenges, solvedCount, total) {
     const rooms = {
+      airport: {
+        title: 'Airport Multi-System Intrusion',
+        description: 'Investigate Airport doors, baggage reclaim, airplane parking, air-quality sensors, kiosk PNR responses, and billboard media handling where weak OPC UA, insecure MQTT, HTTP MITM, and unsafe FTP workflows can affect the model. Complete recon, credential audit, topic mapping, kiosk tampering review, billboard upload review, safe recovery, and Blue Team hardening tasks.',
+        tags: ['OPC UA', 'MQTT', 'HTTP MITM', 'FTP Billboard']
+      },
+      hospital: {
+        title: 'Hospital OpenEMR Authenticated RCE',
+        description: 'Investigate a Hospital OpenEMR 5.0.1 application where authenticated RCE can lead to host access, phpMyAdmin credential exposure, and medication-record tampering risk. Complete enumeration, impact analysis, recovery, and Blue Team hardening tasks.',
+        tags: ['OpenEMR', 'TCP/80', 'Authenticated RCE', 'Red + Blue Team']
+      },
+      'lift-house': {
+        title: 'Lift House Gas, Fire, And Elevator Intrusion',
+        description: 'Investigate Lift House gas sensors, fire sensors, and elevator controls where WebSocket, CoAP, and Modbus TCP paths can affect the physical model. Complete traffic analysis, false-data simulation, CoAP value tampering review, Modbus register mapping, recovery, and Blue Team hardening tasks.',
+        tags: ['WebSocket', 'CoAP', 'Modbus TCP', 'Red + Blue Team']
+      },
+      'power-grid': {
+        title: 'Power Grid ISO-TSAP Intrusion',
+        description: 'Investigate a Power Grid controller where internally exposed ISO-TSAP/S7 communication on TCP/102 can lead to unsafe controller stop behavior. Complete enumeration, tool review, controlled simulation, recovery, and Blue Team hardening tasks.',
+        tags: ['ISO-TSAP', 'TCP/102', 'S7COMM', 'Red + Blue Team']
+      },
+      'toll-plaza': {
+        title: 'Toll Plaza RFID Clone Risk',
+        description: 'Investigate a Toll Plaza RFID reader where vulnerable MIFARE-style lab cards can be read, cloned to a writable test card, and replayed at the toll lane. Complete card evidence collection, dashboard impact review, cleanup, and Blue Team anti-cloning controls.',
+        tags: ['RFID', 'MIFARE', 'Cloned Card', 'Red + Blue Team']
+      },
+      'stock-market': {
+        title: 'Stock Market Phishing And Billboard Incident',
+        description: 'Investigate a Stock Market training workstation where phishing can trigger a benign ransomware simulation, and a billboard media workflow where unsafe FTP/upload handling creates content compromise risk. Complete mail evidence, file recovery, billboard review, and Blue Team hardening tasks.',
+        tags: ['Phishing', 'Ransomware Drill', 'FTP Billboard', 'Red + Blue Team']
+      },
+      metro: {
+        title: 'Metro Modbus Coil Intrusion',
+        description: 'Investigate a Metro PLC where Modbus TCP on port 502 exposes write_coil behavior. Complete port discovery, interlock observation, controlled coil-write testing, safe recovery, and Blue Team hardening tasks.',
+        tags: ['Modbus TCP', 'Write Coil', 'Interlock', 'Red + Blue Team']
+      },
+      'traffic-lights': {
+        title: 'Traffic Lights MQTT Intrusion',
+        description: 'Investigate a Traffic Lights MQTT broker where wildcard topic discovery and unauthorized publishes can force all green lights on. Complete broker enumeration, topic mapping, all-green simulation, safe recovery, and Blue Team MQTT hardening tasks.',
+        tags: ['MQTT', 'TCP/1883', 'All-Green State', 'Red + Blue Team']
+      },
       industry: {
         title: 'Industrial MQTT Telemetry Intrusion',
         description: 'Investigate a phygital Industrial model where a Kali machine can spoof MQTT sensor values and mislead the live Node-RED dashboard. Complete the Red Team discovery tasks, then finish with Blue Team containment and hardening.',

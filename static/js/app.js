@@ -9,8 +9,8 @@ const domains = [
     overview: "The Airport model demonstrates how passenger movement, baggage handling, runway lighting, surveillance, access control, emergency response, and IoT monitoring can be represented in a phygital training setup.",
     features: ["Runway and terminal monitoring", "Baggage and passenger flow", "Access control and CCTV", "Emergency and fire response"],
     steps: ["Sensor and camera events are generated from terminal, runway, and restricted zones.", "Gateway nodes forward events to the operations dashboard.", "Rules detect congestion, intrusion, equipment fault, or unsafe movement.", "Operators respond through SOPs, alerts, and cyber-physical incident drills."],
-    red: "Test weak access control, exposed cameras, IoT device credentials, spoofed sensor events, and dashboard injection paths.",
-    blue: "Monitor CCTV logs, gate access, alert timelines, unusual device traffic, and SIEM dashboards for airport operations.",
+    red: "Test Airport doors, baggage reclaim, airplane parking, air-quality sensors, kiosk HTTP MITM, billboard FTP/media workflow, weak credentials, and unsafe value changes.",
+    blue: "Monitor OPC UA sessions, MQTT publishers, kiosk HTTP responses, billboard uploads, door and baggage state changes, air-quality surges, credential failures, TCP/4840, TCP/1883, TCP/80/FTP access, and recovery actions.",
     twin: "Terminal, runway, vehicle, and passenger flow representation.",
     analytics: "Crowd density, baggage delay, intrusion, fire, and operational incident analytics.",
     simulation: "Runway closure, unauthorized access, baggage jam, evacuation, and camera outage scenarios.",
@@ -63,8 +63,8 @@ const domains = [
     overview: "The Hospital model represents patient care zones, emergency response, fire safety, restricted areas, medical asset tracking, environmental sensing, and cyber resilience for healthcare infrastructure.",
     features: ["Patient and ward monitoring", "Emergency alerts", "Medical asset tracking", "Fire and access safety"],
     steps: ["Sensors report ward occupancy, environmental status, and emergency triggers.", "Access and safety events are correlated with dashboard alerts.", "Operators follow emergency SOPs.", "Cyber exercises test resilience of healthcare systems."],
-    red: "Assess weak IoT devices, unauthorized access, exposed dashboards, spoofed emergency alerts, and privacy-sensitive data paths.",
-    blue: "Monitor access logs, patient-zone events, asset movement, emergency alarms, and network anomalies.",
+    red: "Assess OpenEMR version exposure, authenticated RCE risk, weak shared accounts, phpMyAdmin credential discovery, and medication tampering paths.",
+    blue: "Monitor OpenEMR access logs, suspicious authenticated activity, reverse-shell indicators, phpMyAdmin access, database changes, and patient record integrity.",
     twin: "Wards, emergency area, restricted rooms, assets, and safety systems.",
     analytics: "Occupancy, response time, equipment availability, air quality, and abnormal events.",
     simulation: "Fire alert, asset missing, ward overload, network outage, and unauthorized entry.",
@@ -72,22 +72,22 @@ const domains = [
     photos: ["Hospital model overview", "Ward and emergency zone", "Fire and safety system", "Healthcare dashboard"]
   },
   {
-    id: "banking",
-    title: "Banking",
-    icon: "Bank",
-    group: "enterprise",
-    accent: "rgba(124,167,255,0.9)",
-    summary: "Branch, ATM, vault, queue, transaction, surveillance, and fraud detection training model.",
-    overview: "The Banking model combines branch operations, ATM monitoring, vault security, customer queue visibility, transaction events, surveillance, and cyber-fraud exercises.",
-    features: ["ATM status", "Vault and access control", "Transaction alerts", "Branch security"],
-    steps: ["Branch and ATM events are collected from physical and logical devices.", "Access control and transaction telemetry are processed.", "Dashboards flag suspicious operations.", "Students investigate incidents through logs and exercises."],
-    red: "Test ATM interface abuse, weak branch network controls, access bypass, transaction manipulation, and phishing-style entry points.",
-    blue: "Monitor ATM health, access logs, transaction anomalies, suspicious authentication, and SIEM alerts.",
-    twin: "Branch lobby, ATM, vault, counters, and surveillance zones.",
-    analytics: "Queue time, ATM uptime, suspicious transaction patterns, and access attempts.",
-    simulation: "ATM downtime, vault access alert, transaction spike, card fraud, and CCTV failure.",
-    image: "static/images/Bank.jpg",
-    photos: ["Banking model overview", "ATM and customer zone", "Vault/security area", "Transaction dashboard"]
+    id: "lift-house",
+    title: "Lift House",
+    icon: "Lift",
+    group: "urban",
+    accent: "rgba(120,213,111,0.9)",
+    summary: "Flat-building lift house model with gas sensors, fire sensors, elevator control, WebSocket telemetry, CoAP messages, Modbus TCP, and safety monitoring.",
+    overview: "The Lift House model represents a flat building with gas/fire safety sensors and an elevator. Students study how sensor telemetry and elevator control values can be intercepted, mapped, spoofed, validated, and defended in a phygital safety scenario.",
+    features: ["CH4/H2 gas telemetry", "Fire sensor status", "Elevator Modbus registers", "WebSocket, CoAP, and Modbus flows"],
+    steps: ["Gas, fire, and elevator systems emit telemetry or control states from the building model.", "Network traffic is observed to understand WebSocket, CoAP, and Modbus message formats.", "Cyber drills test false gas readings, fire-state tampering, and elevator register mapping in an approved lab setup.", "Blue Team validates physical state and hardens telemetry/control paths."],
+    red: "Test ARP poisoning, WebSocket gas-value injection, CoAP message tampering, Modbus elevator register reads/writes, and false physical-state manipulation in an approved lab environment.",
+    blue: "Monitor ARP anomalies, gas sensor spikes, CoAP value changes, Modbus register activity, impossible fire/elevator states, and sensor-to-physical-model mismatches.",
+    twin: "Flat building, lift area, gas sensors, fire sensors, elevator state, and safety monitoring paths.",
+    analytics: "Gas thresholds, fire state changes, elevator state, telemetry integrity, Modbus write activity, sensor anomalies, and response timing.",
+    simulation: "High gas reading, fire-state tamper, elevator register mapping, ARP poisoning, WebSocket spoofing, CoAP value alteration, and Modbus write validation.",
+    image: "static/images/lift-house-model.jpeg",
+    photos: ["Lift House full model view", "LIC building gas sensor facade", "CH4 and fire sensor area", "Lift shaft and flat-building zone"]
   },
   {
     id: "power-grid",
@@ -99,8 +99,8 @@ const domains = [
     overview: "The Power Grid model demonstrates generation, substation switching, transmission, load balancing, fault detection, safety interlocks, and cyber-physical grid incident response.",
     features: ["Substation monitoring", "Load and fault indicators", "Breaker and relay workflow", "Grid OT security"],
     steps: ["Generation and load telemetry enters the control view.", "Substation events and breaker states are monitored.", "Fault rules detect overload or abnormal switching.", "Operators respond using isolation and recovery SOPs."],
-    red: "Investigate relay misoperation, false data injection, unauthorized breaker commands, exposed protocols, and weak segmentation.",
-    blue: "Monitor relay logs, load changes, breaker operations, event timelines, and grid control network traffic.",
+    red: "Investigate internally exposed ISO-TSAP/S7 communication, TCP/102 reachability, S7COMM STOP command risk, relay misoperation, and weak grid segmentation.",
+    blue: "Monitor TCP/102 access, S7COMM stop/write indicators, relay logs, load changes, breaker operations, event timelines, and grid control network traffic.",
     twin: "Generation, transmission, substation, feeders, and consumer load.",
     analytics: "Load forecast, outage detection, relay event correlation, and power quality.",
     simulation: "Overload, feeder fault, breaker trip, renewable fluctuation, and control network attack.",
@@ -117,8 +117,8 @@ const domains = [
     overview: "The Toll Plaza model shows lane automation, RFID/FASTag style detection, barrier control, vehicle classification, queue monitoring, transaction events, and cybersecurity for transport infrastructure.",
     features: ["Lane and barrier status", "RFID/vehicle detection", "Traffic flow analytics", "Payment event security"],
     steps: ["Vehicles trigger lane sensors and RFID reads.", "Barrier and payment events are processed.", "Dashboard tracks queue, violations, and lane availability.", "Cyber exercises investigate spoofing and transaction misuse."],
-    red: "Test RFID replay, lane controller abuse, weak payment APIs, barrier tampering, and camera/feed manipulation.",
-    blue: "Monitor lane events, abnormal barrier cycles, transaction mismatches, vehicle counts, and security alerts.",
+    red: "Test vulnerable RFID/MIFARE card cloning risk, RFID replay behavior, lane access misuse, barrier opening, and payment-event mismatch in the approved lab.",
+    blue: "Monitor duplicate RFID identifiers, abnormal barrier cycles, transaction mismatches, impossible card timing, vehicle counts, and cloned-card alerts.",
     twin: "Toll booths, lanes, barriers, vehicle sensors, and camera zones.",
     analytics: "Throughput, lane wait time, failed payment, violation, and barrier health.",
     simulation: "Lane blockage, payment failure, RFID spoof, barrier fault, and traffic surge.",
@@ -153,8 +153,8 @@ const domains = [
     overview: "The Stock Market model demonstrates market data flow, trading terminal events, order lifecycle, risk monitoring, fraud detection, availability, and cybersecurity in financial systems.",
     features: ["Market feed visualization", "Order event monitoring", "Risk and fraud rules", "Availability tracking"],
     steps: ["Market and order events are generated by the model.", "Risk checks and transaction rules process activity.", "Dashboards show volatility, failures, and suspicious patterns.", "Cyber exercises test manipulation and resilience."],
-    red: "Test API misuse, feed tampering, credential attacks, transaction replay, and dashboard manipulation.",
-    blue: "Monitor order anomalies, feed integrity, login patterns, latency, and incident alerts.",
+    red: "Test phishing-led ransomware simulation, suspicious attachment handling, market workstation impact, billboard FTP/media workflow risk, and dashboard manipulation.",
+    blue: "Monitor phishing indicators, attachment execution, file encryption events, billboard uploads, feed integrity, login patterns, latency, and incident alerts.",
     twin: "Trading terminals, market feed, broker gateway, and risk engine.",
     analytics: "Volume spikes, failed orders, abnormal trades, latency, and fraud indicators.",
     simulation: "Flash movement, feed delay, suspicious order burst, API abuse, and terminal outage.",
@@ -171,8 +171,8 @@ const domains = [
     overview: "The Metro model demonstrates station and train movement, signaling, track occupancy, ticketing gates, passenger safety, power supply, and control room workflows.",
     features: ["Train and track status", "Station safety", "Ticketing gates", "Signaling and power"],
     steps: ["Train, track, gate, and station events are collected.", "Control logic tracks occupancy, signals, and movement.", "Dashboard surfaces safety or timing incidents.", "Students practice operations and cyber response."],
-    red: "Test ticketing bypass, signal spoofing concepts, dashboard abuse, exposed cameras, and network segmentation gaps.",
-    blue: "Monitor train events, gate logs, station alerts, signal status, and unusual network traffic.",
+    red: "Test Modbus TCP exposure, interlock behavior, controlled write_coil simulation, signal/train state impact, dashboard abuse, and segmentation gaps.",
+    blue: "Monitor train events, gate logs, station alerts, signal/interlock status, TCP/502 access, Modbus write_coil actions, and unusual network traffic.",
     twin: "Stations, tracks, train units, ticket gates, and control room.",
     analytics: "Passenger flow, schedule adherence, gate exceptions, track occupancy, and safety alerts.",
     simulation: "Train delay, platform crowding, gate fault, signal alert, and power interruption.",
@@ -180,22 +180,22 @@ const domains = [
     photos: ["Metro model overview", "Station platform", "Train and track area", "Metro control dashboard"]
   },
   {
-    id: "warehouse",
-    title: "Warehouse",
-    icon: "Warehouse",
+    id: "traffic-lights",
+    title: "Traffic Lights",
+    icon: "Traffic",
     group: "urban",
     accent: "rgba(240,182,74,0.9)",
-    summary: "Inventory, loading dock, asset tracking, robotics, fire safety, access control, and logistics analytics.",
-    overview: "The Warehouse model covers inventory movement, loading dock events, asset tracking, robotics or conveyor flow, access control, fire safety, and logistics monitoring.",
-    features: ["Inventory and asset tracking", "Dock operations", "Conveyor/robot workflow", "Fire and access safety"],
-    steps: ["Packages, assets, and dock events are captured.", "Movement and stock data updates the dashboard.", "Rules detect delays, missing assets, or unsafe conditions.", "Cyber exercises test logistics system resilience."],
-    red: "Test RFID spoofing, inventory API misuse, access bypass, camera tampering, and rogue device entry.",
-    blue: "Monitor asset movement, dock events, inventory mismatches, access logs, and safety alarms.",
-    twin: "Storage racks, dock, conveyor/robot area, and access zones.",
-    analytics: "Inventory accuracy, dock time, asset movement, exception rate, and safety events.",
-    simulation: "Missing asset, dock congestion, conveyor stop, fire alert, and inventory tampering.",
-    image: "static/images/ware house.jpeg",
-    photos: ["Warehouse model overview", "Storage rack area", "Loading dock section", "Inventory dashboard"]
+    summary: "Traffic signal control, MQTT topics, intersection safety, manual dashboard control, and cyber-physical traffic response.",
+    overview: "The Traffic Lights model demonstrates a smart intersection where light states are controlled through MQTT topics. Students study how exposed publish access can force unsafe signal combinations and how defenders validate and restore safe traffic control.",
+    features: ["Signal state monitoring", "MQTT topic mapping", "Manual dashboard control", "Intersection safety workflow"],
+    steps: ["Traffic light states are controlled from the dashboard.", "MQTT topics carry red, yellow, and green commands.", "Cyber drills test false green-light publishing in an approved lab setup.", "Blue Team validates safe signal state and hardens MQTT access."],
+    red: "Test MQTT exposure, wildcard topic discovery, traffic-light topic mapping, false green-light publishing, and unsafe intersection state impact.",
+    blue: "Monitor MQTT publishers, signal topic changes, impossible all-green states, dashboard/manual control mismatch, and intersection recovery actions.",
+    twin: "Traffic light poles, intersection lanes, manual control dashboard, and signal state telemetry.",
+    analytics: "Signal state changes, unsafe combinations, MQTT publish history, manual override events, and response timing.",
+    simulation: "All-green condition, MQTT spoofing, signal conflict, manual recovery, and traffic-safety alert.",
+    image: "static/images/IMG_0888.jpeg",
+    photos: ["Traffic light model overview", "Intersection signal poles", "MQTT control dashboard", "Manual recovery view"]
   }
 ];
 
@@ -412,12 +412,17 @@ function renderDomainVisual(domain) {
         <rect class="conveyor" x="52" y="166" width="256" height="14" rx="7"></rect>
         <rect class="box-moving" x="0" y="140" width="32" height="26" rx="3"></rect>
       </svg>`,
-    banking: `
-      <svg class="scene-svg bank-scene" viewBox="0 0 360 210">
+    "lift-house": `
+      <svg class="scene-svg lift-house-scene" viewBox="0 0 360 210">
         <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
-        <g class="bank-building"><path d="M68 78 L180 24 L292 78 Z"></path><rect x="82" y="78" width="196" height="78" rx="4"></rect>
-        <rect x="104" y="92" width="18" height="56"></rect><rect x="152" y="92" width="18" height="56"></rect><rect x="200" y="92" width="18" height="56"></rect><rect x="248" y="92" width="18" height="56"></rect></g>
-        <g class="coin"><circle cx="0" cy="0" r="16"></circle><text x="-5" y="6">$</text></g>
+        <rect class="hospital-building-2d" x="106" y="34" width="148" height="124" rx="8"></rect>
+        <rect class="hospital-door" x="166" y="124" width="28" height="34" rx="4"></rect>
+        <g class="server-lights">
+          <circle cx="74" cy="70" r="10"></circle><circle cx="286" cy="62" r="10"></circle><circle cx="284" cy="118" r="10"></circle>
+        </g>
+        <path class="ecg-line" d="M50 96 H92 L106 72 L124 126 L144 88 H172"></path>
+        <path class="pipe-flow" d="M206 74 C246 42 284 54 308 88"></path>
+        <text class="ticker-text" x="122" y="62">LIFT</text>
       </svg>`,
     "power-grid": `
       <svg class="scene-svg grid-scene" viewBox="0 0 360 210">
@@ -449,12 +454,14 @@ function renderDomainVisual(domain) {
         <g class="bars"><rect x="62" y="112" width="28" height="46"></rect><rect x="130" y="86" width="28" height="72"></rect><rect x="198" y="98" width="28" height="60"></rect><rect x="266" y="58" width="28" height="100"></rect></g>
         <text class="ticker-text" x="42" y="42">LIVE MARKET</text>
       </svg>`,
-    warehouse: `
-      <svg class="scene-svg warehouse-scene" viewBox="0 0 360 210">
+    "traffic-lights": `
+      <svg class="scene-svg traffic-scene" viewBox="0 0 360 210">
         <rect class="scene-ground" x="0" y="158" width="360" height="52" rx="8"></rect>
-        <path class="warehouse-building" d="M52 150 V82 L180 34 L308 82 V150 Z"></path>
-        <g class="boxes"><rect x="92" y="118" width="34" height="32"></rect><rect x="130" y="98" width="34" height="52"></rect><rect x="168" y="124" width="34" height="26"></rect></g>
-        <g class="forklift"><rect x="0" y="0" width="58" height="28" rx="5"></rect><path d="M58 4 H82 V9 H64 V36 H58z"></path><circle cx="15" cy="30" r="6"></circle><circle cx="45" cy="30" r="6"></circle></g>
+        <path class="road-line" d="M20 184 H340 M180 158 V210"></path>
+        <g class="traffic-pole"><path d="M92 158 V56 H118 V158"></path><rect x="78" y="42" width="54" height="86" rx="10"></rect></g>
+        <g class="traffic-pole"><path d="M242 158 V56 H268 V158"></path><rect x="228" y="42" width="54" height="86" rx="10"></rect></g>
+        <g class="signal-lights"><circle cx="105" cy="62" r="8"></circle><circle cx="105" cy="85" r="8"></circle><circle cx="105" cy="108" r="8"></circle><circle cx="255" cy="62" r="8"></circle><circle cx="255" cy="85" r="8"></circle><circle cx="255" cy="108" r="8"></circle></g>
+        <path class="data-flow" d="M105 108 C135 74 222 74 255 108"></path>
       </svg>`
   };
   return scenes[domain.id] || `<div class="visual-generic">${domain.title}</div>`;

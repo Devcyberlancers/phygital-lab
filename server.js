@@ -14,13 +14,13 @@ const domains = [
   ["water-treatment", "Water Treatment"],
   ["industry", "Industrial"],
   ["hospital", "Hospital"],
-  ["banking", "Banking"],
+  ["lift-house", "Lift House"],
   ["power-grid", "Power Grid"],
   ["toll-plaza", "Toll Plaza"],
   ["data-center", "Data Center"],
   ["stock-market", "Stock Market"],
   ["metro", "Metro"],
-  ["warehouse", "Warehouse"]
+  ["traffic-lights", "Traffic Lights"]
 ];
 
 const domainIds = domains.map(([id]) => id);
@@ -43,6 +43,51 @@ const legacyWaterTreatmentChallengeIds = new Set([
   "water-treatment_001",
   "water-treatment_002",
   "water-treatment_003"
+]);
+const legacyAirportChallengeIds = new Set([
+  "airport_001",
+  "airport_002",
+  "airport_003"
+]);
+const legacyHospitalChallengeIds = new Set([
+  "hospital_001",
+  "hospital_002",
+  "hospital_003"
+]);
+const legacyPowerGridChallengeIds = new Set([
+  "power-grid_001",
+  "power-grid_002",
+  "power-grid_003"
+]);
+const legacyTollPlazaChallengeIds = new Set([
+  "toll-plaza_001",
+  "toll-plaza_002",
+  "toll-plaza_003"
+]);
+const legacyStockMarketChallengeIds = new Set([
+  "stock-market_001",
+  "stock-market_002",
+  "stock-market_003"
+]);
+const legacyMetroChallengeIds = new Set([
+  "metro_001",
+  "metro_002",
+  "metro_003"
+]);
+const legacyWarehouseChallengeIds = new Set([
+  "warehouse_001",
+  "warehouse_002",
+  "warehouse_003"
+]);
+const legacyTrafficLightsChallengeIds = new Set([
+  "traffic-lights_001",
+  "traffic-lights_002",
+  "traffic-lights_003"
+]);
+const legacyBankingChallengeIds = new Set([
+  "banking_001",
+  "banking_002",
+  "banking_003"
 ]);
 
 const seedChallenges = Object.fromEntries(domains.map(([id, label]) => [id, [
@@ -74,6 +119,984 @@ const seedChallenges = Object.fromEntries(domains.map(([id, label]) => [id, [
     hint: "Sort events by time and compare failed access, command, and alarm entries."
   }
 ]]));
+
+seedChallenges.airport = [
+  {
+    id: "airport_room_001",
+    category: "airport",
+    title: "Task 1 - Airport Door Room Briefing",
+    description: "You are investigating Airport door PLCs that expose OPC UA services. Open the Airport Red Team scenario page and identify the three approved PLC IP addresses for the door-control lab.",
+    points: 50,
+    flag: "FLAG{airport_opcua_room_started}",
+    hint: "The scenario commands list all three Airport door PLC targets."
+  },
+  {
+    id: "airport_room_002",
+    category: "airport",
+    title: "Task 2 - OPC UA Port Discovery",
+    description: "Run the approved lab scan against the Airport door PLCs and identify the TCP port used by OPC UA.",
+    points: 100,
+    flag: "FLAG{airport_opcua_tcp_4840}",
+    hint: "The scan command targets one OPC UA port on the PLCs."
+  },
+  {
+    id: "airport_room_003",
+    category: "airport",
+    title: "Task 3 - Door PLC Targets",
+    description: "Identify the three Airport PLC IP addresses documented for the OPC UA door-control drill.",
+    points: 150,
+    flag: "FLAG{airport_plcs_123_124_125}",
+    hint: "The targets end in .123, .124, and .125."
+  },
+  {
+    id: "airport_room_004",
+    category: "airport",
+    title: "Task 4 - OPC UA Client Validation",
+    description: "Use UAExpert or another approved OPC UA client to connect to the PLC endpoint and determine whether authentication is required before browsing objects.",
+    points: 150,
+    flag: "FLAG{airport_uaexpert_auth_check}",
+    hint: "This step validates whether anonymous access is blocked and credentials are needed."
+  },
+  {
+    id: "airport_room_005",
+    category: "airport",
+    title: "Task 5 - Credential Audit Tool",
+    description: "Identify the approved OPC UA vulnerability scanner used in the lab to audit weak OPC UA credentials with a username:password dictionary.",
+    points: 150,
+    flag: "FLAG{airport_opalopc_scanner}",
+    hint: "The command starts with the tool name before -vv."
+  },
+  {
+    id: "airport_room_006",
+    category: "airport",
+    title: "Task 6 - Dictionary Format",
+    description: "Identify the required brute-force dictionary format used by the approved OPC UA credential audit.",
+    points: 150,
+    flag: "FLAG{airport_username_password_format}",
+    hint: "The scenario says the dictionary should store each entry as username:password."
+  },
+  {
+    id: "airport_room_007",
+    category: "airport",
+    title: "Task 7 - Report Review",
+    description: "After opalopc completes, identify which report format students should open to find the recovered lab credentials.",
+    points: 150,
+    flag: "FLAG{airport_html_report_review}",
+    hint: "The scenario mentions that opalopc generates a report in this format."
+  },
+  {
+    id: "airport_room_008",
+    category: "airport",
+    title: "Task 8 - Door Object Discovery",
+    description: "After authenticating with the OPC UA client, identify the object students browse to in order to find the airport door control value.",
+    points: 200,
+    flag: "FLAG{airport_objects_door}",
+    hint: "Under Objects, the scenario says to select this object."
+  },
+  {
+    id: "airport_room_009",
+    category: "airport",
+    title: "Task 9 - Safe Recovery",
+    description: "After changing a Door value and observing movement, identify the required final safety action before ending the drill.",
+    points: 200,
+    flag: "FLAG{airport_restore_safe_door_state}",
+    hint: "The Blue Team playbook requires restoring the approved safe door state."
+  },
+  {
+    id: "airport_room_010",
+    category: "airport",
+    title: "Task 10 - OPC UA Hardening Plan",
+    description: "Recommend the key protections for Airport door PLCs: disable anonymous access, remove weak credentials, restrict TCP/4840, segment PLCs, and alert on OPC UA write operations or brute-force attempts.",
+    points: 250,
+    flag: "FLAG{airport_opcua_hardening}",
+    hint: "Look at the Airport Blue Team hardening checklist."
+  },
+  {
+    id: "airport_baggage_001",
+    category: "airport",
+    title: "Task 11 - Baggage Reclaim Target",
+    description: "Identify the Airport baggage reclaim PLC IP address and protocol used for the reclaim-belt lab.",
+    points: 100,
+    flag: "FLAG{airport_baggage_172_16_17_130_opcua}",
+    hint: "The baggage reclaim system uses OPC UA on one PLC ending in .130."
+  },
+  {
+    id: "airport_baggage_002",
+    category: "airport",
+    title: "Task 12 - Baggage Reclaim Port",
+    description: "Run the approved scan against the baggage reclaim PLC and identify the TCP port where OPC UA is exposed.",
+    points: 100,
+    flag: "FLAG{airport_baggage_tcp_4840}",
+    hint: "Use the same OPC UA port used by the Airport door PLCs."
+  },
+  {
+    id: "airport_baggage_003",
+    category: "airport",
+    title: "Task 13 - Reclaim Belt Object",
+    description: "After connecting with recovered credentials in an OPC UA client, identify the object area students inspect to find the value that controls the baggage reclaim belt.",
+    points: 200,
+    flag: "FLAG{airport_reclaim_belt_object}",
+    hint: "Browse Objects and locate the control for the reclaim belt."
+  },
+  {
+    id: "airport_baggage_004",
+    category: "airport",
+    title: "Task 14 - Baggage Reclaim Recovery",
+    description: "Explain the required safety action after changing the baggage reclaim belt value and observing the effect on the physical model.",
+    points: 200,
+    flag: "FLAG{airport_baggage_restore_safe_state}",
+    hint: "The drill should never end with the belt left in an unsafe or unexpected state."
+  },
+  {
+    id: "airport_mqtt_001",
+    category: "airport",
+    title: "Task 15 - MQTT Target Identification",
+    description: "Identify the two Airport MQTT-related IP addresses used for airplane parking and air-quality sensor telemetry.",
+    points: 150,
+    flag: "FLAG{airport_mqtt_101_207}",
+    hint: "The airplane parking IP is in 172.16.20.0/24 and the air sensor IP is in 172.16.17.0/24."
+  },
+  {
+    id: "airport_mqtt_002",
+    category: "airport",
+    title: "Task 16 - MQTT Port Discovery",
+    description: "Run the approved scan against the Airport MQTT targets and identify the port used by the insecure MQTT service.",
+    points: 100,
+    flag: "FLAG{airport_mqtt_tcp_1883}",
+    hint: "MQTT commonly listens on this TCP port."
+  },
+  {
+    id: "airport_mqtt_003",
+    category: "airport",
+    title: "Task 17 - Wildcard Subscription",
+    description: "Identify the MQTT wildcard topic used to subscribe to all visible topics during the Airport telemetry discovery step.",
+    points: 150,
+    flag: "FLAG{airport_mqtt_wildcard_hash}",
+    hint: "The mosquitto_sub command uses a single-character wildcard wrapped in quotes."
+  },
+  {
+    id: "airport_mqtt_004",
+    category: "airport",
+    title: "Task 18 - Topic Evidence",
+    description: "Observe the MQTT stream and document why topic names and payload formats must be collected before publishing any lab-only false data.",
+    points: 200,
+    flag: "FLAG{airport_mqtt_topic_mapping_first}",
+    hint: "Students should not guess payloads; they should learn the topic and value format from observed traffic."
+  },
+  {
+    id: "airport_mqtt_005",
+    category: "airport",
+    title: "Task 19 - MQTT Blue Team Control",
+    description: "Recommend the main MQTT controls that prevent unauthorized airplane parking or air-quality telemetry spoofing.",
+    points: 250,
+    flag: "FLAG{airport_mqtt_auth_acl_segmentation}",
+    hint: "Think authentication, topic ACLs, trusted publishers, network segmentation, and alerts."
+  },
+  {
+    id: "airport_mqtt_006",
+    category: "airport",
+    title: "Task 20 - Airport Multi-System Incident Report",
+    description: "Write the final Airport incident summary covering affected systems, evidence collected, safe-state restoration, and hardening actions for OPC UA, MQTT, kiosk HTTP MITM, and billboard FTP/media workflow risk.",
+    points: 300,
+    flag: "FLAG{airport_multisystem_report_complete}",
+    hint: "Include doors, baggage reclaim, airplane parking, air-quality telemetry, kiosk PNR responses, and billboard media handling."
+  },
+  {
+    id: "airport_kiosk_001",
+    category: "airport",
+    title: "Task 21 - Kiosk Target Identification",
+    description: "Identify the Airport kiosk IP address, protocol, and port used for the HTTP MITM lab.",
+    points: 100,
+    flag: "FLAG{airport_kiosk_172_16_17_112_http_80}",
+    hint: "The kiosk section lists one IP address and uses HTTP."
+  },
+  {
+    id: "airport_kiosk_002",
+    category: "airport",
+    title: "Task 22 - Kiosk MITM Pair",
+    description: "Identify the two IP addresses used in the authorized ARP poisoning step for the Airport kiosk exercise.",
+    points: 150,
+    flag: "FLAG{airport_kiosk_mitm_112_100}",
+    hint: "The ARP poisoning step targets the kiosk and the paired host ending in .100."
+  },
+  {
+    id: "airport_kiosk_003",
+    category: "airport",
+    title: "Task 23 - Traffic Forwarding Rule",
+    description: "Identify the local proxy port used when forwarding kiosk HTTP traffic to mitmproxy.",
+    points: 150,
+    flag: "FLAG{airport_kiosk_mitmproxy_8080}",
+    hint: "The iptables DNAT rule forwards destination port 80 traffic to this port."
+  },
+  {
+    id: "airport_kiosk_004",
+    category: "airport",
+    title: "Task 24 - Response Tampering Logic",
+    description: "Review the kiosk response-tampering script and identify the JSON field used to decide whether a PNR lookup succeeded or failed.",
+    points: 200,
+    flag: "FLAG{airport_kiosk_success_field}",
+    hint: "The script checks for success values of 1 and 0."
+  },
+  {
+    id: "airport_kiosk_005",
+    category: "airport",
+    title: "Task 25 - Kiosk Cleanup And Defense",
+    description: "Identify the cleanup and defense actions after kiosk MITM testing: stop mitmproxy, clear iptables forwarding, stop ARP poisoning, validate legitimate PNR responses, and harden against ARP/HTTP response tampering.",
+    points: 250,
+    flag: "FLAG{airport_kiosk_cleanup_and_defense}",
+    hint: "The post-testing commands flush iptables and NAT rules."
+  },
+  {
+    id: "airport_billboard_001",
+    category: "airport",
+    title: "Task 26 - Billboard FTP Enumeration",
+    description: "Enumerate the Airport billboard host and identify the service and script category used to test for anonymous FTP exposure.",
+    points: 100,
+    flag: "FLAG{airport_billboard_ftp_anon_enum}",
+    hint: "Use an FTP anonymous-access NSE check during enumeration."
+  },
+  {
+    id: "airport_billboard_002",
+    category: "airport",
+    title: "Task 27 - Anonymous Upload Risk",
+    description: "Document why anonymous FTP upload is dangerous for a billboard media workflow and what evidence proves the risk in the lab.",
+    points: 150,
+    flag: "FLAG{airport_billboard_anonymous_upload_risk}",
+    hint: "Focus on whether a user can place media into a workflow without authentication."
+  },
+  {
+    id: "airport_billboard_003",
+    category: "airport",
+    title: "Task 28 - Video Workflow Review",
+    description: "Identify the media-management script or workflow that processes uploaded billboard videos and explain why its execution context matters.",
+    points: 200,
+    flag: "FLAG{airport_billboard_video_workflow_review}",
+    hint: "The important evidence is what processes uploaded videos and what privileges it runs with."
+  },
+  {
+    id: "airport_billboard_004",
+    category: "airport",
+    title: "Task 29 - Privilege Boundary Finding",
+    description: "Explain the privilege-boundary issue demonstrated by the billboard workflow without leaving any unauthorized files or elevated changes behind.",
+    points: 250,
+    flag: "FLAG{airport_billboard_privilege_boundary}",
+    hint: "Look for unsafe automation, unsafe library paths, or write permissions that cross a trust boundary."
+  },
+  {
+    id: "airport_billboard_005",
+    category: "airport",
+    title: "Task 30 - Billboard Blue Team Plan",
+    description: "Recommend the key billboard defenses: disable anonymous FTP, restrict upload paths, validate media, run processors with least privilege, monitor upload logs, and restore approved content.",
+    points: 250,
+    flag: "FLAG{airport_billboard_blue_team_plan}",
+    hint: "A strong answer covers access control, file validation, least privilege, monitoring, and cleanup."
+  }
+];
+
+seedChallenges.hospital = [
+  {
+    id: "hospital_room_001",
+    category: "hospital",
+    title: "Task 1 - OpenEMR Room Briefing",
+    description: "You are investigating a Hospital OpenEMR application exposed on the lab network. Open the Hospital Red Team scenario page and identify the OpenEMR URL used for this exercise.",
+    points: 50,
+    flag: "FLAG{hospital_openemr_room_started}",
+    hint: "The Hospital scenario links directly to the OpenEMR application."
+  },
+  {
+    id: "hospital_room_002",
+    category: "hospital",
+    title: "Task 2 - Target Service",
+    description: "Identify the TCP port and protocol used by the public-facing Hospital OpenEMR web application.",
+    points: 100,
+    flag: "FLAG{hospital_tcp_80_http}",
+    hint: "The OpenEMR URL uses plain HTTP."
+  },
+  {
+    id: "hospital_room_003",
+    category: "hospital",
+    title: "Task 3 - Version Enumeration",
+    description: "Enumerate the Hospital web application and identify the OpenEMR version associated with the approved exploit reference.",
+    points: 150,
+    flag: "FLAG{hospital_openemr_5_0_1}",
+    hint: "The scenario brief names the vulnerable OpenEMR version."
+  },
+  {
+    id: "hospital_room_004",
+    category: "hospital",
+    title: "Task 4 - Authenticated Attack Path",
+    description: "Identify the vulnerability class for the Hospital OpenEMR drill and whether it requires credentials before exploitation.",
+    points: 150,
+    flag: "FLAG{hospital_authenticated_rce}",
+    hint: "The vulnerability field in the scenario says authenticated RCE."
+  },
+  {
+    id: "hospital_room_005",
+    category: "hospital",
+    title: "Task 5 - Lab Account",
+    description: "Identify the lab account used to validate the authenticated OpenEMR attack path.",
+    points: 150,
+    flag: "FLAG{hospital_sahil_sahil}",
+    hint: "The scenario lists the accountant credentials."
+  },
+  {
+    id: "hospital_room_006",
+    category: "hospital",
+    title: "Task 6 - Listener Port",
+    description: "Identify the listener port used by the attacker machine during the approved reverse-shell validation drill.",
+    points: 150,
+    flag: "FLAG{hospital_listener_4444}",
+    hint: "Look at the nc listener command in the scenario."
+  },
+  {
+    id: "hospital_room_007",
+    category: "hospital",
+    title: "Task 7 - phpMyAdmin Config Path",
+    description: "After authorized lab access, identify the configuration file path students inspect to find phpMyAdmin database credentials.",
+    points: 200,
+    flag: "FLAG{hospital_phpmyadmin_config_path}",
+    hint: "The path starts with C:\\Apache24\\htdocs\\phpMyAdmin."
+  },
+  {
+    id: "hospital_room_008",
+    category: "hospital",
+    title: "Task 8 - Database Credential",
+    description: "Identify the phpMyAdmin database credential found in the training scenario.",
+    points: 200,
+    flag: "FLAG{hospital_root_hacker_123}",
+    hint: "The scenario lists the phpMyAdmin lab credential."
+  },
+  {
+    id: "hospital_room_009",
+    category: "hospital",
+    title: "Task 9 - Patient Safety Impact",
+    description: "Identify the patient-safety impact demonstrated by the database access portion of the Hospital scenario.",
+    points: 200,
+    flag: "FLAG{hospital_medication_tampering}",
+    hint: "The final Red Team step changes a patient-related table."
+  },
+  {
+    id: "hospital_room_010",
+    category: "hospital",
+    title: "Task 10 - Hospital Hardening Plan",
+    description: "Recommend the key protections: upgrade OpenEMR, remove weak shared accounts, restrict phpMyAdmin, rotate database credentials, enforce least privilege, and alert on medication table changes.",
+    points: 250,
+    flag: "FLAG{hospital_openemr_hardening}",
+    hint: "Use the Hospital Blue Team hardening checklist."
+  }
+];
+
+seedChallenges["lift-house"] = [
+  {
+    id: "lift_house_room_001",
+    category: "lift-house",
+    title: "Task 1 - Lift House Room Briefing",
+    description: "You are investigating the Lift House model where gas sensor data is transported over WebSocket and fire sensor data can be observed over CoAP. Open the Lift House Red Team scenario page and identify the two gas sensor IP addresses.",
+    points: 50,
+    flag: "FLAG{lift_house_room_started}",
+    hint: "The gas sensor section lists two IP addresses."
+  },
+  {
+    id: "lift_house_room_002",
+    category: "lift-house",
+    title: "Task 2 - Gas Sensor Targets",
+    description: "Identify the two IP addresses involved in the Lift House gas sensor WebSocket attack path.",
+    points: 100,
+    flag: "FLAG{lift_house_gas_207_104}",
+    hint: "The target pair ends in .207 and .104."
+  },
+  {
+    id: "lift_house_room_003",
+    category: "lift-house",
+    title: "Task 3 - WebSocket Endpoint",
+    description: "Identify the WebSocket endpoint path used in the sample gas sensor false-data injection program.",
+    points: 150,
+    flag: "FLAG{lift_house_ws_gas_h2}",
+    hint: "Look at the URI in the sample WebSocket program."
+  },
+  {
+    id: "lift_house_room_004",
+    category: "lift-house",
+    title: "Task 4 - Fake Gas Payload",
+    description: "Identify the sample fake payload used to simulate a very high H2 gas reading.",
+    points: 150,
+    flag: "FLAG{lift_house_h2_99_99}",
+    hint: "The payload starts with H2 and contains the high value 99.99."
+  },
+  {
+    id: "lift_house_room_005",
+    category: "lift-house",
+    title: "Task 5 - Fire Sensor Protocol",
+    description: "Identify the protocol and port used by the Lift House fire sensor MITM exercise.",
+    points: 150,
+    flag: "FLAG{lift_house_coap_5684}",
+    hint: "The fire sensor section lists CoAP and the port."
+  },
+  {
+    id: "lift_house_room_006",
+    category: "lift-house",
+    title: "Task 6 - Fire Sensor Server",
+    description: "Identify the server IP address used as target 1 during the fire sensor CoAP MITM exercise.",
+    points: 150,
+    flag: "FLAG{lift_house_fire_server_172_16_17_113}",
+    hint: "The fire sensor section labels this IP as Server."
+  },
+  {
+    id: "lift_house_room_007",
+    category: "lift-house",
+    title: "Task 7 - CoAP Packet Filter",
+    description: "Identify the Wireshark display filter used to focus only on CoAP traffic during the fire sensor exercise.",
+    points: 150,
+    flag: "FLAG{lift_house_wireshark_coap}",
+    hint: "The scenario says to apply this filter in Wireshark."
+  },
+  {
+    id: "lift_house_room_008",
+    category: "lift-house",
+    title: "Task 8 - Ettercap Filter Logic",
+    description: "Identify the value replacement shown in the sample ettercap filter for the fire sensor MITM drill.",
+    points: 200,
+    flag: "FLAG{lift_house_true_to_false}",
+    hint: "The sample filter replaces one boolean value with another."
+  },
+  {
+    id: "lift_house_room_009",
+    category: "lift-house",
+    title: "Task 9 - Filter Compilation",
+    description: "Identify the command-line tool used to compile coap_filter.ecf into coap_filter.ef.",
+    points: 150,
+    flag: "FLAG{lift_house_etterfilter}",
+    hint: "The command starts with this tool name."
+  },
+  {
+    id: "lift_house_room_010",
+    category: "lift-house",
+    title: "Task 10 - Lift House Hardening Plan",
+    description: "Recommend protections for Lift House sensors: prevent ARP spoofing, segment sensor networks, authenticate WebSocket publishers, protect CoAP traffic, validate sensor ranges, and alert on impossible gas or fire-state changes.",
+    points: 250,
+    flag: "FLAG{lift_house_sensor_hardening}",
+    hint: "Use the Lift House Blue Team hardening checklist."
+  },
+  {
+    id: "lift_house_elevator_001",
+    category: "lift-house",
+    title: "Task 11 - Elevator PLC Discovery",
+    description: "Identify the Lift House elevator PLC target and the protocol used for the elevator control drill.",
+    points: 100,
+    flag: "FLAG{lift_house_elevator_modbus_plc}",
+    hint: "The Elevator section lists a PLC IP and Modbus Application Protocol."
+  },
+  {
+    id: "lift_house_elevator_002",
+    category: "lift-house",
+    title: "Task 12 - Modbus Port Discovery",
+    description: "Run the approved port scan against the elevator PLC and identify the TCP port exposing Modbus Application Protocol.",
+    points: 100,
+    flag: "FLAG{lift_house_elevator_tcp_502}",
+    hint: "The scan command targets the standard Modbus TCP port."
+  },
+  {
+    id: "lift_house_elevator_003",
+    category: "lift-house",
+    title: "Task 13 - Modbus Client Module",
+    description: "Identify the Metasploit auxiliary module used to read Lift House elevator Modbus register values.",
+    points: 150,
+    flag: "FLAG{lift_house_modbusclient_module}",
+    hint: "The module path ends with scada/modbusclient."
+  },
+  {
+    id: "lift_house_elevator_004",
+    category: "lift-house",
+    title: "Task 14 - Floor Register Mapping",
+    description: "Capture elevator register values while someone controls the elevator and identify the register addresses tested for different floors.",
+    points: 200,
+    flag: "FLAG{lift_house_floor_registers_0_1_2_3_4}",
+    hint: "The exercise repeats data_address values from 0 through 4."
+  },
+  {
+    id: "lift_house_elevator_005",
+    category: "lift-house",
+    title: "Task 15 - Safe Write Validation",
+    description: "Explain why students should only use captured safe floor values when testing write_register actions against the elevator PLC.",
+    points: 250,
+    flag: "FLAG{lift_house_safe_floor_write_only}",
+    hint: "The safe value must come from observed dashboard-driven elevator behavior."
+  },
+  {
+    id: "lift_house_elevator_006",
+    category: "lift-house",
+    title: "Task 16 - Elevator Blue Team Hardening",
+    description: "Recommend protections for the elevator PLC: restrict TCP/502, segment the PLC network, allow only trusted HMI/SCADA hosts, log register activity, and alert on write_register operations or unexpected floor changes.",
+    points: 250,
+    flag: "FLAG{lift_house_elevator_modbus_hardening}",
+    hint: "Use the Elevator Blue Team response checklist."
+  }
+];
+
+seedChallenges["power-grid"] = [
+  {
+    id: "power_grid_room_001",
+    category: "power-grid",
+    title: "Task 1 - Power Grid Room Briefing",
+    description: "You are investigating a Power Grid model with internally exposed ISO-TSAP/S7 communication. Open the Power Grid Red Team scenario page and identify the dashboard used for observation.",
+    points: 50,
+    flag: "FLAG{power_grid_room_started}",
+    hint: "The scenario page links the Power Grid dashboard."
+  },
+  {
+    id: "power_grid_room_002",
+    category: "power-grid",
+    title: "Task 2 - Protocol Identification",
+    description: "Identify the insecure internally exposed protocol family used in the Power Grid exercise.",
+    points: 100,
+    flag: "FLAG{power_grid_iso_tsap}",
+    hint: "The protocol is commonly associated with Siemens S7 communication."
+  },
+  {
+    id: "power_grid_room_003",
+    category: "power-grid",
+    title: "Task 3 - Port Discovery",
+    description: "Run the approved scan against the Power Grid controller and identify the TCP port used by ISO-TSAP/S7 communication.",
+    points: 100,
+    flag: "FLAG{power_grid_tcp_102}",
+    hint: "The scenario lists TCP/102."
+  },
+  {
+    id: "power_grid_room_004",
+    category: "power-grid",
+    title: "Task 4 - Exploit Concept",
+    description: "Identify the command concept demonstrated by the Power Grid lab tool and explain why it is unsafe on exposed controllers.",
+    points: 150,
+    flag: "FLAG{power_grid_s7comm_stop_risk}",
+    hint: "The scenario refers to an S7COMM STOP command risk."
+  },
+  {
+    id: "power_grid_room_005",
+    category: "power-grid",
+    title: "Task 5 - Tool Reference",
+    description: "Identify the approved lab tool repository used for the Power Grid S7 communication drill.",
+    points: 150,
+    flag: "FLAG{power_grid_simatic_smackdown}",
+    hint: "The GitHub repository name appears in the Red Team tool review section."
+  },
+  {
+    id: "power_grid_room_006",
+    category: "power-grid",
+    title: "Task 6 - Build Step",
+    description: "Identify the build command used before running the approved Power Grid lab tool.",
+    points: 100,
+    flag: "FLAG{power_grid_make_build}",
+    hint: "The build command uses make."
+  },
+  {
+    id: "power_grid_room_007",
+    category: "power-grid",
+    title: "Task 7 - Dashboard Evidence",
+    description: "During the controlled simulation, identify which dashboard evidence students should record for relay, generation, load, or controller state impact.",
+    points: 200,
+    flag: "FLAG{power_grid_dashboard_evidence}",
+    hint: "Record timestamp, observed effect, and affected state."
+  },
+  {
+    id: "power_grid_room_008",
+    category: "power-grid",
+    title: "Task 8 - Safe Recovery",
+    description: "Identify the required recovery action after a Power Grid controller stop or unsafe state is observed during the lab.",
+    points: 200,
+    flag: "FLAG{power_grid_restore_run_state}",
+    hint: "Use the approved operator workflow to restore normal state."
+  },
+  {
+    id: "power_grid_room_009",
+    category: "power-grid",
+    title: "Task 9 - Blue Team Detection",
+    description: "Identify the main network and process indicators the Blue Team should monitor for this Power Grid ISO-TSAP/S7 exercise.",
+    points: 200,
+    flag: "FLAG{power_grid_detect_tcp102_s7}",
+    hint: "Think TCP/102 connections and S7COMM stop/write indicators."
+  },
+  {
+    id: "power_grid_room_010",
+    category: "power-grid",
+    title: "Task 10 - Power Grid Hardening Plan",
+    description: "Recommend key protections: restrict TCP/102 to trusted engineering hosts, segment Power Grid PLCs, disable unnecessary ISO-TSAP exposure, alert on S7 STOP/write actions, and document recovery SOPs.",
+    points: 250,
+    flag: "FLAG{power_grid_iso_tsap_hardening}",
+    hint: "Use the Power Grid Blue Team hardening checklist."
+  }
+];
+
+seedChallenges["toll-plaza"] = [
+  {
+    id: "toll_plaza_room_001",
+    category: "toll-plaza",
+    title: "Task 1 - Toll Plaza Room Briefing",
+    description: "You are investigating a Toll Plaza RFID reader that accepts vulnerable lab RFID cards. Open the Toll Plaza Red Team scenario page and identify the dashboard used for observation.",
+    points: 50,
+    flag: "FLAG{toll_plaza_room_started}",
+    hint: "The scenario page links the Toll Plaza dashboard."
+  },
+  {
+    id: "toll_plaza_room_002",
+    category: "toll-plaza",
+    title: "Task 2 - Target Identification",
+    description: "Identify the target device in the Toll Plaza RFID cloning exercise.",
+    points: 100,
+    flag: "FLAG{toll_plaza_rfid_reader}",
+    hint: "The target is the reader at the toll lane."
+  },
+  {
+    id: "toll_plaza_room_003",
+    category: "toll-plaza",
+    title: "Task 3 - Protocol Family",
+    description: "Identify the RFID card protocol family used in the Toll Plaza lab.",
+    points: 100,
+    flag: "FLAG{toll_plaza_rfid_mifare}",
+    hint: "The scenario lists RFID MIFARE."
+  },
+  {
+    id: "toll_plaza_room_004",
+    category: "toll-plaza",
+    title: "Task 4 - Vulnerability Class",
+    description: "Identify the core vulnerability class demonstrated when a lab RFID card can be read and copied to another writable card.",
+    points: 150,
+    flag: "FLAG{toll_plaza_vulnerable_rfid_cards}",
+    hint: "The issue is cloneable card data."
+  },
+  {
+    id: "toll_plaza_room_005",
+    category: "toll-plaza",
+    title: "Task 5 - Read Evidence",
+    description: "During the read step, identify what evidence students should record before writing any cloned test card.",
+    points: 150,
+    flag: "FLAG{toll_plaza_card_read_evidence}",
+    hint: "Record card identifier, timestamp, reader response, and dashboard event."
+  },
+  {
+    id: "toll_plaza_room_006",
+    category: "toll-plaza",
+    title: "Task 6 - Write Test Card",
+    description: "Identify the type of card used during the lab write phase and why it must remain inside the approved lab exercise.",
+    points: 150,
+    flag: "FLAG{toll_plaza_writable_lab_card}",
+    hint: "The scenario says to use an approved writable RFID lab card."
+  },
+  {
+    id: "toll_plaza_room_007",
+    category: "toll-plaza",
+    title: "Task 7 - Access Simulation",
+    description: "Use the approved cloned test card at the toll reader and identify the dashboard behavior that proves unauthorized access risk.",
+    points: 200,
+    flag: "FLAG{toll_plaza_cloned_card_access}",
+    hint: "Watch lane, payment, and barrier behavior."
+  },
+  {
+    id: "toll_plaza_room_008",
+    category: "toll-plaza",
+    title: "Task 8 - Blue Team Detection",
+    description: "Identify the main dashboard indicators that help detect cloned or replayed RFID card behavior.",
+    points: 200,
+    flag: "FLAG{toll_plaza_duplicate_card_detection}",
+    hint: "Look for repeated card IDs, impossible timing, and barrier events without valid payment context."
+  },
+  {
+    id: "toll_plaza_room_009",
+    category: "toll-plaza",
+    title: "Task 9 - Containment",
+    description: "Identify the immediate containment actions after cloned-card behavior is confirmed in the Toll Plaza lab.",
+    points: 200,
+    flag: "FLAG{toll_plaza_revoke_cloned_card}",
+    hint: "Remove the cloned card and block or revoke the affected test-card identifier."
+  },
+  {
+    id: "toll_plaza_room_010",
+    category: "toll-plaza",
+    title: "Task 10 - RFID Hardening Plan",
+    description: "Recommend key Toll Plaza RFID protections: diversified keys, mutual authentication where supported, challenge-response cards, transaction binding, anti-passback checks, and duplicate-card alerting.",
+    points: 250,
+    flag: "FLAG{toll_plaza_rfid_hardening}",
+    hint: "Use the Toll Plaza Blue Team hardening checklist."
+  }
+];
+
+seedChallenges["stock-market"] = [
+  {
+    id: "stock_market_room_001",
+    category: "stock-market",
+    title: "Task 1 - Stock Market Room Briefing",
+    description: "You are investigating a Stock Market training scenario involving phishing-led ransomware simulation and billboard media workflow risk. Open the Stock Market Red Team scenario page and identify the training mailbox.",
+    points: 50,
+    flag: "FLAG{stock_market_room_started}",
+    hint: "The Red Team page lists the training mailbox."
+  },
+  {
+    id: "stock_market_room_002",
+    category: "stock-market",
+    title: "Task 2 - Phishing Target Mailbox",
+    description: "Identify the approved mailbox used only for the Stock Market phishing-awareness drill.",
+    points: 100,
+    flag: "FLAG{stock_exchange_training_mailbox}",
+    hint: "The mailbox address appears in the Phishing Awareness Setup section."
+  },
+  {
+    id: "stock_market_room_003",
+    category: "stock-market",
+    title: "Task 3 - Ransomware Test File",
+    description: "Identify the approved test file used by the classroom ransomware simulator.",
+    points: 100,
+    flag: "FLAG{stock_market_secret_dat}",
+    hint: "The file path ends with secret.dat."
+  },
+  {
+    id: "stock_market_room_004",
+    category: "stock-market",
+    title: "Task 4 - Recovery Key Evidence",
+    description: "Identify the file path used to store the classroom recovery key and IV for the ransomware simulation.",
+    points: 150,
+    flag: "FLAG{stock_market_encryption_key_bin}",
+    hint: "The key file path ends with encryption_key.bin."
+  },
+  {
+    id: "stock_market_room_005",
+    category: "stock-market",
+    title: "Task 5 - Phishing Impact Evidence",
+    description: "Identify the key evidence students should record when reviewing the phishing attachment execution chain.",
+    points: 150,
+    flag: "FLAG{stock_market_attachment_execution_evidence}",
+    hint: "Look for download, execution, test-file change, and endpoint/mail alert evidence."
+  },
+  {
+    id: "stock_market_room_006",
+    category: "stock-market",
+    title: "Task 6 - Billboard FTP Enumeration",
+    description: "Identify the enumeration method used to check for anonymous FTP exposure in the Stock Market billboard workflow.",
+    points: 100,
+    flag: "FLAG{stock_market_billboard_ftp_anon}",
+    hint: "The command uses the ftp-anon NSE script."
+  },
+  {
+    id: "stock_market_room_007",
+    category: "stock-market",
+    title: "Task 7 - Media Workflow Risk",
+    description: "Explain why anonymous uploads and unsafe media processing can compromise billboard content.",
+    points: 200,
+    flag: "FLAG{stock_market_billboard_media_risk}",
+    hint: "Focus on untrusted uploads being processed into approved display content."
+  },
+  {
+    id: "stock_market_room_008",
+    category: "stock-market",
+    title: "Task 8 - Blue Team Containment",
+    description: "Identify the immediate containment actions for the phishing/ransomware simulation.",
+    points: 200,
+    flag: "FLAG{stock_market_isolate_block_stop}",
+    hint: "Isolate the workstation, block the attachment, and stop the simulator process."
+  },
+  {
+    id: "stock_market_room_009",
+    category: "stock-market",
+    title: "Task 9 - Recovery Validation",
+    description: "Identify how Blue Team validates recovery after the ransomware simulation.",
+    points: 200,
+    flag: "FLAG{stock_market_restore_validate_hash}",
+    hint: "Restore the approved test file and validate content/hash."
+  },
+  {
+    id: "stock_market_room_010",
+    category: "stock-market",
+    title: "Task 10 - Stock Market Hardening Plan",
+    description: "Recommend key controls: mail filtering, attachment sandboxing, user reporting, offline backups, FTP authentication, media validation, least privilege, and monitoring for encryption/upload events.",
+    points: 250,
+    flag: "FLAG{stock_market_phishing_billboard_hardening}",
+    hint: "Use the Stock Market Blue Team hardening checklist."
+  }
+];
+
+seedChallenges.metro = [
+  {
+    id: "metro_room_001",
+    category: "metro",
+    title: "Task 1 - Metro Room Briefing",
+    description: "You are investigating a Metro PLC where Modbus TCP is exposed for a supervised write_coil lab. Open the Metro Red Team scenario page and identify the dashboard used for observation.",
+    points: 50,
+    flag: "FLAG{metro_room_started}",
+    hint: "The scenario page links the Metro dashboard."
+  },
+  {
+    id: "metro_room_002",
+    category: "metro",
+    title: "Task 2 - PLC Target",
+    description: "Identify the Metro PLC IP address used in the Modbus write_coil drill.",
+    points: 100,
+    flag: "FLAG{metro_plc_172_16_17_127}",
+    hint: "The Metro scenario lists the PLC target."
+  },
+  {
+    id: "metro_room_003",
+    category: "metro",
+    title: "Task 3 - Modbus Port",
+    description: "Run the approved port scan against the Metro PLC and identify the TCP port used by Modbus Application Protocol.",
+    points: 100,
+    flag: "FLAG{metro_modbus_tcp_502}",
+    hint: "The scan command targets the standard Modbus TCP port."
+  },
+  {
+    id: "metro_room_004",
+    category: "metro",
+    title: "Task 4 - Interlock Observation",
+    description: "Explain what students should observe when normal Modbus tampering is blocked by the Metro interlocking mechanism or ladder logic.",
+    points: 150,
+    flag: "FLAG{metro_interlock_blocks_tamper}",
+    hint: "The Red Team page says the interlock/ladder logic does not allow normal unsafe tampering."
+  },
+  {
+    id: "metro_room_005",
+    category: "metro",
+    title: "Task 5 - Modbus Client Module",
+    description: "Identify the Metasploit auxiliary module used to test the Metro Modbus write_coil behavior.",
+    points: 150,
+    flag: "FLAG{metro_modbusclient_module}",
+    hint: "The module path ends with scada/modbusclient."
+  },
+  {
+    id: "metro_room_006",
+    category: "metro",
+    title: "Task 6 - Coil Write Action",
+    description: "Identify the Modbus action used during the controlled Metro coil-write test.",
+    points: 150,
+    flag: "FLAG{metro_write_coil_action}",
+    hint: "The scenario command sets action to this value."
+  },
+  {
+    id: "metro_room_007",
+    category: "metro",
+    title: "Task 7 - Coil Address And Data",
+    description: "Identify the coil address and data value used in the approved Metro write_coil test.",
+    points: 200,
+    flag: "FLAG{metro_coil_0_data_1}",
+    hint: "Look for data_address and data in the controlled coil write section."
+  },
+  {
+    id: "metro_room_008",
+    category: "metro",
+    title: "Task 8 - Dashboard Evidence",
+    description: "During the Metro write_coil simulation, identify what evidence students should record from the dashboard and physical model.",
+    points: 200,
+    flag: "FLAG{metro_dashboard_coil_evidence}",
+    hint: "Record timestamp, coil address, written value, and visible impact."
+  },
+  {
+    id: "metro_room_009",
+    category: "metro",
+    title: "Task 9 - Safe Recovery",
+    description: "Identify the required recovery action after the controlled Metro write_coil test.",
+    points: 200,
+    flag: "FLAG{metro_restore_safe_state}",
+    hint: "Use the approved operator workflow to restore normal train/signal/interlock state."
+  },
+  {
+    id: "metro_room_010",
+    category: "metro",
+    title: "Task 10 - Metro Modbus Hardening",
+    description: "Recommend protections for the Metro PLC: restrict TCP/502, segment PLCs, monitor write_coil actions, document approved coil/register addresses, and validate ladder-logic protections.",
+    points: 250,
+    flag: "FLAG{metro_modbus_hardening}",
+    hint: "Use the Metro Blue Team hardening checklist."
+  }
+];
+
+seedChallenges["traffic-lights"] = [
+  {
+    id: "traffic_lights_room_001",
+    category: "traffic-lights",
+    title: "Task 1 - Traffic Lights Room Briefing",
+    description: "You are investigating a Traffic Lights model where exposed MQTT can affect signal states. Open the Traffic Lights Red Team scenario page and identify the dashboard used for observation.",
+    points: 50,
+    flag: "FLAG{traffic_lights_room_started}",
+    hint: "The scenario page links the Traffic Lights dashboard."
+  },
+  {
+    id: "traffic_lights_room_002",
+    category: "traffic-lights",
+    title: "Task 2 - Broker Target",
+    description: "Identify the MQTT broker IP address used by the Traffic Lights model.",
+    points: 100,
+    flag: "FLAG{traffic_lights_broker_172_16_17_208}",
+    hint: "The broker IP is listed in the Enumeration section."
+  },
+  {
+    id: "traffic_lights_room_003",
+    category: "traffic-lights",
+    title: "Task 3 - MQTT Port",
+    description: "Run the approved scan against the Traffic Lights broker and identify the TCP port used by MQTT.",
+    points: 100,
+    flag: "FLAG{traffic_lights_mqtt_1883}",
+    hint: "The scan command targets the standard MQTT port."
+  },
+  {
+    id: "traffic_lights_room_004",
+    category: "traffic-lights",
+    title: "Task 4 - Wildcard Subscription",
+    description: "Identify the MQTT wildcard topic used to subscribe to all visible Traffic Lights topics.",
+    points: 150,
+    flag: "FLAG{traffic_lights_wildcard_hash}",
+    hint: "The mosquitto_sub command subscribes to a single-character wildcard."
+  },
+  {
+    id: "traffic_lights_room_005",
+    category: "traffic-lights",
+    title: "Task 5 - Topic Mapping",
+    description: "Identify an example topic pattern used to control a traffic light color.",
+    points: 150,
+    flag: "FLAG{traffic_lights_t1_control_g}",
+    hint: "The topic examples include t1/control/r, t1/control/y, and t1/control/g."
+  },
+  {
+    id: "traffic_lights_room_006",
+    category: "traffic-lights",
+    title: "Task 6 - Green Topics",
+    description: "Identify the four green-light topics used by the all-green simulation.",
+    points: 200,
+    flag: "FLAG{traffic_lights_all_green_topics}",
+    hint: "The list contains t1/control/g through t4/control/g."
+  },
+  {
+    id: "traffic_lights_room_007",
+    category: "traffic-lights",
+    title: "Task 7 - Publish Value",
+    description: "Identify the MQTT payload value used to turn on each green signal during the simulation.",
+    points: 150,
+    flag: "FLAG{traffic_lights_publish_1}",
+    hint: "The script publishes one character to each green topic."
+  },
+  {
+    id: "traffic_lights_room_008",
+    category: "traffic-lights",
+    title: "Task 8 - Unsafe State",
+    description: "Identify the unsafe condition created when every green topic is repeatedly published as ON.",
+    points: 200,
+    flag: "FLAG{traffic_lights_all_green_chaos}",
+    hint: "The scenario describes all green lights on at the same time."
+  },
+  {
+    id: "traffic_lights_room_009",
+    category: "traffic-lights",
+    title: "Task 9 - Safe Recovery",
+    description: "Identify the safe recovery steps after the Traffic Lights all-green simulation.",
+    points: 200,
+    flag: "FLAG{traffic_lights_restore_safe_state}",
+    hint: "Stop the script and use dashboard/manual controls to restore safe signal state."
+  },
+  {
+    id: "traffic_lights_room_010",
+    category: "traffic-lights",
+    title: "Task 10 - MQTT Hardening Plan",
+    description: "Recommend key protections: MQTT authentication, anonymous publish disablement, topic ACLs, TCP/1883 restriction, signal logic validation, and alerts for impossible all-green states.",
+    points: 250,
+    flag: "FLAG{traffic_lights_mqtt_hardening}",
+    hint: "Use the Traffic Lights Blue Team hardening checklist."
+  }
+];
 
 seedChallenges.industry = [
   {
@@ -355,7 +1378,16 @@ function readDb() {
   const removedLegacyIndustry = db.challenges.filter((challenge) => legacyIndustryChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
   const removedLegacyDataCenter = db.challenges.filter((challenge) => legacyDataCenterChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
   const removedLegacyWaterTreatment = db.challenges.filter((challenge) => legacyWaterTreatmentChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
-  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter, ...removedLegacyWaterTreatment];
+  const removedLegacyAirport = db.challenges.filter((challenge) => legacyAirportChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyHospital = db.challenges.filter((challenge) => legacyHospitalChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyPowerGrid = db.challenges.filter((challenge) => legacyPowerGridChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyTollPlaza = db.challenges.filter((challenge) => legacyTollPlazaChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyStockMarket = db.challenges.filter((challenge) => legacyStockMarketChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyMetro = db.challenges.filter((challenge) => legacyMetroChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyWarehouse = db.challenges.filter((challenge) => legacyWarehouseChallengeIds.has(challenge.id) || challenge.category === "warehouse").map((challenge) => challenge.id);
+  const removedLegacyTrafficLights = db.challenges.filter((challenge) => legacyTrafficLightsChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
+  const removedLegacyBanking = db.challenges.filter((challenge) => legacyBankingChallengeIds.has(challenge.id) || challenge.category === "banking").map((challenge) => challenge.id);
+  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter, ...removedLegacyWaterTreatment, ...removedLegacyAirport, ...removedLegacyHospital, ...removedLegacyPowerGrid, ...removedLegacyTollPlaza, ...removedLegacyStockMarket, ...removedLegacyMetro, ...removedLegacyWarehouse, ...removedLegacyTrafficLights, ...removedLegacyBanking];
   if (removedLegacy.length) {
     const removed = new Set(removedLegacy);
     db.challenges = db.challenges.filter((challenge) => !removed.has(challenge.id));

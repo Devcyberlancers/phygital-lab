@@ -638,12 +638,37 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
 .scenario-block h4 { margin-bottom: 0.75rem; color: var(--cyan); }
 .scenario-block ol { padding-left: 1.2rem; }
 .scenario-block li + li { margin-top: 0.55rem; }
-.scenario-block pre {
+.scenario-command-list {
+  display: grid;
+  gap: 0.8rem;
+}
+.scenario-command-section {
+  border: 1px solid rgba(77,216,255,0.16);
+  border-radius: 8px;
+  background: rgba(2,8,14,0.48);
+  overflow: hidden;
+}
+.scenario-command-section h3 {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  color: var(--cyan);
+  background: rgba(77,216,255,0.08);
+  border-bottom: 1px solid rgba(77,216,255,0.14);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.scenario-block pre,
+.scenario-command-section pre {
   overflow-x: auto;
   margin: 0;
+  padding: 0.85rem;
   color: var(--green);
   font: 800 0.92rem/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   white-space: pre-wrap;
+}
+.scenario-block > pre {
+  padding: 0;
 }
 .scenario-dashboard-btn {
   display: inline-flex;

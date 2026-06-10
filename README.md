@@ -25,7 +25,7 @@ Then open:
 - Data Center
 - Stock Market
 - Metro
-- Warehouse
+- Traffic Lights
 
 Runtime CTF data is generated locally in `data/phygital_ctf.json` and is intentionally ignored by Git.
 
