@@ -683,13 +683,35 @@ window.CTF = (function () {
         resEl.textContent = result.msg;
       }
       if (result.correct) {
-        setTimeout(() => renderBoard(category, containerId), 900);
+        if (category === 'data-center') {
+          markQuestionSolvedInPlace(id);
+        } else {
+          setTimeout(() => renderBoard(category, containerId), 900);
+        }
       }
     } catch (e) {
       if (resEl) {
         resEl.className = 'ctf-result-msg ctf-err';
         resEl.textContent = e.message;
       }
+    }
+  }
+
+  function markQuestionSolvedInPlace(id) {
+    const input = document.getElementById(`ctf-inp-${id}`);
+    const question = input ? input.closest('.ctf-question-block') : null;
+    if (!question) return;
+    question.classList.add('solved');
+    const answerRow = question.querySelector('.ctf-answer-row');
+    const meta = question.querySelector('.ctf-question-meta');
+    const hint = question.querySelector('.ctf-hint-text');
+    if (answerRow) answerRow.remove();
+    if (meta) meta.remove();
+    if (hint) hint.remove();
+    const res = question.querySelector(`#ctf-res-${id}`);
+    if (res) {
+      res.className = 'ctf-solved-banner';
+      res.textContent = 'Answer accepted - question complete!';
     }
   }
 
