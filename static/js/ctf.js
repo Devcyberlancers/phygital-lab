@@ -267,9 +267,11 @@ window.CTF = (function () {
           </div>
           <div class="ctf-sb-solved">${solvedCount} / ${challenges.length} solved</div>
         </div>
-        <div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
-          ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
-        </div>`;
+        ${category === 'data-center'
+          ? renderDataCenterTaskRoom(challenges)
+          : `<div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
+              ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
+            </div>`}`;
 
       bindBoard(container, category, containerId);
     } catch (e) {
@@ -329,6 +331,15 @@ window.CTF = (function () {
   }
 
   function bindBoard(container, category, containerId) {
+    container.querySelectorAll('.ctf-task-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const block = header.closest('.ctf-task-block');
+        if (!block) return;
+        block.classList.toggle('open');
+        header.setAttribute('aria-expanded', block.classList.contains('open') ? 'true' : 'false');
+      });
+    });
+
     container.querySelectorAll('.ctf-submit-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
@@ -417,6 +428,94 @@ window.CTF = (function () {
         <span class="ctf-lb-rank">#${row.rank}</span>
         <span class="ctf-lb-name">${escapeHtml(row.name)} <small>${row.solvedCount} solved / ${row.roomCount} rooms</small></span>
         <span class="ctf-lb-score">${row.score} pts</span>
+      </div>`;
+  }
+
+  function renderDataCenterTaskRoom(challenges) {
+    const groups = [
+      {
+        no: '1',
+        title: 'Reconnaissance - Confirm the Attack Surface',
+        intro: 'Before interacting with any industrial protocol, confirm the service is actually exposed. Use a port scanner to probe the target and verify which port Modbus TCP is running on.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 1 '))
+      },
+      {
+        no: '2',
+        title: 'Register Enumeration - Map the Control Space',
+        intro: 'Modbus devices expose data through numbered registers. Read register values while the HVAC system is operating and correlate them with dashboard state.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 2 '))
+      },
+      {
+        no: '3',
+        title: 'Exploitation - Write to a Control Register',
+        intro: 'Use the discovered register map and captured values to understand how an unauthorized write can affect the HVAC coolant state. Restore safe state after the drill.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 3 '))
+      }
+    ].filter((group) => group.items.length);
+    const completedGroups = groups.filter((group) => group.items.every((item) => item.solved)).length;
+
+    return `
+      <div class="ctf-dc-target">
+        <div>
+          <span>Target IP</span>
+          <strong>-- Start Room --</strong>
+        </div>
+        <div>
+          <span>Protocol</span>
+          <strong>Modbus TCP</strong>
+        </div>
+        <p>This is a lab environment. Do not attack systems outside the designated IP range. Restore all registers before ending the drill.</p>
+      </div>
+      <div class="ctf-task-list-head">
+        <h3>Tasks</h3>
+        <span>${completedGroups} / ${groups.length} complete</span>
+      </div>
+      <div class="ctf-task-list">
+        ${groups.map((group) => renderDataCenterTaskGroup(group)).join('')}
+      </div>`;
+  }
+
+  function renderDataCenterTaskGroup(group) {
+    const complete = group.items.every((item) => item.solved);
+    return `
+      <section class="ctf-task-block ${complete ? 'completed' : ''}">
+        <button class="ctf-task-header" type="button" aria-expanded="false">
+          <span class="ctf-task-num">Task ${group.no}</span>
+          <span class="ctf-task-check ${complete ? 'done' : ''}"></span>
+          <strong>${escapeHtml(group.title)}</strong>
+          <span class="ctf-task-arrow">v</span>
+        </button>
+        <div class="ctf-task-body">
+          <p>${escapeHtml(group.intro)}</p>
+          ${group.items.map((challenge, index) => renderDataCenterQuestion(challenge, group.no, index + 1)).join('')}
+        </div>
+      </section>`;
+  }
+
+  function renderDataCenterQuestion(challenge, taskNo, questionNo) {
+    const solved = !!challenge.solved;
+    return `
+      <div class="ctf-question-block ${solved ? 'solved' : ''}">
+        <label for="ctf-inp-${challenge.id}">
+          <span>Q${taskNo}.${questionNo}</span>
+          ${escapeHtml(challenge.description)}
+        </label>
+        ${solved
+          ? `<div class="ctf-solved-banner">Answer accepted - question complete!</div>`
+          : `<div class="ctf-answer-row">
+              <input type="text" class="ctf-flag-input" id="ctf-inp-${challenge.id}"
+                     data-id="${challenge.id}"
+                     placeholder="Enter answer"
+                     spellcheck="false" autocomplete="off" />
+              <button class="ctf-submit-btn" data-id="${challenge.id}">Check</button>
+            </div>
+            <div class="ctf-question-meta">
+              ${challenge.hasHint ? `<button class="ctf-hint-toggle" data-id="${challenge.id}">Show hint</button>` : ''}
+              <span class="ctf-award-note" id="ctf-award-${challenge.id}">${challenge.currentAward} pts available</span>
+            </div>
+            <p class="ctf-hint-text" id="ctf-hint-${challenge.id}" style="display:none"></p>
+            <div class="ctf-result-msg" id="ctf-res-${challenge.id}"></div>`
+        }
       </div>`;
   }
 
@@ -564,7 +663,7 @@ window.CTF = (function () {
             : `<div class="ctf-flag-row">
                  <input type="text" class="ctf-flag-input" id="ctf-inp-${ch.id}"
                         data-id="${ch.id}"
-                        placeholder="Enter flag: FLAG{...}"
+                        placeholder="Enter answer"
                         spellcheck="false" autocomplete="off" />
                  <button class="ctf-submit-btn" data-id="${ch.id}">Submit</button>
                </div>

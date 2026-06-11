@@ -1825,6 +1825,17 @@ function renderEmbeddedCtf(domain, mode) {
     return;
   }
 
+  if (mode === "blue") {
+    const title = document.getElementById("scenario-ctf-title");
+    if (title) title.textContent = `${domainTitles[domain] || "Model"} Blue Team Questions`;
+    board.innerHTML = `
+      <div class="ctf-empty">
+        <h3>Blue Team questions coming soon.</h3>
+        <p>This room is blank for now. Red Team questions are available from the Red Team scenario.</p>
+      </div>`;
+    return;
+  }
+
   if (!window.CTF || typeof CTF.renderBoard !== "function") {
     board.innerHTML = '<div class="ctf-empty"><p>CTF board is not available.</p></div>';
     return;

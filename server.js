@@ -44,7 +44,18 @@ const legacyDataCenterChallengeIds = new Set([
   "data_center_room_004",
   "data_center_room_005",
   "data_center_room_006",
-  "data_center_room_007"
+  "data_center_room_007",
+  "data_center_hvac_001",
+  "data_center_hvac_002",
+  "data_center_hvac_003",
+  "data_center_hvac_004",
+  "data_center_hvac_005",
+  "data_center_hvac_006",
+  "data_center_hvac_007",
+  "data_center_hvac_008",
+  "data_center_hvac_009",
+  "data_center_hvac_010",
+  "data_center_hvac_011"
 ]);
 const legacyWaterTreatmentChallengeIds = new Set([
   "water-treatment_001",
@@ -1200,85 +1211,103 @@ seedChallenges.industry = [
 
 seedChallenges["data-center"] = [
   {
-    id: "data_center_hvac_001",
+    id: "data_center_red_001",
     category: "data-center",
-    title: "Task 1.1 - Confirm Modbus Port",
-    description: "Start the Data Center HVAC room. Before interacting with the PLC, confirm the exposed Modbus TCP attack surface. Submit the standard TCP port used by the service.",
+    title: "Task 1 - Reconnaissance: Modbus Port",
+    description: "What port is the Modbus service running on?",
     points: 50,
-    flag: "FLAG{data_center_modbus_tcp_502}",
-    hint: "Run the approved lab scan against the Data Center PLC. Modbus TCP uses a well-known assigned port."
+    flag: "502",
+    hint: "Run the approved Nmap scan against the PLC."
   },
   {
-    id: "data_center_hvac_002",
+    id: "data_center_red_002",
     category: "data-center",
-    title: "Task 1.2 - Identify The Protocol",
-    description: "Name the industrial protocol exposed on the Data Center HVAC PLC. This protocol lets clients read and write register values.",
+    title: "Task 1 - Reconnaissance: Service Name",
+    description: "What is the service name shown by Nmap on that port?",
     points: 100,
-    flag: "FLAG{data_center_protocol_modbus}",
-    hint: "The Data Center Red Team page names the protocol in the title and badges."
+    flag: "mbap",
+    hint: "Look at the SERVICE column in the Nmap output for TCP/502."
   },
   {
-    id: "data_center_hvac_003",
+    id: "data_center_red_003",
     category: "data-center",
-    title: "Task 2.1 - Coolant Register Mapping",
-    description: "Read register values while a teammate toggles HVAC controls from the dashboard. Identify the data_address that controls the coolant.",
+    title: "Task 1 - Reconnaissance: PLC MAC Address",
+    description: "What is the MAC address of the PLC?",
     points: 100,
-    flag: "FLAG{data_center_coolant_register_0}",
-    hint: "Compare register values while the coolant is changed from the dashboard."
+    flag: "8C:F3:19:01:34:AD",
+    hint: "Use network discovery output and check the MAC address line."
   },
   {
-    id: "data_center_hvac_004",
+    id: "data_center_red_004",
     category: "data-center",
-    title: "Task 2.2 - Ventilation Register Mapping",
-    description: "Continue register enumeration and identify the data_address that controls the ventilation fan.",
+    title: "Task 1 - Reconnaissance: PLC Manufacturer",
+    description: "Which company manufactured this PLC?",
     points: 150,
-    flag: "FLAG{data_center_ventilation_register_1}",
-    hint: "The HVAC room has two key registers: coolant and ventilation."
+    flag: "Siemens",
+    hint: "The vendor can be inferred from the MAC/vendor output."
   },
   {
-    id: "data_center_hvac_005",
+    id: "data_center_red_005",
     category: "data-center",
-    title: "Task 3.1 - Coolant ON Value",
-    description: "During exploitation, captured register values reveal the safe coolant ON state. Submit the value that turns coolant ON.",
+    title: "Task 2 - Register Enumeration: Default Action",
+    description: "What is the default action of the Metasploit Modbus module?",
     points: 200,
-    flag: "FLAG{data_center_coolant_on_111}",
-    hint: "The restore-safe-state command writes this value after testing."
+    flag: "READ_HOLDING_REGISTERS",
+    hint: "Inspect the module options after loading auxiliary/scanner/scada/modbusclient."
   },
   {
-    id: "data_center_hvac_006",
+    id: "data_center_red_006",
     category: "data-center",
-    title: "Task 3.2 - Coolant OFF Value",
-    description: "Identify the lab value that turns the HVAC coolant OFF and can make the Data Center heat up if left unrestored.",
+    title: "Task 2 - Register Enumeration: Supported Actions",
+    description: "How many total actions does the module support?",
     points: 200,
-    flag: "FLAG{data_center_coolant_off_333}",
-    hint: "The controlled write_register test uses this value for coolant OFF."
+    flag: "9",
+    hint: "Check the ACTION option list in the Metasploit module."
   },
   {
-    id: "data_center_hvac_007",
+    id: "data_center_red_007",
     category: "data-center",
-    title: "Task 3.3 - HVAC Dashboard Flag",
-    description: "After the controlled write test, read the flag shown by the HVAC dashboard or instructor validation panel.",
+    title: "Task 2 - Register Enumeration: Address 1 Value",
+    description: "What value was returned when reading data_address 1?",
     points: 250,
-    flag: "FLAG{modbus_unauthenticated_write}",
-    hint: "The flag appears after a successful authorized Modbus write in the Data Center HVAC drill."
+    flag: "0",
+    hint: "Read data_address 1 and record the returned value."
   },
   {
-    id: "data_center_hvac_008",
+    id: "data_center_red_008",
     category: "data-center",
-    title: "Task 4.1 - Missing Security Control",
-    description: "Identify the Modbus security control missing from the PLC path that allowed unauthenticated reads and writes.",
+    title: "Task 2 - Register Enumeration: Coolant Address",
+    description: "What data address controls the coolant?",
     points: 200,
-    flag: "FLAG{data_center_missing_authentication}",
-    hint: "The room brief says the PLC is directly reachable with no authentication."
+    flag: "0",
+    hint: "Compare register changes while the coolant is controlled from the dashboard."
   },
   {
-    id: "data_center_hvac_009",
+    id: "data_center_red_009",
     category: "data-center",
-    title: "Task 4.2 - Network Protection",
-    description: "Name the network security control that would stop OT devices from being directly reachable from the corporate or student network.",
+    title: "Task 3 - Exploitation: Coolant OFF",
+    description: "What value turns the coolant OFF?",
     points: 250,
-    flag: "FLAG{data_center_network_segmentation}",
-    hint: "Accepted defensive designs usually include segmentation, firewall rules, VLAN isolation, or an OT DMZ."
+    flag: "333",
+    hint: "Use the captured value from the write_register test."
+  },
+  {
+    id: "data_center_red_010",
+    category: "data-center",
+    title: "Task 3 - Exploitation: Coolant ON",
+    description: "What value turns the coolant ON (safe state)?",
+    points: 250,
+    flag: "111",
+    hint: "This is the value used to restore the safe state."
+  },
+  {
+    id: "data_center_red_011",
+    category: "data-center",
+    title: "Task 3 - Exploitation: Write Confirmation",
+    description: "What message confirms a successful register write?",
+    points: 300,
+    flag: "Value 333 successfully written at registry address 0",
+    hint: "Copy the success message shown after the register write."
   }
 ];
 
@@ -1626,7 +1655,7 @@ async function handleApi(req, res, url) {
     if (db.solves.some((item) => item.studentId === studentId && item.challengeId === challengeId)) {
       return sendJson(res, 200, { ok: true, already: true, msg: "Already solved!" });
     }
-    const correct = answer === ch.flag;
+    const correct = answer.toLowerCase() === String(ch.flag || "").toLowerCase();
     let awarded = 0;
     if (correct) {
       const hint = db.hints.find((item) => item.studentId === studentId && item.challengeId === challengeId);
