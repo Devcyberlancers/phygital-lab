@@ -68,7 +68,14 @@ const legacyWaterTreatmentChallengeIds = new Set([
   "water_treatment_room_005",
   "water_treatment_room_006",
   "water_treatment_room_007",
-  "water_treatment_room_008"
+  "water_treatment_room_008",
+  "water_treatment_red_015",
+  "water_treatment_red_016",
+  "water_treatment_red_017",
+  "water_treatment_red_018",
+  "water_treatment_red_019",
+  "water_treatment_red_020",
+  "water_treatment_red_021"
 ]);
 const legacyAirportChallengeIds = new Set([
   "airport_001",
@@ -1445,69 +1452,6 @@ seedChallenges["water-treatment"] = [
     points: 200,
     flag: "CRC",
     hint: "The final bytes validate the Modbus RTU frame."
-  },
-  {
-    id: "water_treatment_red_015",
-    category: "water-treatment",
-    title: "Task 3 - Exploitation: Dashboard Flag",
-    description: "Submit the flag displayed on the dashboard after the filtration motor stops.",
-    points: 300,
-    flag: "FLAG{water_treatment_filtration_stopped}",
-    hint: "Read the flag from the Water Treatment dashboard after the authorized lab impact."
-  },
-  {
-    id: "water_treatment_red_016",
-    category: "water-treatment",
-    title: "Task 4 - Blue Team: Network Control",
-    description: "What network security control would prevent the Moxa from being directly reachable?",
-    points: 200,
-    flag: "network segmentation",
-    hint: "Think about what separates corporate and OT networks."
-  },
-  {
-    id: "water_treatment_red_017",
-    category: "water-treatment",
-    title: "Task 4 - Blue Team: Modbus Security Extension",
-    description: "What is the name of the Modbus security extension that adds authentication?",
-    points: 200,
-    flag: "Modbus Security",
-    hint: "It is the official security extension name for Modbus."
-  },
-  {
-    id: "water_treatment_red_018",
-    category: "water-treatment",
-    title: "Task 4 - Blue Team: ICS Standard",
-    description: "Which ICS security standard recommends zones and conduits for OT protection?",
-    points: 200,
-    flag: "IEC 62443",
-    hint: "This standard is commonly used for industrial automation and control system security."
-  },
-  {
-    id: "water_treatment_red_019",
-    category: "water-treatment",
-    title: "Task 4 - Blue Team: MITRE ATT&CK ICS Technique",
-    description: "What MITRE ATT&CK ICS technique covers writing to a control register?",
-    points: 250,
-    flag: "T0836",
-    hint: "Look for the ATT&CK for ICS technique related to modify parameter."
-  },
-  {
-    id: "water_treatment_red_020",
-    category: "water-treatment",
-    title: "Task 4 - Blue Team: Suricata Keyword",
-    description: "What Suricata rule keyword would detect traffic on port 4001?",
-    points: 200,
-    flag: "port 4001",
-    hint: "The answer should include the monitored port."
-  },
-  {
-    id: "water_treatment_red_021",
-    category: "water-treatment",
-    title: "Task 4 - Blue Team: Cortex Analyzer",
-    description: "Which Cortex analyzer would you run on the attacker IP in TheHive?",
-    points: 200,
-    flag: "AbuseIPDB",
-    hint: "Use an IP reputation analyzer."
   }
 ];
 

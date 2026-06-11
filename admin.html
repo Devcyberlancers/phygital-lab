@@ -290,8 +290,8 @@
               <div class="stats"><span class="pill">${q.points} pts</span><span class="pill">${escapeHtml(q.id)}</span></div>
             </div>
             <div class="actions">
-              <button class="btn ok" onclick="openEdit('${q.id}','${id}')">Edit</button>
-              <button class="btn danger" onclick="deleteQuestion('${q.id}','${id}')">Delete</button>
+              <button class="btn ok" type="button" onclick="openEdit('${q.id}','${id}')">Edit</button>
+              <button class="btn danger" type="button" onclick="deleteQuestion('${q.id}','${id}')">Delete</button>
             </div>
           </div>
           <p>${q.description}</p>
@@ -361,15 +361,23 @@
         flag: document.getElementById("edit-flag").value.trim(),
         hint: document.getElementById("edit-hint").value.trim()
       };
-      await api(`/api/admin/challenges/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(payload) });
-      closeModal();
-      await reloadDomain(category);
+      try {
+        await api(`/api/admin/challenges/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(payload) });
+        closeModal();
+        await reloadDomain(category);
+      } catch (e) {
+        alert(e.message || "Could not save this challenge.");
+      }
     }
 
     async function deleteQuestion(id, category) {
       if (!confirm("Delete this challenge?")) return;
-      await api(`/api/admin/challenges/${encodeURIComponent(id)}`, { method: "DELETE" });
-      await reloadDomain(category);
+      try {
+        await api(`/api/admin/challenges/${encodeURIComponent(id)}`, { method: "DELETE" });
+        await reloadDomain(category);
+      } catch (e) {
+        alert(e.message || "Could not delete this challenge. Please login as admin again.");
+      }
     }
 
     async function renderStudents() {
