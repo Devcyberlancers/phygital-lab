@@ -458,7 +458,7 @@ window.CTF = (function () {
       <div class="ctf-dc-target">
         <div>
           <span>Target IP</span>
-          <strong>-- Start Room --</strong>
+          <strong>172.16.17.126</strong>
         </div>
         <div>
           <span>Protocol</span>
