@@ -38,12 +38,18 @@
     .pill { border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:999px; padding:.45rem .7rem; color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; }
     .student-grid { display:grid; gap:.9rem; }
     .student-card { border:1px solid var(--line); background:rgba(255,255,255,.035); border-radius:8px; padding:1rem; overflow-wrap:anywhere; }
+    .student-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; }
+    .student-select { display:flex; align-items:center; gap:.45rem; color:var(--muted); font-size:.82rem; font-weight:800; }
+    .student-select input { width:18px; height:18px; accent-color:var(--cyan); }
     .student-card h3 { font-size:1.15rem; margin-bottom:.25rem; }
     .student-domain-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:.45rem; margin-top:.8rem; }
     .student-domain-row { display:flex; align-items:center; justify-content:space-between; gap:.6rem; border:1px solid var(--line); border-radius:6px; background:rgba(255,255,255,.035); padding:.55rem .65rem; }
     .student-domain-row strong { font-size:.86rem; }
     .student-domain-row span { color:var(--muted); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.78rem; white-space:nowrap; }
     .hidden { display:none!important; }
+    .danger-zone { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; margin:.9rem 0 1rem; }
+    .danger-zone .btn { min-height:38px; }
+    .action-msg { color:var(--amber); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.8rem; min-height:1.2rem; }
     @media (max-width:760px) { header { flex-direction:column; align-items:flex-start; } .brand img { width:220px; max-width:76vw; } .topline { align-items:flex-start; flex-direction:column; } }
   </style>
 </head>
@@ -78,6 +84,13 @@
           <h1>Student Scores</h1>
         </div>
         <button class="btn" type="button" onclick="loadStudents()">Refresh</button>
+      </div>
+      <div class="danger-zone">
+        <button class="btn" type="button" onclick="toggleSelectAllStudents(true)">Select All</button>
+        <button class="btn" type="button" onclick="toggleSelectAllStudents(false)">Clear Selection</button>
+        <button class="btn danger" type="button" onclick="deleteSelectedStudents()">Delete Selected</button>
+        <button class="btn danger" type="button" onclick="deleteAllStudents()">Delete All Student Data</button>
+        <span class="action-msg" id="student-action-msg"></span>
       </div>
       <div class="stats" id="students-stats"></div>
       <div class="student-grid" id="students-list"></div>
@@ -151,8 +164,16 @@
     function renderStudent(st) {
       return `
         <article class="student-card">
-          <h3>${escapeHtml(st.name)}</h3>
-          <p>${escapeHtml(st.email)}</p>
+          <div class="student-card-head">
+            <div>
+              <h3>${escapeHtml(st.name)}</h3>
+              <p>${escapeHtml(st.email)}</p>
+            </div>
+            <label class="student-select">
+              <input type="checkbox" class="student-delete-check" value="${st.id}">
+              Select
+            </label>
+          </div>
           <div class="score-row">
             <span class="pill">${st.totalScore} total points</span>
             <span class="pill">${st.totalSolved} solved</span>
@@ -167,6 +188,40 @@
             }).join("")}
           </div>
         </article>`;
+    }
+
+    function selectedStudentIds() {
+      return [...document.querySelectorAll(".student-delete-check:checked")].map((input) => Number(input.value)).filter(Boolean);
+    }
+
+    function toggleSelectAllStudents(checked) {
+      document.querySelectorAll(".student-delete-check").forEach((input) => { input.checked = checked; });
+      document.getElementById("student-action-msg").textContent = checked ? `${selectedStudentIds().length} selected` : "";
+    }
+
+    async function deleteSelectedStudents() {
+      const ids = selectedStudentIds();
+      if (!ids.length) {
+        document.getElementById("student-action-msg").textContent = "Select at least one student.";
+        return;
+      }
+      if (!confirm(`Delete ${ids.length} selected student(s) and all their scores?`)) return;
+      const result = await api("/api/admin/students", {
+        method: "DELETE",
+        body: JSON.stringify({ ids })
+      });
+      document.getElementById("student-action-msg").textContent = `${result.deleted} student(s) deleted.`;
+      await loadStudents();
+    }
+
+    async function deleteAllStudents() {
+      if (!confirm("Delete ALL students, scores, attempts, solves, and hints? This cannot be undone.")) return;
+      const result = await api("/api/admin/students", {
+        method: "DELETE",
+        body: JSON.stringify({ all: true })
+      });
+      document.getElementById("student-action-msg").textContent = `${result.deleted} student(s) deleted.`;
+      await loadStudents();
     }
 
     function formatDate(value) {

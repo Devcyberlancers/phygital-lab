@@ -3,6 +3,7 @@ window.CTF = (function () {
 
   const STUDENT_KEY = 'cdac_ctf_student';
   const SHUFFLE_KEY = 'cdac_ctf_shuffle_seed';
+  const ROLE_KEY = 'phygital_role';
   const LABELS = {
     "airport": "Airport",
     "water-treatment": "Water Treatment",
@@ -29,6 +30,8 @@ window.CTF = (function () {
 
   function saveStudent(student) {
     localStorage.setItem(STUDENT_KEY, JSON.stringify(student));
+    localStorage.removeItem('phygital_admin_token');
+    localStorage.setItem(ROLE_KEY, 'student');
   }
 
   async function api(path, options) {
@@ -205,6 +208,14 @@ window.CTF = (function () {
     return api('/api/leaderboard?' + qs.toString());
   }
 
+  async function getOverallLeaderboard() {
+    const student = currentStudent();
+    const qs = new URLSearchParams();
+    if (student && student.id) qs.set('studentId', student.id);
+    const suffix = qs.toString() ? '?' + qs.toString() : '';
+    return api('/api/leaderboard-overall' + suffix);
+  }
+
   async function renderBoard(category, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -231,8 +242,7 @@ window.CTF = (function () {
           <div class="ctf-empty">
             <span class="ctf-empty-icon">!</span>
             <p>No challenges configured yet.<br>
-               An administrator needs to add challenges via the
-               <a href="admin.html" target="_blank">Admin Panel</a>.</p>
+               Please contact the lab administrator to add this room.</p>
           </div>`;
         return;
       }
@@ -262,6 +272,57 @@ window.CTF = (function () {
         </div>`;
 
       bindBoard(container, category, containerId);
+    } catch (e) {
+      container.innerHTML = `<div class="ctf-empty"><p>${escapeHtml(e.message)}</p></div>`;
+    }
+  }
+
+  async function renderLeaderboardOnly(category, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '<div class="ctf-loading">Loading leaderboard...</div>';
+    try {
+      const board = await getLeaderboard(category);
+      const top = board.top || [];
+      container.innerHTML = `
+        <div class="ctf-leaderboard-only">
+          <div class="ctf-lb-only-head">
+            <span>${escapeHtml(labelFor(category))} Room Leaderboard</span>
+            <strong>Top ${top.length || 0}</strong>
+          </div>
+          <div class="ctf-lb-rows">
+            ${top.length
+              ? top.map(renderRankRow).join('')
+              : '<div class="ctf-lb-empty">No student has solved a task in this room yet.</div>'}
+          </div>
+        </div>`;
+    } catch (e) {
+      container.innerHTML = `<div class="ctf-empty"><p>${escapeHtml(e.message)}</p></div>`;
+    }
+  }
+
+  async function renderOverallLeaderboard(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '<div class="ctf-loading">Loading overall leaderboard...</div>';
+    try {
+      const board = await getOverallLeaderboard();
+      const top = board.top || [];
+      const current = board.current;
+      const showCurrent = current && !top.some(row => row.studentId === current.studentId);
+      container.innerHTML = `
+        <div class="ctf-leaderboard-only">
+          <div class="ctf-lb-only-head">
+            <span>Overall Platform Leaderboard</span>
+            ${current ? `<strong>Your rank: #${current.rank}</strong>` : '<strong>Top students</strong>'}
+          </div>
+          <div class="ctf-lb-rows">
+            ${top.length
+              ? top.map(renderOverallRankRow).join('')
+              : '<div class="ctf-lb-empty">No student has solved a task yet.</div>'}
+            ${showCurrent ? '<div class="ctf-lb-gap"></div>' + renderOverallRankRow(current, true) : ''}
+          </div>
+        </div>`;
     } catch (e) {
       container.innerHTML = `<div class="ctf-empty"><p>${escapeHtml(e.message)}</p></div>`;
     }
@@ -335,7 +396,7 @@ window.CTF = (function () {
           ${current ? `<strong>Your rank: #${current.rank}</strong>` : '<strong>No rank yet</strong>'}
         </div>
         <div class="ctf-lb-rows">
-          ${top.length ? top.map(renderRankRow).join('') : '<div class="ctf-lb-empty">No scores yet.</div>'}
+          ${top.length ? top.map(renderRankRow).join('') : '<div class="ctf-lb-empty">No one has solved a task in this room yet.</div>'}
           ${showCurrent ? '<div class="ctf-lb-gap"></div>' + renderRankRow(current, true) : ''}
         </div>
       </div>`;
@@ -348,6 +409,55 @@ window.CTF = (function () {
         <span class="ctf-lb-name">${escapeHtml(row.name)}</span>
         <span class="ctf-lb-score">${row.score} pts</span>
       </div>`;
+  }
+
+  function renderOverallRankRow(row, current) {
+    return `
+      <div class="ctf-lb-row ${current ? 'current' : ''}">
+        <span class="ctf-lb-rank">#${row.rank}</span>
+        <span class="ctf-lb-name">${escapeHtml(row.name)} <small>${row.solvedCount} solved / ${row.roomCount} rooms</small></span>
+        <span class="ctf-lb-score">${row.score} pts</span>
+      </div>`;
+  }
+
+  function openOverallLeaderboardModal() {
+    let overlay = document.getElementById('ctf-overall-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'ctf-overall-overlay';
+      overlay.className = 'phygital-ctf-modal';
+      overlay.innerHTML = `
+        <div class="ctf-modal">
+          <div class="ctf-modal-head">
+            <div class="ctf-modal-title-group">
+              <div class="ctf-modal-icon" aria-hidden="true">TOP</div>
+              <div>
+                <div class="ctf-modal-title">Overall Leaderboard</div>
+                <div class="ctf-modal-subtitle">Combined score across every model room</div>
+              </div>
+            </div>
+            <button class="ctf-modal-close" type="button" aria-label="Close overall leaderboard">x</button>
+          </div>
+          <div class="ctf-modal-body">
+            <div id="ctf-overall-board"></div>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      overlay.querySelector('.ctf-modal-close').addEventListener('click', closeOverallLeaderboardModal);
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) closeOverallLeaderboardModal();
+      });
+    }
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    renderOverallLeaderboard('ctf-overall-board');
+  }
+
+  function closeOverallLeaderboardModal() {
+    const overlay = document.getElementById('ctf-overall-overlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   function renderGuidedRoomHeader(category, challenges, solvedCount, total) {
@@ -399,8 +509,8 @@ window.CTF = (function () {
       },
       'data-center': {
         title: 'Data Center HVAC Modbus Intrusion',
-        description: 'Investigate a Data Center HVAC PLC where exposed Modbus TCP can be used to read and write coolant or ventilation registers. Complete discovery, register mapping, safe recovery, and Blue Team hardening tasks.',
-        tags: ['Modbus TCP', 'PLC', 'HVAC', 'Red + Blue Team']
+        description: 'Work through a Data Center HVAC room where an exposed Modbus TCP PLC allows register reads and writes against coolant and ventilation control. Confirm the attack surface, map registers, perform a controlled write, restore safe cooling, and document the Blue Team controls.',
+        tags: ['Easy', 'ICS/SCADA', 'Modbus TCP', 'HVAC']
       },
       'water-treatment': {
         title: 'Water Treatment Moxa Modbus RTU Intrusion',
@@ -507,6 +617,9 @@ window.CTF = (function () {
 
   return {
     renderBoard,
+    renderLeaderboardOnly,
+    renderOverallLeaderboard,
+    openOverallLeaderboardModal,
     getData,
     setData,
     getProgress,

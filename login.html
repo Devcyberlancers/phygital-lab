@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <title>Login - Phygital Lab</title>
+</head>
+<body class="login-page">
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <main class="login-shell">
+    <a class="login-brand" href="/index.html">
+      <img src="/static/images/cyber-lancers-logo.png" alt="Cyber Lancers logo">
+    </a>
+
+    <section class="login-grid">
+      <article class="content-card login-card">
+        <p class="section-kicker">Student Sign In</p>
+        <h1>Join The CTF</h1>
+        <p>New and returning students can sign in with name and email. Scores continue from the same email.</p>
+        <label for="student-name">Name</label>
+        <input id="student-name" type="text" autocomplete="name" placeholder="Student name">
+        <label for="student-email">Email</label>
+        <input id="student-email" type="email" autocomplete="email" placeholder="name@example.com">
+        <label for="student-email-confirm">Confirm Email</label>
+        <input id="student-email-confirm" type="email" autocomplete="email" placeholder="Re-enter email">
+        <button class="primary-action" id="student-login-btn" type="button" data-icon="ctf">Sign In As Student</button>
+        <div class="login-message" id="student-login-msg"></div>
+      </article>
+
+      <article class="content-card login-card">
+        <p class="section-kicker">Admin Login</p>
+        <h2>Challenge Management</h2>
+        <p>Admins can manage CTF questions, view student scores, reset progress, and restore defaults.</p>
+        <label for="admin-pass">Admin Password</label>
+        <input id="admin-pass" type="password" autocomplete="current-password" placeholder="Enter admin password">
+        <button class="secondary-action" id="admin-login-btn" type="button">Login As Admin</button>
+        <div class="login-message" id="admin-login-msg"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="/static/js/ctf.js"></script>
+  <script>
+    const ADMIN_TOKEN_KEY = "phygital_admin_token";
+    const ROLE_KEY = "phygital_role";
+    const STUDENT_KEY = "cdac_ctf_student";
+
+    async function postJson(path, payload) {
+      const res = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.ok === false) throw new Error(data.msg || "Login failed.");
+      return data;
+    }
+
+    async function studentLogin() {
+      const msg = document.getElementById("student-login-msg");
+      const btn = document.getElementById("student-login-btn");
+      msg.textContent = "";
+      btn.disabled = true;
+      try {
+        const email = document.getElementById("student-email").value.trim().toLowerCase();
+        const confirmEmail = document.getElementById("student-email-confirm").value.trim().toLowerCase();
+        if (!email || email !== confirmEmail) {
+          throw new Error("Email confirmation does not match.");
+        }
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        localStorage.setItem(ROLE_KEY, "student");
+        await CTF.registerStudent(
+          document.getElementById("student-name").value.trim(),
+          email
+        );
+        localStorage.setItem(ROLE_KEY, "student");
+        msg.textContent = "Student sign-in successful. Opening home page...";
+        setTimeout(() => { window.location.href = "/student.html"; }, 450);
+      } catch (error) {
+        msg.textContent = error.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function adminLogin() {
+      const msg = document.getElementById("admin-login-msg");
+      const btn = document.getElementById("admin-login-btn");
+      msg.textContent = "";
+      btn.disabled = true;
+      try {
+        const data = await postJson("/api/admin/login", {
+          password: document.getElementById("admin-pass").value
+        });
+        localStorage.removeItem(STUDENT_KEY);
+        localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        localStorage.setItem(ROLE_KEY, "admin");
+        msg.textContent = "Admin login successful. Opening home page...";
+        setTimeout(() => { window.location.href = "/index.html"; }, 450);
+      } catch (error) {
+        msg.textContent = error.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById("student-login-btn").addEventListener("click", studentLogin);
+    document.getElementById("admin-login-btn").addEventListener("click", adminLogin);
+    document.getElementById("student-email-confirm").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") studentLogin();
+    });
+    document.getElementById("admin-pass").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") adminLogin();
+    });
+  </script>
+</body>
+</html>

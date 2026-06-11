@@ -201,7 +201,68 @@ const domains = [
 
 const pages = document.querySelectorAll(".page");
 const navLinks = document.getElementById("nav-links");
+const ADMIN_TOKEN_KEY = "phygital_admin_token";
+const ROLE_KEY = "phygital_role";
+const STUDENT_KEY = "cdac_ctf_student";
 let currentDomain = domains[0];
+
+function hasSiteAccess() {
+  const role = localStorage.getItem(ROLE_KEY) || "";
+  const hasAdminToken = Boolean(localStorage.getItem(ADMIN_TOKEN_KEY));
+  const hasStudent = Boolean(localStorage.getItem(STUDENT_KEY));
+  return (role === "admin" && hasAdminToken) || (role === "student" && hasStudent);
+}
+
+function requireSiteAccess() {
+  const path = window.location.pathname.toLowerCase();
+  const role = localStorage.getItem(ROLE_KEY) || "";
+  const hasAdminToken = Boolean(localStorage.getItem(ADMIN_TOKEN_KEY));
+  const hasStudent = Boolean(localStorage.getItem(STUDENT_KEY));
+  if (role === "student" && hasStudent) {
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    if (!path.endsWith("/student.html")) {
+      window.location.replace("/student.html");
+      return false;
+    }
+    return true;
+  }
+  if (role === "admin" && hasAdminToken) {
+    if (path.endsWith("/student.html")) {
+      window.location.replace("/index.html");
+      return false;
+    }
+    return true;
+  }
+  window.location.replace("/login.html");
+  return false;
+}
+
+function applyAccessState() {
+  const role = localStorage.getItem(ROLE_KEY) || "";
+  if (role === "student") localStorage.removeItem(ADMIN_TOKEN_KEY);
+  const hasAdminToken = Boolean(localStorage.getItem(ADMIN_TOKEN_KEY));
+  const hasStudent = Boolean(localStorage.getItem(STUDENT_KEY));
+  const isAdmin = role === "admin" && hasAdminToken;
+  const isStudent = role === "student" && hasStudent;
+  const signedIn = hasSiteAccess();
+  document.querySelectorAll("[data-admin-link]").forEach((link) => {
+    link.hidden = !isAdmin;
+  });
+  document.querySelectorAll("[data-wiki-link]").forEach((link) => {
+    link.hidden = isStudent;
+  });
+  document.querySelectorAll("[data-auth-action]").forEach((link) => {
+    link.textContent = signedIn ? "Logout" : "Login";
+    link.href = signedIn ? "#" : "/login.html";
+    link.onclick = signedIn ? (event) => {
+      event.preventDefault();
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      localStorage.removeItem(STUDENT_KEY);
+      localStorage.removeItem(ROLE_KEY);
+      window.location.href = "/login.html";
+    } : null;
+  });
+}
 
 function showPage(pageName) {
   pages.forEach((page) => page.classList.toggle("active", page.id === `page-${pageName}`));
@@ -519,11 +580,17 @@ function observeReveals(root = document) {
 function openCtfBoard(domainId) {
   const domain = domains.find((item) => item.id === domainId) || domains[0];
   const overlay = document.getElementById("ctf-modal-overlay");
-  document.getElementById("ctf-modal-title").textContent = `${domain.title} CTF Challenges`;
-  document.getElementById("ctf-modal-subtitle").textContent = "Red Team / Blue Team training exercise";
+  const role = localStorage.getItem(ROLE_KEY) || "";
+  const studentMode = role === "student" || window.location.pathname.toLowerCase().endsWith("/student.html");
+  document.getElementById("ctf-modal-title").textContent = studentMode ? `${domain.title} Leaderboard` : `${domain.title} CTF Challenges`;
+  document.getElementById("ctf-modal-subtitle").textContent = studentMode ? "Top students in this model room" : "Red Team / Blue Team training exercise";
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
-  CTF.renderBoard(domain.id, "ctf-domain-board");
+  if (studentMode && CTF.renderLeaderboardOnly) {
+    CTF.renderLeaderboardOnly(domain.id, "ctf-domain-board");
+  } else {
+    CTF.renderBoard(domain.id, "ctf-domain-board");
+  }
 }
 
 function closeCtfBoard() {
@@ -645,6 +712,8 @@ function drawHomeMatrix() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!requireSiteAccess()) return;
+  applyAccessState();
   renderDomains();
   renderCyberScope();
   drawCanvas();

@@ -12,6 +12,13 @@ const domainTitles = {
   "traffic-lights": "Traffic Lights"
 };
 
+function currentRole() {
+  const role = localStorage.getItem("phygital_role") || "";
+  const isAdmin = role === "admin" && Boolean(localStorage.getItem("phygital_admin_token"));
+  const isStudent = role === "student" && Boolean(localStorage.getItem("cdac_ctf_student"));
+  return { role, isAdmin, isStudent };
+}
+
 const industryDashboardUrl = "http://172.16.17.204:1880/ui/#!/4?socketid=zxL7Ex3NoOUjbRHMAAAB";
 const dataCenterDashboardUrl = "http://172.16.17.204:1880/ui/#!/7?socketid=vmNCQThlV3IuIaD_AAAV";
 const waterTreatmentDashboardUrl = "http://172.16.17.204:1880/ui/#!/1?socketid=F6KardZPucXn7VJVAAAf";
@@ -1776,8 +1783,18 @@ function renderScenario() {
   const mode = params.get("mode") || "red";
   const showPythonCode = false;
   const scenario = getScenario(domain, mode);
+  const { isStudent } = currentRole();
 
   document.title = `${scenario.title} - Phygital Lab`;
+  if (isStudent) {
+    document.querySelector(".scenario-hero")?.remove();
+    document.querySelector(".scenario-grid")?.remove();
+    document.getElementById("scenario-code-section")?.remove();
+    renderEmbeddedCtf(domain, mode);
+    applyScenarioAccessState();
+    return;
+  }
+
   document.getElementById("scenario-kicker").textContent = scenario.kicker;
   document.getElementById("scenario-title").textContent = scenario.title;
   document.getElementById("scenario-summary").textContent = scenario.summary;
@@ -1790,9 +1807,76 @@ function renderScenario() {
   document.getElementById("scenario-links").innerHTML = scenario.links.map((link) => (
     `<button class="scenario-dashboard-btn" type="button" data-href="${link.href}">${link.label}</button>`
   )).join("");
+  document.getElementById("scenario-code-section").hidden = true;
+  renderEmbeddedCtf(domain, mode);
+  applyScenarioAccessState();
+}
+
+function renderEmbeddedCtf(domain, mode) {
+  const section = document.getElementById("scenario-ctf-section");
+  const board = document.getElementById("scenario-ctf-board");
+  if (!section || !board) return;
+  const { isStudent } = currentRole();
+
+  const showRoom = isStudent;
+  section.hidden = !showRoom;
+  if (!showRoom) {
+    board.innerHTML = "";
+    return;
+  }
+
+  if (!window.CTF || typeof CTF.renderBoard !== "function") {
+    board.innerHTML = '<div class="ctf-empty"><p>CTF board is not available.</p></div>';
+    return;
+  }
+  const title = document.getElementById("scenario-ctf-title");
+  const link = document.getElementById("scenario-ctf-link");
+  if (title) title.textContent = `${domainTitles[domain] || "Model"} Tasks And Leaderboard`;
+  if (link) {
+    link.textContent = "Open Overall Leaderboard";
+    link.href = "#overall-leaderboard";
+    link.onclick = (event) => {
+      event.preventDefault();
+      if (window.CTF && typeof CTF.openOverallLeaderboardModal === "function") {
+        CTF.openOverallLeaderboardModal();
+      }
+    };
+  }
+  CTF.renderBoard(domain, "scenario-ctf-board");
+}
+
+function applyScenarioAccessState() {
+  const { role, isAdmin, isStudent } = currentRole();
+  if (role === "student") localStorage.removeItem("phygital_admin_token");
+  const signedIn = isAdmin || isStudent;
+  document.querySelectorAll("[data-admin-link]").forEach((link) => {
+    link.hidden = !isAdmin;
+  });
+  document.querySelectorAll("[data-auth-action]").forEach((link) => {
+    link.textContent = signedIn ? "Logout" : "Login";
+    link.href = signedIn ? "#" : "/login.html";
+    link.onclick = signedIn ? (event) => {
+      event.preventDefault();
+      localStorage.removeItem("phygital_admin_token");
+      localStorage.removeItem("cdac_ctf_student");
+      localStorage.removeItem("phygital_role");
+      window.location.href = "/login.html";
+    } : null;
+  });
+}
+
+function hasScenarioAccess() {
+  const role = localStorage.getItem("phygital_role") || "";
+  const hasAdminToken = Boolean(localStorage.getItem("phygital_admin_token"));
+  const hasStudent = Boolean(localStorage.getItem("cdac_ctf_student"));
+  return (role === "admin" && hasAdminToken) || (role === "student" && hasStudent);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!hasScenarioAccess()) {
+    window.location.replace("/login.html");
+    return;
+  }
   renderScenario();
   document.querySelectorAll("[data-code-target]").forEach((button) => {
     button.addEventListener("click", () => {

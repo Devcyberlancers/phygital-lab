@@ -17,6 +17,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
 html { scroll-behavior: auto; }
 body {
   min-height: 100vh;
@@ -714,8 +715,20 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
   font-size: 1.1rem;
   line-height: 1.7;
 }
-.scenario-code-section {
+.scenario-code-section,
+.scenario-ctf-section {
   margin-top: 1rem;
+}
+.scenario-ctf-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.scenario-ctf-head h2 {
+  margin-top: 0.35rem;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
 }
 .scenario-code-head {
   display: flex;
@@ -978,6 +991,87 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
   display: block;
 }
 
+.login-page {
+  min-height: 100vh;
+}
+.login-shell {
+  width: min(1080px, calc(100% - 2rem));
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  gap: 1.2rem;
+  margin: 0 auto;
+  padding: 3rem 0;
+}
+.login-brand {
+  width: fit-content;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.94);
+  padding: 0.45rem 0.75rem;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.2);
+}
+.login-brand img {
+  display: block;
+  width: 250px;
+  max-width: 70vw;
+  height: 48px;
+  object-fit: contain;
+}
+.login-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  gap: 1rem;
+}
+.login-card {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+.login-card h1,
+.login-card h2 {
+  margin: 0;
+  line-height: 1;
+}
+.login-card h1 {
+  font-size: clamp(2.35rem, 6vw, 4.6rem);
+}
+.login-card h2 {
+  font-size: clamp(1.85rem, 4vw, 3rem);
+}
+.login-card p {
+  max-width: 620px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.login-card label {
+  color: var(--soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.login-card input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  background: rgba(2,8,14,0.58);
+  color: var(--text);
+  padding: 0.75rem 0.9rem;
+  outline: none;
+}
+.login-card input:focus {
+  border-color: rgba(77,216,255,0.52);
+  box-shadow: 0 0 0 3px rgba(77,216,255,0.13);
+}
+.login-message {
+  min-height: 1.3rem;
+  color: var(--amber);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+}
+
 .ctf-student-strip,
 .ctf-leaderboard,
 .ctf-scorebar,
@@ -1028,6 +1122,24 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
 .ctf-leaderboard {
   display: grid;
   gap: 0.75rem;
+}
+.ctf-leaderboard-only {
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.035);
+  padding: 1rem;
+}
+.ctf-lb-only-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  color: var(--green);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .ctf-lb-head {
   display: flex;
@@ -1310,6 +1422,13 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
   .ctf-room-card .ctf-card-head,
   .ctf-room-card .ctf-card-desc,
   .ctf-room-card .ctf-card-foot { grid-column: 1; }
+  .scenario-ctf-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {

@@ -37,7 +37,14 @@ const legacyIndustryChallengeIds = new Set([
 const legacyDataCenterChallengeIds = new Set([
   "data-center_001",
   "data-center_002",
-  "data-center_003"
+  "data-center_003",
+  "data_center_room_001",
+  "data_center_room_002",
+  "data_center_room_003",
+  "data_center_room_004",
+  "data_center_room_005",
+  "data_center_room_006",
+  "data_center_room_007"
 ]);
 const legacyWaterTreatmentChallengeIds = new Set([
   "water-treatment_001",
@@ -1193,67 +1200,85 @@ seedChallenges.industry = [
 
 seedChallenges["data-center"] = [
   {
-    id: "data_center_room_001",
+    id: "data_center_hvac_001",
     category: "data-center",
-    title: "Task 1 - HVAC Room Briefing",
-    description: "You are investigating a Data Center HVAC model where coolant and ventilation can be controlled through a Modbus TCP PLC. Open the Data Center Red Team scenario page and identify the dashboard used for observation.",
+    title: "Task 1.1 - Confirm Modbus Port",
+    description: "Start the Data Center HVAC room. Before interacting with the PLC, confirm the exposed Modbus TCP attack surface. Submit the standard TCP port used by the service.",
     points: 50,
-    flag: "FLAG{data_center_hvac_room_started}",
-    hint: "Start from Data Center > Cybersecurity > Attack Surface Training. The scenario page links the live Data Center dashboard."
-  },
-  {
-    id: "data_center_room_002",
-    category: "data-center",
-    title: "Task 2 - Modbus Port Discovery",
-    description: "Run the approved lab port scan against the Data Center PLC and identify which TCP port exposes Modbus Application Protocol.",
-    points: 100,
     flag: "FLAG{data_center_modbus_tcp_502}",
-    hint: "The scan command targets only one port on 172.16.17.126."
+    hint: "Run the approved lab scan against the Data Center PLC. Modbus TCP uses a well-known assigned port."
   },
   {
-    id: "data_center_room_003",
+    id: "data_center_hvac_002",
     category: "data-center",
-    title: "Task 3 - PLC Target Identification",
-    description: "Identify the PLC IP address used by the Data Center HVAC Modbus drill.",
+    title: "Task 1.2 - Identify The Protocol",
+    description: "Name the industrial protocol exposed on the Data Center HVAC PLC. This protocol lets clients read and write register values.",
     points: 100,
-    flag: "FLAG{data_center_plc_172_16_17_126}",
-    hint: "Look at the RHOSTS value in the Modbus client commands."
+    flag: "FLAG{data_center_protocol_modbus}",
+    hint: "The Data Center Red Team page names the protocol in the title and badges."
   },
   {
-    id: "data_center_room_004",
+    id: "data_center_hvac_003",
     category: "data-center",
-    title: "Task 4 - Register Mapping",
-    description: "The attacker discovers two important Modbus register addresses. Identify which register address controls the coolant.",
-    points: 150,
+    title: "Task 2.1 - Coolant Register Mapping",
+    description: "Read register values while a teammate toggles HVAC controls from the dashboard. Identify the data_address that controls the coolant.",
+    points: 100,
     flag: "FLAG{data_center_coolant_register_0}",
-    hint: "The scenario notes say data_address 0 controls coolant and data_address 1 controls the ventilation fan."
+    hint: "Compare register values while the coolant is changed from the dashboard."
   },
   {
-    id: "data_center_room_005",
+    id: "data_center_hvac_004",
     category: "data-center",
-    title: "Task 5 - Coolant OFF Command",
-    description: "In the lab simulation, the attacker writes a value that turns the HVAC coolant OFF and can make the Data Center heat up. Identify that value.",
-    points: 200,
-    flag: "FLAG{data_center_coolant_off_333}",
-    hint: "Check the write_register command used for coolant OFF."
+    title: "Task 2.2 - Ventilation Register Mapping",
+    description: "Continue register enumeration and identify the data_address that controls the ventilation fan.",
+    points: 150,
+    flag: "FLAG{data_center_ventilation_register_1}",
+    hint: "The HVAC room has two key registers: coolant and ventilation."
   },
   {
-    id: "data_center_room_006",
+    id: "data_center_hvac_005",
     category: "data-center",
-    title: "Task 6 - Safe Recovery Value",
-    description: "After containment, Blue Team must restore the HVAC coolant to a safe ON state. Identify the value used to turn coolant ON.",
+    title: "Task 3.1 - Coolant ON Value",
+    description: "During exploitation, captured register values reveal the safe coolant ON state. Submit the value that turns coolant ON.",
     points: 200,
     flag: "FLAG{data_center_coolant_on_111}",
-    hint: "The recovery command writes the coolant ON value."
+    hint: "The restore-safe-state command writes this value after testing."
   },
   {
-    id: "data_center_room_007",
+    id: "data_center_hvac_006",
     category: "data-center",
-    title: "Task 7 - Modbus Hardening Plan",
-    description: "Recommend the key protection that limits unauthorized Modbus writes to the PLC: restrict TCP/502 to trusted HMI/SCADA hosts, segment the PLC network, and alert on write_register operations.",
+    title: "Task 3.2 - Coolant OFF Value",
+    description: "Identify the lab value that turns the HVAC coolant OFF and can make the Data Center heat up if left unrestored.",
+    points: 200,
+    flag: "FLAG{data_center_coolant_off_333}",
+    hint: "The controlled write_register test uses this value for coolant OFF."
+  },
+  {
+    id: "data_center_hvac_007",
+    category: "data-center",
+    title: "Task 3.3 - HVAC Dashboard Flag",
+    description: "After the controlled write test, read the flag shown by the HVAC dashboard or instructor validation panel.",
     points: 250,
-    flag: "FLAG{data_center_modbus_write_protection}",
-    hint: "The Blue Team scenario lists the hardening checklist for TCP/502 and write_register monitoring."
+    flag: "FLAG{modbus_unauthenticated_write}",
+    hint: "The flag appears after a successful authorized Modbus write in the Data Center HVAC drill."
+  },
+  {
+    id: "data_center_hvac_008",
+    category: "data-center",
+    title: "Task 4.1 - Missing Security Control",
+    description: "Identify the Modbus security control missing from the PLC path that allowed unauthenticated reads and writes.",
+    points: 200,
+    flag: "FLAG{data_center_missing_authentication}",
+    hint: "The room brief says the PLC is directly reachable with no authentication."
+  },
+  {
+    id: "data_center_hvac_009",
+    category: "data-center",
+    title: "Task 4.2 - Network Protection",
+    description: "Name the network security control that would stop OT devices from being directly reachable from the corporate or student network.",
+    points: 250,
+    flag: "FLAG{data_center_network_segmentation}",
+    hint: "Accepted defensive designs usually include segmentation, firewall rules, VLAN isolation, or an OT DMZ."
   }
 ];
 
@@ -1506,7 +1531,32 @@ function leaderboard(db, category, studentId) {
   const entries = rows.map((row, index) => ({ rank: index + 1, ...row }));
   return {
     ok: true,
-    top: entries.filter((row) => row.solvedCount > 0).slice(0, 3),
+    top: entries.filter((row) => row.solvedCount > 0).slice(0, 5),
+    current: entries.find((row) => row.studentId === studentId) || null
+  };
+}
+
+function overallLeaderboard(db, studentId) {
+  const rows = db.students.map((student) => {
+    const solves = db.solves.filter((solve) => solve.studentId === student.id);
+    const categories = new Set();
+    solves.forEach((solve) => {
+      const challenge = db.challenges.find((ch) => ch.id === solve.challengeId);
+      if (challenge) categories.add(challenge.category);
+    });
+    return {
+      studentId: student.id,
+      name: student.name,
+      score: solves.reduce((sum, solve) => sum + solve.awardedPoints, 0),
+      solvedCount: solves.length,
+      roomCount: categories.size,
+      lastSolvedAt: solves.reduce((latest, solve) => latest > solve.solvedAt ? latest : solve.solvedAt, "")
+    };
+  }).sort((a, b) => b.score - a.score || b.solvedCount - a.solvedCount || a.name.localeCompare(b.name));
+  const entries = rows.map((row, index) => ({ rank: index + 1, ...row }));
+  return {
+    ok: true,
+    top: entries.filter((row) => row.solvedCount > 0).slice(0, 10),
     current: entries.find((row) => row.studentId === studentId) || null
   };
 }
@@ -1598,6 +1648,11 @@ async function handleApi(req, res, url) {
     return sendJson(res, 200, leaderboard(db, category, studentId));
   }
 
+  if (req.method === "GET" && url.pathname === "/api/leaderboard-overall") {
+    const studentId = Number(url.searchParams.get("studentId") || 0);
+    return sendJson(res, 200, overallLeaderboard(db, studentId));
+  }
+
   if (req.method === "POST" && url.pathname === "/api/admin/login") {
     const payload = await readBody(req);
     const password = String(payload.password || "");
@@ -1687,6 +1742,21 @@ async function handleApi(req, res, url) {
       };
     }).sort((a, b) => b.totalScore - a.totalScore || b.lastActivity.localeCompare(a.lastActivity));
     return sendJson(res, 200, { ok: true, domains: domains.map(([id, title]) => ({ id, title })), students });
+  }
+
+  if (req.method === "DELETE" && url.pathname === "/api/admin/students") {
+    const payload = await readBody(req);
+    const ids = Array.isArray(payload.ids) ? payload.ids.map(Number).filter(Boolean) : [];
+    const deleteAll = Boolean(payload.all);
+    const selected = deleteAll ? new Set(db.students.map((student) => student.id)) : new Set(ids);
+    if (!selected.size) return sendJson(res, 400, { ok: false, msg: "Select at least one student." });
+    const before = db.students.length;
+    db.students = db.students.filter((student) => !selected.has(student.id));
+    db.submissions = db.submissions.filter((item) => !selected.has(item.studentId));
+    db.solves = db.solves.filter((item) => !selected.has(item.studentId));
+    db.hints = db.hints.filter((item) => !selected.has(item.studentId));
+    writeDb(db);
+    return sendJson(res, 200, { ok: true, deleted: before - db.students.length });
   }
 
   if (req.method === "POST" && url.pathname === "/api/admin/reset-progress") {

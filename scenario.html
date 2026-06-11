@@ -20,8 +20,9 @@
     <ul class="nav-links">
       <li><a class="nav-btn" href="/index.html">Home</a></li>
       <li><a class="nav-btn" href="/index.html#models">Models</a></li>
-      <li><a class="nav-btn active" href="/index.html#cyber">Cybersecurity</a></li>
-      <li><a class="nav-btn" href="http://172.16.17.219/">Wiki</a></li>
+      <li><a class="nav-btn active" href="/index.html#cyber">Cybersecurity Leaderboard</a></li>
+      <li><a class="nav-btn" href="/login.html" data-auth-action>Login</a></li>
+      <li><a class="nav-btn" href="/admin.html" data-admin-link>Admin</a></li>
     </ul>
   </nav>
 
@@ -60,8 +61,20 @@
       </div>
       <pre class="scenario-code-view" id="scenario-code-view">Select a script to view its code.</pre>
     </section>
+
+    <section class="content-card scenario-ctf-section" id="scenario-ctf-section" hidden>
+      <div class="scenario-ctf-head">
+        <div>
+          <p class="section-kicker">TryHackMe Style Room</p>
+          <h2 id="scenario-ctf-title">Model Tasks And Leaderboard</h2>
+        </div>
+        <a class="secondary-action" id="scenario-ctf-link" href="/index.html#cyber" data-icon="ctf">Open Full Leaderboard</a>
+      </div>
+      <div id="scenario-ctf-board"></div>
+    </section>
   </main>
 
+  <script src="/static/js/ctf.js"></script>
   <script src="/static/js/scenario.js"></script>
 </body>
 </html>
