@@ -60,7 +60,15 @@ const legacyDataCenterChallengeIds = new Set([
 const legacyWaterTreatmentChallengeIds = new Set([
   "water-treatment_001",
   "water-treatment_002",
-  "water-treatment_003"
+  "water-treatment_003",
+  "water_treatment_room_001",
+  "water_treatment_room_002",
+  "water_treatment_room_003",
+  "water_treatment_room_004",
+  "water_treatment_room_005",
+  "water_treatment_room_006",
+  "water_treatment_room_007",
+  "water_treatment_room_008"
 ]);
 const legacyAirportChallengeIds = new Set([
   "airport_001",
@@ -1313,76 +1321,193 @@ seedChallenges["data-center"] = [
 
 seedChallenges["water-treatment"] = [
   {
-    id: "water_treatment_room_001",
+    id: "water_treatment_red_001",
     category: "water-treatment",
-    title: "Task 1 - Water Plant Room Briefing",
-    description: "You are investigating a Water Treatment model where dashboard controls start the physical plant and a Moxa serial gateway can pass Modbus RTU commands. Open the Water Treatment Red Team scenario page and identify the dashboard used for observation.",
+    title: "Task 1 - Reconnaissance: Moxa Port",
+    description: "What port is the Moxa NPort service running on?",
     points: 50,
-    flag: "FLAG{water_treatment_room_started}",
-    hint: "Start from Water Treatment > Cybersecurity > Attack Surface Training. The scenario page links the live Water Treatment dashboard."
+    flag: "4001",
+    hint: "Run Nmap against the target and identify the open Moxa service port."
   },
   {
-    id: "water_treatment_room_002",
+    id: "water_treatment_red_002",
     category: "water-treatment",
-    title: "Task 2 - Moxa Gateway Discovery",
-    description: "Identify the vulnerable device type used in this Water Treatment drill. This device bridges network traffic to Modbus RTU serial control.",
+    title: "Task 1 - Reconnaissance: Service Name",
+    description: "What is the service name Nmap shows on that port?",
     points: 100,
-    flag: "FLAG{water_treatment_moxa_nport}",
-    hint: "The scenario brief names the vulnerable device as Moxa."
+    flag: "newoak",
+    hint: "Read the SERVICE column from the scan output."
   },
   {
-    id: "water_treatment_room_003",
+    id: "water_treatment_red_003",
     category: "water-treatment",
-    title: "Task 3 - Target Port Identification",
-    description: "Run the approved lab scan against the Water Treatment Moxa target and identify which TCP port is used for the Modbus RTU gateway connection.",
+    title: "Task 1 - Reconnaissance: Moxa MAC Address",
+    description: "What is the MAC address of the Moxa device?",
     points: 100,
-    flag: "FLAG{water_treatment_tcp_4001}",
-    hint: "The scenario commands use MOXA_PORT=4001."
+    flag: "00:90:E8:4F:EF:4D",
+    hint: "Read the full Nmap output carefully, including the MAC address line."
   },
   {
-    id: "water_treatment_room_004",
+    id: "water_treatment_red_004",
     category: "water-treatment",
-    title: "Task 4 - Gateway Target IP",
-    description: "Identify the approved Moxa IP address documented for the Water Treatment Modbus RTU-over-TCP lab.",
+    title: "Task 1 - Reconnaissance: Device Manufacturer",
+    description: "Which company manufactured this device?",
     points: 150,
-    flag: "FLAG{water_treatment_moxa_172_16_17_133}",
-    hint: "Look at the MOXA_IP value in the Water Treatment scenario commands."
+    flag: "Moxa Technologies",
+    hint: "Use the MAC vendor line from the scan output."
   },
   {
-    id: "water_treatment_room_005",
+    id: "water_treatment_red_005",
     category: "water-treatment",
-    title: "Task 5 - HEX Command Analysis",
-    description: "The lab uses a generated Modbus RTU command in HEX format to affect filtration. Identify the HEX payload shown in the scenario.",
+    title: "Task 2 - Protocol Analysis: Bridged Protocol",
+    description: "What industrial protocol is the Moxa NPort bridging to TCP?",
     points: 200,
-    flag: "FLAG{water_treatment_hex_01100000000102014D67F5}",
-    hint: "Copy only the bytes.fromhex value from the approved lab example."
+    flag: "Modbus RTU",
+    hint: "The Moxa is a serial-to-ethernet converter for the plant Modbus bus."
   },
   {
-    id: "water_treatment_room_006",
+    id: "water_treatment_red_006",
     category: "water-treatment",
-    title: "Task 6 - Dashboard Impact",
-    description: "Run only the approved lab command and observe the Water Treatment dashboard. Identify which plant function the example command is documented to stop.",
+    title: "Task 2 - Protocol Analysis: Slave ID",
+    description: "What is the Modbus slave ID used to address this device?",
     points: 200,
-    flag: "FLAG{water_treatment_stop_filtration}",
-    hint: "The scenario notes say the example command stops the filters/filtration."
+    flag: "1",
+    hint: "The slave ID is the first byte of the raw payload."
   },
   {
-    id: "water_treatment_room_007",
+    id: "water_treatment_red_007",
     category: "water-treatment",
-    title: "Task 7 - Blue Team Recovery",
-    description: "After containment, identify the safe recovery path Blue Team should use to restore filtration and pump behavior.",
+    title: "Task 2 - Protocol Analysis: Function Code",
+    description: "What Modbus function code is used to write a single register?",
     points: 200,
-    flag: "FLAG{water_treatment_restore_from_dashboard}",
-    hint: "The Blue Team playbook says to restore safe plant operation using the approved dashboard controls."
+    flag: "6",
+    hint: "Modbus RTU function code 06 is used for this operation."
   },
   {
-    id: "water_treatment_room_008",
+    id: "water_treatment_red_008",
     category: "water-treatment",
-    title: "Task 8 - Moxa Hardening Plan",
-    description: "Recommend the key protection for this lab: restrict TCP/4001 to trusted HMI or engineering hosts, segment the Moxa gateway, log gateway sessions, and alert on unauthorized Modbus RTU write commands.",
+    title: "Task 2 - Protocol Analysis: Function Name",
+    description: "What is the name of that function code?",
     points: 250,
-    flag: "FLAG{water_treatment_moxa_4001_hardening}",
-    hint: "Look for TCP/4001 restrictions, segmentation, gateway logging, and Modbus write alerts in the mitigation checklist."
+    flag: "Write Single Register",
+    hint: "Function code 06 is also called Preset Single Holding Register."
+  },
+  {
+    id: "water_treatment_red_009",
+    category: "water-treatment",
+    title: "Task 2 - Protocol Analysis: Filtration Register",
+    description: "What register address controls the filtration motor?",
+    points: 250,
+    flag: "0",
+    hint: "The filtration motor is controlled through register address 0."
+  },
+  {
+    id: "water_treatment_red_010",
+    category: "water-treatment",
+    title: "Task 3 - Exploitation: Payload Delivery Tool",
+    description: "What command-line tool is used to deliver the raw payload to the Moxa?",
+    points: 150,
+    flag: "netcat",
+    hint: "The Python bytes.fromhex output is piped into this network tool."
+  },
+  {
+    id: "water_treatment_red_011",
+    category: "water-treatment",
+    title: "Task 3 - Exploitation: Filtration Stop Value",
+    description: "What value written to register 0 stops the filtration motor?",
+    points: 200,
+    flag: "333",
+    hint: "Use the value documented for stopping filtration."
+  },
+  {
+    id: "water_treatment_red_012",
+    category: "water-treatment",
+    title: "Task 3 - Exploitation: Hex Value",
+    description: "What is the hex representation of 333 in the payload?",
+    points: 200,
+    flag: "014D",
+    hint: "Convert decimal 333 to a two-byte hexadecimal value."
+  },
+  {
+    id: "water_treatment_red_013",
+    category: "water-treatment",
+    title: "Task 3 - Exploitation: Full Payload",
+    description: "What is the full hex payload used in the attack?",
+    points: 250,
+    flag: "01060000014D486F",
+    hint: "Copy the full Modbus RTU payload used for the filtration stop command."
+  },
+  {
+    id: "water_treatment_red_014",
+    category: "water-treatment",
+    title: "Task 3 - Exploitation: CRC Bytes",
+    description: "What are the last 2 bytes of the payload used for?",
+    points: 200,
+    flag: "CRC",
+    hint: "The final bytes validate the Modbus RTU frame."
+  },
+  {
+    id: "water_treatment_red_015",
+    category: "water-treatment",
+    title: "Task 3 - Exploitation: Dashboard Flag",
+    description: "Submit the flag displayed on the dashboard after the filtration motor stops.",
+    points: 300,
+    flag: "FLAG{water_treatment_filtration_stopped}",
+    hint: "Read the flag from the Water Treatment dashboard after the authorized lab impact."
+  },
+  {
+    id: "water_treatment_red_016",
+    category: "water-treatment",
+    title: "Task 4 - Blue Team: Network Control",
+    description: "What network security control would prevent the Moxa from being directly reachable?",
+    points: 200,
+    flag: "network segmentation",
+    hint: "Think about what separates corporate and OT networks."
+  },
+  {
+    id: "water_treatment_red_017",
+    category: "water-treatment",
+    title: "Task 4 - Blue Team: Modbus Security Extension",
+    description: "What is the name of the Modbus security extension that adds authentication?",
+    points: 200,
+    flag: "Modbus Security",
+    hint: "It is the official security extension name for Modbus."
+  },
+  {
+    id: "water_treatment_red_018",
+    category: "water-treatment",
+    title: "Task 4 - Blue Team: ICS Standard",
+    description: "Which ICS security standard recommends zones and conduits for OT protection?",
+    points: 200,
+    flag: "IEC 62443",
+    hint: "This standard is commonly used for industrial automation and control system security."
+  },
+  {
+    id: "water_treatment_red_019",
+    category: "water-treatment",
+    title: "Task 4 - Blue Team: MITRE ATT&CK ICS Technique",
+    description: "What MITRE ATT&CK ICS technique covers writing to a control register?",
+    points: 250,
+    flag: "T0836",
+    hint: "Look for the ATT&CK for ICS technique related to modify parameter."
+  },
+  {
+    id: "water_treatment_red_020",
+    category: "water-treatment",
+    title: "Task 4 - Blue Team: Suricata Keyword",
+    description: "What Suricata rule keyword would detect traffic on port 4001?",
+    points: 200,
+    flag: "port 4001",
+    hint: "The answer should include the monitored port."
+  },
+  {
+    id: "water_treatment_red_021",
+    category: "water-treatment",
+    title: "Task 4 - Blue Team: Cortex Analyzer",
+    description: "Which Cortex analyzer would you run on the attacker IP in TheHive?",
+    points: 200,
+    flag: "AbuseIPDB",
+    hint: "Use an IP reputation analyzer."
   }
 ];
 

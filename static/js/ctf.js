@@ -269,6 +269,8 @@ window.CTF = (function () {
         </div>
         ${category === 'data-center'
           ? renderDataCenterTaskRoom(challenges)
+          : category === 'water-treatment'
+          ? renderWaterTreatmentTaskRoom(challenges)
           : `<div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
               ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
             </div>`}`;
@@ -475,6 +477,56 @@ window.CTF = (function () {
       </div>`;
   }
 
+  function renderWaterTreatmentTaskRoom(challenges) {
+    const groups = [
+      {
+        no: '1',
+        title: 'Reconnaissance - Confirm the Attack Surface',
+        intro: 'Before interacting with any industrial protocol, confirm the exposed Moxa NPort service. Use a port scanner to identify the open port, service name, MAC address, and vendor.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 1 '))
+      },
+      {
+        no: '2',
+        title: 'Protocol Analysis - Understand the Attack Vector',
+        intro: 'The Moxa NPort bridges TCP connections directly to the Modbus RTU serial bus. Understand the raw payload structure before injecting commands.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 2 '))
+      },
+      {
+        no: '3',
+        title: 'Exploitation - Inject the Payload',
+        intro: 'The gateway accepts raw Modbus RTU frames over TCP. Craft and deliver the payload that stops filtration, then observe dashboard impact.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 3 '))
+      },
+      {
+        no: '4',
+        title: 'Blue Team - Detection And Remediation',
+        intro: 'A single unauthenticated TCP connection can stop filtration. Identify controls that would detect, restrict, and harden this pathway.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 4 '))
+      }
+    ].filter((group) => group.items.length);
+    const completedGroups = groups.filter((group) => group.items.every((item) => item.solved)).length;
+
+    return `
+      <div class="ctf-dc-target">
+        <div>
+          <span>Target IP</span>
+          <strong>172.16.17.133</strong>
+        </div>
+        <div>
+          <span>Protocol</span>
+          <strong>Modbus RTU over TCP</strong>
+        </div>
+        <p>This is a lab environment. Do not attack systems outside the designated IP range. Restore filtration before ending the drill.</p>
+      </div>
+      <div class="ctf-task-list-head">
+        <h3>Tasks</h3>
+        <span>${completedGroups} / ${groups.length} complete</span>
+      </div>
+      <div class="ctf-task-list">
+        ${groups.map((group) => renderDataCenterTaskGroup(group)).join('')}
+      </div>`;
+  }
+
   function renderDataCenterTaskGroup(group) {
     const complete = group.items.every((item) => item.solved);
     return `
@@ -613,8 +665,8 @@ window.CTF = (function () {
       },
       'water-treatment': {
         title: 'Water Treatment Moxa Modbus RTU Intrusion',
-        description: 'Investigate a Water Treatment model where a Moxa serial gateway exposes Modbus RTU-over-TCP control paths for filtration and pump behavior. Complete recon, command analysis, dashboard impact, recovery, and Blue Team hardening tasks.',
-        tags: ['Moxa NPort', 'Modbus RTU', 'TCP/4001', 'Red + Blue Team']
+        description: 'Investigate an exposed Moxa NPort serial-to-ethernet converter that bridges raw TCP traffic into the Water Treatment Modbus RTU bus. Discover the service, analyze the protocol, inject a controlled payload, and document detection and remediation.',
+        tags: ['Moxa NPort', 'Modbus RTU', 'TCP/4001', 'Water Treatment']
       }
     };
     const room = rooms[category] || rooms.industry;
