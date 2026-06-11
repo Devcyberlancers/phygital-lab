@@ -227,7 +227,7 @@ function renderDomains(filter = "all") {
         <h3>${domain.title}</h3>
         <p>${domain.summary}</p>
         <div class="tag-row">
-          <span>About</span><span>Cybersecurity</span><span>Simulation</span>
+          <span>About</span><span>Cybersecurity</span><span>Photos</span>
         </div>
         <div class="card-action">Open Model</div>
       `;
@@ -257,9 +257,6 @@ function openDomain(id) {
   document.getElementById("detail-overview").textContent = currentDomain.overview;
   document.getElementById("detail-red").textContent = currentDomain.red;
   document.getElementById("detail-blue").textContent = currentDomain.blue;
-  document.getElementById("detail-twin").textContent = currentDomain.twin;
-  document.getElementById("detail-analytics").textContent = currentDomain.analytics;
-  document.getElementById("detail-simulation").textContent = currentDomain.simulation;
   document.getElementById("detail-features").innerHTML = currentDomain.features.map((feature) => `
     <article class="feature-item reveal">
       <h4>${feature}</h4>
@@ -468,6 +465,7 @@ function renderDomainVisual(domain) {
 }
 
 function switchTab(tabName) {
+  if (!document.getElementById(`tab-${tabName}`)) tabName = "about";
   document.querySelectorAll(".tab-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === tabName));
   document.querySelectorAll(".tab-content").forEach((tab) => tab.classList.toggle("active", tab.id === `tab-${tabName}`));
 }
