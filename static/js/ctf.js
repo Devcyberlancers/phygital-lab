@@ -539,33 +539,27 @@ window.CTF = (function () {
       },
       {
         no: '2',
-        title: 'Enumeration - Discover All Topics',
+        title: 'Topic Enumeration',
         intro: 'MQTT uses a publish/subscribe model. Use the # wildcard to subscribe to every topic and map the live ZPHS01B sensor attack surface.',
         items: challenges.filter((challenge) => challenge.title.startsWith('Task 2 '))
       },
       {
         no: '3',
-        title: 'Passive Reconnaissance - Read Sensor Values',
+        title: 'Passive Intelligence',
         intro: 'Observe normal sensor baselines before spoofing. Baseline readings help prove when dashboard values have been manipulated.',
         items: challenges.filter((challenge) => challenge.title.startsWith('Task 3 '))
       },
       {
         no: '4',
-        title: 'Exploitation - Spoof a Single Sensor',
+        title: 'Single Sensor Exploitation',
         intro: 'Publish a controlled fake value to one topic and observe the dashboard impact before escalating to all sensors.',
         items: challenges.filter((challenge) => challenge.title.startsWith('Task 4 '))
       },
       {
         no: '5',
-        title: 'Full Exploitation - Spoof All Sensors',
+        title: 'Full System Exploitation',
         intro: 'Escalate the MQTT spoofing attack by looping through all topics and sustaining fake values across the dashboard.',
         items: challenges.filter((challenge) => challenge.title.startsWith('Task 5 '))
-      },
-      {
-        no: '6',
-        title: 'Blue Team - Detection And Remediation',
-        intro: 'Identify the controls that would prevent unauthenticated publishing, encrypt MQTT traffic, restrict topics, and detect traffic on the broker port.',
-        items: challenges.filter((challenge) => challenge.title.startsWith('Task 6 '))
       }
     ].filter((group) => group.items.length);
     const completedGroups = groups.filter((group) => group.items.every((item) => item.solved)).length;

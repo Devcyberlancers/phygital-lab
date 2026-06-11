@@ -42,7 +42,39 @@ const legacyIndustryChallengeIds = new Set([
   "industry_room_007",
   "industry_room_008",
   "industry_room_009",
-  "industry_room_010"
+  "industry_room_010",
+  "industry_red_001",
+  "industry_red_002",
+  "industry_red_003",
+  "industry_red_004",
+  "industry_red_005",
+  "industry_red_006",
+  "industry_red_007",
+  "industry_red_008",
+  "industry_red_009",
+  "industry_red_010",
+  "industry_red_011",
+  "industry_red_012",
+  "industry_red_013",
+  "industry_red_014",
+  "industry_red_015",
+  "industry_red_016",
+  "industry_red_017",
+  "industry_red_018",
+  "industry_red_019",
+  "industry_red_020",
+  "industry_red_021",
+  "industry_red_022",
+  "industry_red_023",
+  "industry_red_024",
+  "industry_red_025",
+  "industry_red_026",
+  "industry_red_027",
+  "industry_red_028",
+  "industry_red_029",
+  "industry_red_030",
+  "industry_red_031",
+  "industry_red_032"
 ]);
 const legacyDataCenterChallengeIds = new Set([
   "data-center_001",
@@ -1143,25 +1175,25 @@ seedChallenges["traffic-lights"] = [
 
 seedChallenges.industry = [
   {
-    id: "industry_red_001",
+    id: "industry_mqtt_room_001",
     category: "industry",
     title: "Task 1 - Reconnaissance: MQTT Port",
     description: "What port is the MQTT broker running on?",
     points: 50,
     flag: "1883",
-    hint: "Run nmap against the target on the MQTT default port."
+    hint: "Run nmap against the target and check the open MQTT service port."
   },
   {
-    id: "industry_red_002",
+    id: "industry_mqtt_room_002",
     category: "industry",
     title: "Task 1 - Reconnaissance: Service Name",
-    description: "What is the service name Nmap shows?",
+    description: "What is the service name Nmap shows on that port?",
     points: 50,
     flag: "mqtt",
-    hint: "Read the service column in the Nmap result."
+    hint: "Look at the SERVICE column for TCP/1883."
   },
   {
-    id: "industry_red_003",
+    id: "industry_mqtt_room_003",
     category: "industry",
     title: "Task 1 - Reconnaissance: Broker MAC Address",
     description: "What is the MAC address of the broker?",
@@ -1170,265 +1202,193 @@ seedChallenges.industry = [
     hint: "Read the MAC address line in the scan output."
   },
   {
-    id: "industry_red_004",
+    id: "industry_mqtt_room_004",
     category: "industry",
-    title: "Task 1 - Reconnaissance: Server Company",
-    description: "Which company runs this server?",
+    title: "Task 1 - Reconnaissance: Hosting Company",
+    description: "Which company hosts this server?",
     points: 100,
     flag: "Proxmox Server Solutions GmbH",
-    hint: "Read the MAC vendor/company information from the scan output."
+    hint: "The company appears in the MAC vendor information."
   },
   {
-    id: "industry_red_005",
+    id: "industry_mqtt_room_005",
     category: "industry",
-    title: "Task 2 - Enumeration: Subscribe Tool",
-    description: "What tool is used to subscribe to MQTT topics?",
-    points: 100,
-    flag: "mosquitto_sub",
-    hint: "Use the command-line MQTT subscriber."
-  },
-  {
-    id: "industry_red_006",
-    category: "industry",
-    title: "Task 2 - Enumeration: Wildcard Topic",
-    description: "What wildcard subscribes to all topics at once?",
+    title: "Task 2 - Topic Enumeration: Wildcard",
+    description: "What wildcard subscribes to all MQTT topics at once?",
     points: 100,
     flag: "#",
-    hint: "Use mosquitto_sub with the all-topic wildcard."
+    hint: "Use the MQTT wildcard that captures every topic."
   },
   {
-    id: "industry_red_007",
+    id: "industry_mqtt_room_006",
     category: "industry",
-    title: "Task 2 - Enumeration: Sensor Topic Count",
-    description: "How many unique sensor topics does the ZPHS01B publish?",
-    points: 150,
-    flag: "11",
-    hint: "Subscribe to all topics and count the unique ZPHS01B sensor topics."
+    title: "Task 2 - Topic Enumeration: Subscribe Tool",
+    description: "What tool is used to subscribe to MQTT?",
+    points: 100,
+    flag: "mosquitto_sub",
+    hint: "Use the Mosquitto command-line subscriber."
   },
   {
-    id: "industry_red_008",
+    id: "industry_mqtt_room_007",
     category: "industry",
-    title: "Task 2 - Enumeration: Alert Topic",
-    description: "What is the topic that publishes alert values?",
-    points: 150,
-    flag: "sensor/value/alert",
-    hint: "Look for the non-ZPHS01B topic that carries alert values."
-  },
-  {
-    id: "industry_red_009",
-    category: "industry",
-    title: "Task 2 - Enumeration: Normal Alert Value",
-    description: "What is the normal value being published to sensor/value/alert?",
-    points: 150,
-    flag: "33",
-    hint: "Watch the alert topic output during normal operation."
-  },
-  {
-    id: "industry_red_010",
-    category: "industry",
-    title: "Task 2 - Enumeration: Sensor Prefix",
-    description: "What sensor prefix is used for all air quality topics?",
+    title: "Task 2 - Topic Enumeration: Sensor Prefix",
+    description: "What is the sensor prefix for all air quality topics?",
     points: 150,
     flag: "ZPHS01B",
-    hint: "The prefix appears before each air-quality topic name."
+    hint: "The prefix appears before every air-quality topic."
   },
   {
-    id: "industry_red_011",
+    id: "industry_mqtt_room_008",
     category: "industry",
-    title: "Task 3 - Passive Reconnaissance: CO2 Baseline",
+    title: "Task 2 - Topic Enumeration: Sensor Topic Count",
+    description: "How many topics does the ZPHS01B sensor publish?",
+    points: 150,
+    flag: "11",
+    hint: "Count only the ZPHS01B air-quality topics."
+  },
+  {
+    id: "industry_mqtt_room_009",
+    category: "industry",
+    title: "Task 2 - Topic Enumeration: Hidden Alert Topic",
+    description: "What is the hidden alert topic?",
+    points: 150,
+    flag: "sensor/value/alert",
+    hint: "It is separate from the ZPHS01B sensor prefix."
+  },
+  {
+    id: "industry_mqtt_room_010",
+    category: "industry",
+    title: "Task 2 - Topic Enumeration: Alert Baseline",
+    description: "What is the normal value on the alert topic?",
+    points: 150,
+    flag: "33",
+    hint: "Watch sensor/value/alert during normal operation."
+  },
+  {
+    id: "industry_mqtt_room_011",
+    category: "industry",
+    title: "Task 3 - Passive Intelligence: CO2 Baseline",
     description: "What is the normal CO2 reading?",
     points: 150,
-    flag: "~1124 ppm",
-    hint: "Watch mosquitto_sub output for 30 seconds and record the stable CO2 value."
+    flag: "1124",
+    hint: "Record the stable CO2 value from MQTT output."
   },
   {
-    id: "industry_red_012",
+    id: "industry_mqtt_room_012",
     category: "industry",
-    title: "Task 3 - Passive Reconnaissance: Temperature Baseline",
-    description: "What is the normal Temperature reading?",
+    title: "Task 3 - Passive Intelligence: Temperature Baseline",
+    description: "What is the normal temperature?",
     points: 150,
-    flag: "~30°C",
-    hint: "Watch mosquitto_sub output for 30 seconds and record the stable Temperature value."
+    flag: "30",
+    hint: "Record the stable temperature value; enter the rounded number only."
   },
   {
-    id: "industry_red_013",
+    id: "industry_mqtt_room_013",
     category: "industry",
-    title: "Task 3 - Passive Reconnaissance: Humidity Baseline",
-    description: "What is the normal Humidity reading?",
+    title: "Task 3 - Passive Intelligence: Humidity Baseline",
+    description: "What is the normal humidity?",
     points: 150,
-    flag: "~86%",
-    hint: "Watch mosquitto_sub output for 30 seconds and record the stable Humidity value."
+    flag: "86",
+    hint: "Record the stable humidity value; enter the number only."
   },
   {
-    id: "industry_red_014",
+    id: "industry_mqtt_room_014",
     category: "industry",
-    title: "Task 3 - Passive Reconnaissance: NO2 Baseline",
+    title: "Task 3 - Passive Intelligence: NO2 Baseline",
     description: "What is the normal NO2 reading?",
     points: 150,
-    flag: "0.23 ppm",
-    hint: "Watch the NO2 topic and record the normal value."
+    flag: "0.23",
+    hint: "Watch the NO2 topic during normal operation."
   },
   {
-    id: "industry_red_015",
+    id: "industry_mqtt_room_015",
     category: "industry",
-    title: "Task 3 - Passive Reconnaissance: Zero Value Topic",
-    description: "Which topic shows a value of 0 in normal state?",
+    title: "Task 3 - Passive Intelligence: Zero Value Topic",
+    description: "Which topic has a normal value of 0?",
     points: 150,
     flag: "ZPHS01B/VOC",
-    hint: "Find the topic that reports 0 during normal operation."
+    hint: "Find the ZPHS01B topic reporting 0."
   },
   {
-    id: "industry_red_016",
+    id: "industry_mqtt_room_016",
     category: "industry",
-    title: "Task 4 - Exploitation: Publish Tool",
-    description: "What tool is used to publish to MQTT topics?",
+    title: "Task 4 - Single Sensor Exploitation: Publish Tool",
+    description: "What tool publishes to MQTT topics?",
     points: 100,
     flag: "mosquitto_pub",
-    hint: "Use the command-line MQTT publisher."
+    hint: "Use the Mosquitto command-line publisher."
   },
   {
-    id: "industry_red_017",
+    id: "industry_mqtt_room_017",
     category: "industry",
-    title: "Task 4 - Exploitation: NO2 Spoof Command",
-    description: "What command spoofs the NO2 sensor to 999?",
-    points: 250,
-    flag: "mosquitto_pub -h 172.16.17.207 -t \"ZPHS01B/NO2\" -m \"999\"",
-    hint: "Use mosquitto_pub with host, topic, and message flags."
-  },
-  {
-    id: "industry_red_018",
-    category: "industry",
-    title: "Task 4 - Exploitation: Host Flag",
-    description: "What flag do you use to specify the broker host?",
-    points: 100,
-    flag: "-h",
-    hint: "This option comes before the broker IP."
-  },
-  {
-    id: "industry_red_019",
-    category: "industry",
-    title: "Task 4 - Exploitation: Topic Flag",
+    title: "Task 4 - Single Sensor Exploitation: Topic Flag",
     description: "What flag specifies the topic?",
     points: 100,
     flag: "-t",
-    hint: "This option comes before the topic string."
+    hint: "This option comes before the topic name."
   },
   {
-    id: "industry_red_020",
+    id: "industry_mqtt_room_018",
     category: "industry",
-    title: "Task 4 - Exploitation: Message Flag",
-    description: "What flag specifies the message value?",
+    title: "Task 4 - Single Sensor Exploitation: Value Flag",
+    description: "What flag specifies the value?",
     points: 100,
     flag: "-m",
-    hint: "This option comes before the payload value."
+    hint: "This option comes before the message payload."
   },
   {
-    id: "industry_red_021",
+    id: "industry_mqtt_room_019",
     category: "industry",
-    title: "Task 4 - Exploitation: NO2 Dashboard Flag",
-    description: "Submit flag after NO2 gauge hits 999 on dashboard.",
-    points: 250,
-    flag: "FLAG{industry_no2_999}",
-    hint: "Read the flag shown by the dashboard or instructor validation panel after the NO2 gauge reaches 999."
-  },
-  {
-    id: "industry_red_022",
-    category: "industry",
-    title: "Task 5 - Full Exploitation: Spoof Value",
-    description: "What value is published to all topics in the full attack?",
+    title: "Task 4 - Single Sensor Exploitation: Max Value",
+    description: "What value maxes out the gauges?",
     points: 150,
     flag: "999",
-    hint: "The full attack pushes the same high fake value to every sensor topic."
+    hint: "This value drives the gauge to the alarm state."
   },
   {
-    id: "industry_red_023",
+    id: "industry_mqtt_room_020",
     category: "industry",
-    title: "Task 5 - Full Exploitation: Spoofed Topic Count",
-    description: "How many topics are spoofed in the full attack?",
+    title: "Task 4 - Single Sensor Exploitation: NO2 Topic",
+    description: "What topic controls NO2?",
+    points: 150,
+    flag: "ZPHS01B/NO2",
+    hint: "Use the ZPHS01B prefix and the NO2 sensor name."
+  },
+  {
+    id: "industry_mqtt_room_021",
+    category: "industry",
+    title: "Task 4 - Single Sensor Exploitation: NO2 Flag",
+    description: "Submit the flag that appears when NO2 hits 999.",
+    points: 250,
+    flag: "FLAG{industry_no2_999}",
+    hint: "Read the dashboard or instructor validation flag after NO2 reaches 999."
+  },
+  {
+    id: "industry_mqtt_room_022",
+    category: "industry",
+    title: "Task 5 - Full System Exploitation: Total Spoofed Topics",
+    description: "How many total topics are spoofed?",
     points: 150,
     flag: "12",
-    hint: "Include all spoofed sensor and alert topics in the full loop."
+    hint: "Include the 11 ZPHS01B topics and the hidden alert topic."
   },
   {
-    id: "industry_red_024",
+    id: "industry_mqtt_room_023",
     category: "industry",
-    title: "Task 5 - Full Exploitation: Loop Construct",
-    description: "What bash construct is used to loop through all topics?",
-    points: 150,
-    flag: "for loop",
-    hint: "It iterates over every topic name."
-  },
-  {
-    id: "industry_red_025",
-    category: "industry",
-    title: "Task 5 - Full Exploitation: Sleep Value",
-    description: "What sleep value keeps the attack sustained?",
+    title: "Task 5 - Full System Exploitation: Loop Delay",
+    description: "What sleep delay is used between loops?",
     points: 150,
     flag: "0.02",
-    hint: "This short delay keeps messages flowing rapidly."
+    hint: "This short delay sustains the full spoofing loop."
   },
   {
-    id: "industry_red_026",
+    id: "industry_mqtt_room_024",
     category: "industry",
-    title: "Task 5 - Full Exploitation: Full Dashboard Flag",
-    description: "Submit flag when all gauges turn red at 999.",
-    points: 300,
-    flag: "FLAG{industry_all_gauges_999}",
-    hint: "Read the flag shown after all gauges reach the full alarm state."
-  },
-  {
-    id: "industry_red_027",
-    category: "industry",
-    title: "Task 6 - Blue Team: Authentication Control",
-    description: "What MQTT security feature would prevent unauthenticated publishing?",
-    points: 150,
-    flag: "authentication",
-    hint: "Require clients to prove identity before publishing."
-  },
-  {
-    id: "industry_red_028",
-    category: "industry",
-    title: "Task 6 - Blue Team: Encrypted Protocol",
-    description: "What protocol adds TLS encryption to MQTT?",
-    points: 150,
-    flag: "MQTTS",
-    hint: "It is MQTT over TLS."
-  },
-  {
-    id: "industry_red_029",
-    category: "industry",
-    title: "Task 6 - Blue Team: Encrypted MQTT Port",
-    description: "What port does encrypted MQTT run on?",
-    points: 150,
-    flag: "8883",
-    hint: "This is the default TLS-enabled MQTT port."
-  },
-  {
-    id: "industry_red_030",
-    category: "industry",
-    title: "Task 6 - Blue Team: MITRE Technique",
-    description: "Which MITRE ATT&CK ICS technique covers sensor spoofing?",
+    title: "Task 5 - Full System Exploitation: Physical Impact",
+    description: "What physical device triggers during the attack?",
     points: 200,
-    flag: "T0856",
-    hint: "Look for the ATT&CK for ICS technique related to spoof reporting messages."
-  },
-  {
-    id: "industry_red_031",
-    category: "industry",
-    title: "Task 6 - Blue Team: Suricata Port Keyword",
-    description: "What Suricata rule keyword detects traffic on port 1883?",
-    points: 150,
-    flag: "port 1883",
-    hint: "The answer should include the monitored MQTT port."
-  },
-  {
-    id: "industry_red_032",
-    category: "industry",
-    title: "Task 6 - Blue Team: Wildcard Subscription Control",
-    description: "What is the fix to prevent wildcard subscriptions?",
-    points: 200,
-    flag: "ACL - Access Control List",
-    hint: "Restrict which topics clients can subscribe or publish to."
+    flag: "alarm",
+    hint: "The alert topic triggers this physical output."
   }
 ];
 
