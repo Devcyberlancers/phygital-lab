@@ -271,6 +271,8 @@ window.CTF = (function () {
           ? renderDataCenterTaskRoom(challenges)
           : category === 'water-treatment'
           ? renderWaterTreatmentTaskRoom(challenges)
+          : category === 'industry'
+          ? renderIndustryTaskRoom(challenges)
           : `<div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
               ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
             </div>`}`;
@@ -527,6 +529,68 @@ window.CTF = (function () {
       </div>`;
   }
 
+  function renderIndustryTaskRoom(challenges) {
+    const groups = [
+      {
+        no: '1',
+        title: 'Reconnaissance - Confirm the Attack Surface',
+        intro: 'Before interacting with any IoT protocol, confirm the MQTT broker is exposed. Use a port scanner to identify the open port, service name, MAC address, and server vendor.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 1 '))
+      },
+      {
+        no: '2',
+        title: 'Enumeration - Discover All Topics',
+        intro: 'MQTT uses a publish/subscribe model. Use the # wildcard to subscribe to every topic and map the live ZPHS01B sensor attack surface.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 2 '))
+      },
+      {
+        no: '3',
+        title: 'Passive Reconnaissance - Read Sensor Values',
+        intro: 'Observe normal sensor baselines before spoofing. Baseline readings help prove when dashboard values have been manipulated.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 3 '))
+      },
+      {
+        no: '4',
+        title: 'Exploitation - Spoof a Single Sensor',
+        intro: 'Publish a controlled fake value to one topic and observe the dashboard impact before escalating to all sensors.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 4 '))
+      },
+      {
+        no: '5',
+        title: 'Full Exploitation - Spoof All Sensors',
+        intro: 'Escalate the MQTT spoofing attack by looping through all topics and sustaining fake values across the dashboard.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 5 '))
+      },
+      {
+        no: '6',
+        title: 'Blue Team - Detection And Remediation',
+        intro: 'Identify the controls that would prevent unauthenticated publishing, encrypt MQTT traffic, restrict topics, and detect traffic on the broker port.',
+        items: challenges.filter((challenge) => challenge.title.startsWith('Task 6 '))
+      }
+    ].filter((group) => group.items.length);
+    const completedGroups = groups.filter((group) => group.items.every((item) => item.solved)).length;
+
+    return `
+      <div class="ctf-dc-target">
+        <div>
+          <span>Target IP</span>
+          <strong>172.16.17.207</strong>
+        </div>
+        <div>
+          <span>Protocol</span>
+          <strong>MQTT</strong>
+        </div>
+        <p>This is a lab environment. Do not attack systems outside the designated IP range. Restore sensor values before ending the drill.</p>
+      </div>
+      <div class="ctf-task-list-head">
+        <h3>Tasks</h3>
+        <span>${completedGroups} / ${groups.length} complete</span>
+      </div>
+      <div class="ctf-task-list">
+        ${groups.map((group) => renderDataCenterTaskGroup(group)).join('')}
+      </div>`;
+  }
+
   function renderDataCenterTaskGroup(group) {
     const complete = group.items.every((item) => item.solved);
     return `
@@ -735,7 +799,7 @@ window.CTF = (function () {
         resEl.textContent = result.msg;
       }
       if (result.correct) {
-        if (category === 'data-center') {
+        if (category === 'data-center' || category === 'water-treatment' || category === 'industry') {
           markQuestionSolvedInPlace(id);
         } else {
           setTimeout(() => renderBoard(category, containerId), 900);
