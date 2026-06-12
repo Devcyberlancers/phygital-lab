@@ -604,7 +604,7 @@ function renderCyberScope() {
       <h3>${domain.title}</h3>
       <p>${domain.red}</p>
       <div class="cyber-actions">
-        <button class="primary-action" type="button" data-icon="ctf" onclick="openCtfBoard('${domain.id}')">Open CTF</button>
+        <button class="primary-action" type="button" data-icon="ctf" onclick="openCtfBoard('${domain.id}')">Open Leaderboard</button>
       </div>
     </article>
   `).join("");
@@ -646,16 +646,14 @@ function observeReveals(root = document) {
 function openCtfBoard(domainId) {
   const domain = domains.find((item) => item.id === domainId) || domains[0];
   const overlay = document.getElementById("ctf-modal-overlay");
-  const role = localStorage.getItem(ROLE_KEY) || "";
-  const studentMode = role === "student" || window.location.pathname.toLowerCase().endsWith("/student.html");
-  document.getElementById("ctf-modal-title").textContent = studentMode ? `${domain.title} Leaderboard` : `${domain.title} CTF Challenges`;
-  document.getElementById("ctf-modal-subtitle").textContent = studentMode ? "Top students in this model room" : "Red Team / Blue Team training exercise";
+  document.getElementById("ctf-modal-title").textContent = `${domain.title} Leaderboard`;
+  document.getElementById("ctf-modal-subtitle").textContent = "Top students in this model room";
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
-  if (studentMode && CTF.renderLeaderboardOnly) {
+  if (CTF.renderLeaderboardOnly) {
     CTF.renderLeaderboardOnly(domain.id, "ctf-domain-board");
   } else {
-    CTF.renderBoard(domain.id, "ctf-domain-board");
+    document.getElementById("ctf-domain-board").innerHTML = "<div class=\"ctf-empty\"><p>Leaderboard is not available.</p></div>";
   }
 }
 
