@@ -8,6 +8,12 @@ const domains = [
     summary: "Runway, terminal, passenger, baggage, fire, surveillance, and airside operation model.",
     overview: "The Airport model demonstrates how passenger movement, baggage handling, runway lighting, surveillance, access control, emergency response, and IoT monitoring can be represented in a phygital training setup.",
     features: ["Runway and terminal monitoring", "Baggage and passenger flow", "Access control and CCTV", "Emergency and fire response"],
+    featureDetails: [
+          "Runway, terminal, and gate events show how airport operations are monitored in real time.",
+          "Baggage and passenger movement help students understand delays, congestion, and service-state changes.",
+          "Door access, CCTV, and restricted-zone events connect physical security to cyber monitoring.",
+          "Fire and emergency workflows show how alarms, evacuation signals, and response actions are coordinated."
+    ],
     steps: ["Sensor and camera events are generated from terminal, runway, and restricted zones.", "Gateway nodes forward events to the operations dashboard.", "Rules detect congestion, intrusion, equipment fault, or unsafe movement.", "Operators respond through SOPs, alerts, and cyber-physical incident drills."],
     red: "Test Airport doors, baggage reclaim, airplane parking, air-quality sensors, kiosk HTTP MITM, billboard FTP/media workflow, weak credentials, and unsafe value changes.",
     blue: "Monitor OPC UA sessions, MQTT publishers, kiosk HTTP responses, billboard uploads, door and baggage state changes, air-quality surges, credential failures, TCP/4840, TCP/1883, TCP/80/FTP access, and recovery actions.",
@@ -26,6 +32,12 @@ const domains = [
     summary: "Treatment plant flow with tanks, pumps, level sensors, dosing, SCADA, and water quality monitoring.",
     overview: "The Water Treatment model covers intake, filtration, tank levels, pump control, quality sensing, dosing workflow, and SCADA-style monitoring for safe plant operation.",
     features: ["Tank level monitoring", "Pump and valve control", "Water quality parameters", "SCADA/OT dashboard"],
+    featureDetails: [
+          "Tank levels show how intake and treatment stages are monitored to avoid overflow or dry-run conditions.",
+          "Pump and valve control demonstrates how process equipment changes water flow through the plant.",
+          "Water quality readings help students track filtration, dosing, and abnormal treatment conditions.",
+          "The SCADA/OT dashboard connects physical plant state with operator visibility and incident evidence."
+    ],
     steps: ["Raw water enters monitored intake and tank stages.", "Sensors measure level, flow, pH, turbidity, and pump status.", "Controller logic triggers valves, pumps, and alarms.", "Dashboard and logs support maintenance, troubleshooting, and security exercises."],
     red: "Explore Moxa gateway discovery, Modbus RTU-over-TCP command injection, filtration stop behavior, pump control impact, and exposed OT paths.",
     blue: "Track filtration and pump events, Moxa gateway sessions, unauthorized TCP/4001 access, abnormal control commands, and OT recovery actions.",
@@ -44,6 +56,12 @@ const domains = [
     summary: "Industrial automation, PLC workflow, process safety, production line monitoring, and OT security.",
     overview: "The Industrial model demonstrates a smart factory environment with PLC-style control, conveyor or process stations, safety monitoring, production visibility, and IT/OT cybersecurity exercises.",
     features: ["PLC and actuator logic", "Production line status", "Safety interlocks", "OT network monitoring"],
+    featureDetails: [
+          "PLC logic connects sensor inputs to actuators, interlocks, and process decisions.",
+          "Production status shows whether the line is running normally, delayed, stopped, or reporting false telemetry.",
+          "Safety interlocks demonstrate how machines should prevent unsafe movement or process changes.",
+          "OT network monitoring helps students spot unusual traffic, rogue publishers, and weak segmentation."
+    ],
     steps: ["Machines and sensors generate process status.", "Controller logic manages actuators and safety interlocks.", "Production metrics are shown on dashboards.", "Cyber drills validate segmentation, access control, and alerting."],
     red: "Test PLC command abuse, engineering workstation exposure, weak segmentation, unsafe setpoint changes, and fake telemetry.",
     blue: "Monitor PLC traffic, workstation login events, operator actions, production anomalies, and safety alarms.",
@@ -62,6 +80,12 @@ const domains = [
     summary: "Smart hospital operations with patient zones, emergency systems, asset tracking, and safety monitoring.",
     overview: "The Hospital model represents patient care zones, emergency response, fire safety, restricted areas, medical asset tracking, environmental sensing, and cyber resilience for healthcare infrastructure.",
     features: ["Patient and ward monitoring", "Emergency alerts", "Medical asset tracking", "Fire and access safety"],
+    featureDetails: [
+          "Ward monitoring tracks patient-zone state, environment, and operational readiness.",
+          "Emergency alerts connect fire, access, and safety events to response procedures.",
+          "Asset tracking shows how medical equipment location and availability can affect patient care.",
+          "Fire and access safety combine physical alarms, restricted areas, and cyber evidence."
+    ],
     steps: ["Sensors report ward occupancy, environmental status, and emergency triggers.", "Access and safety events are correlated with dashboard alerts.", "Operators follow emergency SOPs.", "Cyber exercises test resilience of healthcare systems."],
     red: "Assess OpenEMR version exposure, authenticated RCE risk, weak shared accounts, phpMyAdmin credential discovery, and medication tampering paths.",
     blue: "Monitor OpenEMR access logs, suspicious authenticated activity, reverse-shell indicators, phpMyAdmin access, database changes, and patient record integrity.",
@@ -80,6 +104,12 @@ const domains = [
     summary: "Flat-building lift house model with gas sensors, fire sensors, elevator control, WebSocket telemetry, CoAP messages, Modbus TCP, and safety monitoring.",
     overview: "The Lift House model represents a flat building with gas/fire safety sensors and an elevator. Students study how sensor telemetry and elevator control values can be intercepted, mapped, spoofed, validated, and defended in a phygital safety scenario.",
     features: ["CH4/H2 gas telemetry", "Fire sensor status", "Elevator Modbus registers", "WebSocket, CoAP, and Modbus flows"],
+    featureDetails: [
+          "Gas telemetry shows CH4/H2 readings and why false values can affect safety decisions.",
+          "Fire sensor status links building alarms with network messages and physical validation.",
+          "Elevator registers help students understand how floor commands and control values are mapped.",
+          "WebSocket, CoAP, and Modbus flows show how different protocols carry sensor and control data."
+    ],
     steps: ["Gas, fire, and elevator systems emit telemetry or control states from the building model.", "Network traffic is observed to understand WebSocket, CoAP, and Modbus message formats.", "Cyber drills test false gas readings, fire-state tampering, and elevator register mapping in an approved lab setup.", "Blue Team validates physical state and hardens telemetry/control paths."],
     red: "Test ARP poisoning, WebSocket gas-value injection, CoAP message tampering, Modbus elevator register reads/writes, and false physical-state manipulation in an approved lab environment.",
     blue: "Monitor ARP anomalies, gas sensor spikes, CoAP value changes, Modbus register activity, impossible fire/elevator states, and sensor-to-physical-model mismatches.",
@@ -98,6 +128,12 @@ const domains = [
     summary: "Generation, substation, transmission, distribution, load monitoring, and grid cybersecurity.",
     overview: "The Power Grid model demonstrates generation, substation switching, transmission, load balancing, fault detection, safety interlocks, and cyber-physical grid incident response.",
     features: ["Substation monitoring", "Load and fault indicators", "Breaker and relay workflow", "Grid OT security"],
+    featureDetails: [
+          "Substation monitoring tracks switching state, controller status, and abnormal access.",
+          "Load and fault indicators help students identify overload, trip, and unstable operating conditions.",
+          "Breaker and relay workflows show how grid protection events affect physical power delivery.",
+          "Grid OT security focuses on protocol exposure, segmentation, and safe recovery of control systems."
+    ],
     steps: ["Generation and load telemetry enters the control view.", "Substation events and breaker states are monitored.", "Fault rules detect overload or abnormal switching.", "Operators respond using isolation and recovery SOPs."],
     red: "Investigate internally exposed ISO-TSAP/S7 communication, TCP/102 reachability, S7COMM STOP command risk, relay misoperation, and weak grid segmentation.",
     blue: "Monitor TCP/102 access, S7COMM stop/write indicators, relay logs, load changes, breaker operations, event timelines, and grid control network traffic.",
@@ -116,6 +152,12 @@ const domains = [
     summary: "Lane sensors, FASTag/RFID, vehicle count, barrier control, congestion, and payment security.",
     overview: "The Toll Plaza model shows lane automation, RFID/FASTag style detection, barrier control, vehicle classification, queue monitoring, transaction events, and cybersecurity for transport infrastructure.",
     features: ["Lane and barrier status", "RFID/vehicle detection", "Traffic flow analytics", "Payment event security"],
+    featureDetails: [
+          "Lane and barrier state shows how vehicle access is allowed, denied, or delayed.",
+          "RFID and vehicle detection explain how cards, readers, and lane events create trust decisions.",
+          "Traffic flow analytics help students observe queue length, throughput, and lane bottlenecks.",
+          "Payment event security connects transaction evidence with barrier movement and access misuse."
+    ],
     steps: ["Vehicles trigger lane sensors and RFID reads.", "Barrier and payment events are processed.", "Dashboard tracks queue, violations, and lane availability.", "Cyber exercises investigate spoofing and transaction misuse."],
     red: "Test vulnerable RFID/MIFARE card cloning risk, RFID replay behavior, lane access misuse, barrier opening, and payment-event mismatch in the approved lab.",
     blue: "Monitor duplicate RFID identifiers, abnormal barrier cycles, transaction mismatches, impossible card timing, vehicle counts, and cloned-card alerts.",
@@ -134,6 +176,12 @@ const domains = [
     summary: "Server racks, cooling, power, access control, network monitoring, and incident response.",
     overview: "The Data Center model focuses on rack health, cooling, power backup, access control, network status, environmental sensing, and incident response for digital infrastructure.",
     features: ["Rack and server health", "Cooling and power status", "Access control", "Network monitoring"],
+    featureDetails: [
+          "Rack and server health tracks thermal, power, and availability signals for digital infrastructure.",
+          "Cooling and power status shows how HVAC, UPS, and backup systems keep services online.",
+          "Access control records entry events and helps identify unauthorized physical access.",
+          "Network monitoring highlights service availability, unusual traffic, and incident response evidence."
+    ],
     steps: ["Rack, temperature, power, and access events are collected.", "Dashboard correlates thermal, electrical, and network state.", "Alerts identify abnormal conditions.", "Operators practice troubleshooting and cyber response."],
     red: "Assess exposed admin panels, weak remote access, rogue device insertion, alert suppression, and network pivot paths.",
     blue: "Monitor access events, rack temperature, UPS logs, network flows, failed logins, and service availability.",
@@ -152,6 +200,12 @@ const domains = [
     summary: "Trading floor, market feeds, order flow, risk alerts, fraud patterns, and cyber monitoring.",
     overview: "The Stock Market model demonstrates market data flow, trading terminal events, order lifecycle, risk monitoring, fraud detection, availability, and cybersecurity in financial systems.",
     features: ["Market feed visualization", "Order event monitoring", "Risk and fraud rules", "Availability tracking"],
+    featureDetails: [
+          "Market feed visualization shows how price and event data flows into trading displays.",
+          "Order event monitoring tracks transaction lifecycle, failed actions, and suspicious activity.",
+          "Risk and fraud rules help identify abnormal trading behavior and business-impacting events.",
+          "Availability tracking focuses on latency, service outages, and workstation resilience."
+    ],
     steps: ["Market and order events are generated by the model.", "Risk checks and transaction rules process activity.", "Dashboards show volatility, failures, and suspicious patterns.", "Cyber exercises test manipulation and resilience."],
     red: "Test phishing-led ransomware simulation, suspicious attachment handling, market workstation impact, billboard FTP/media workflow risk, and dashboard manipulation.",
     blue: "Monitor phishing indicators, attachment execution, file encryption events, billboard uploads, feed integrity, login patterns, latency, and incident alerts.",
@@ -170,6 +224,12 @@ const domains = [
     summary: "Train movement, station safety, ticketing, signaling, power, passenger flow, and control room operations.",
     overview: "The Metro model demonstrates station and train movement, signaling, track occupancy, ticketing gates, passenger safety, power supply, and control room workflows.",
     features: ["Train and track status", "Station safety", "Ticketing gates", "Signaling and power"],
+    featureDetails: [
+          "Train and track state shows movement, occupancy, and safe operating conditions.",
+          "Station safety covers platform events, alarms, and passenger-flow risks.",
+          "Ticketing gates connect access events with station operations and misuse detection.",
+          "Signaling and power demonstrate how train movement depends on control and electrical systems."
+    ],
     steps: ["Train, track, gate, and station events are collected.", "Control logic tracks occupancy, signals, and movement.", "Dashboard surfaces safety or timing incidents.", "Students practice operations and cyber response."],
     red: "Test Modbus TCP exposure, interlock behavior, controlled write_coil simulation, signal/train state impact, dashboard abuse, and segmentation gaps.",
     blue: "Monitor train events, gate logs, station alerts, signal/interlock status, TCP/502 access, Modbus write_coil actions, and unusual network traffic.",
@@ -188,6 +248,12 @@ const domains = [
     summary: "Traffic signal control, MQTT topics, intersection safety, manual dashboard control, and cyber-physical traffic response.",
     overview: "The Traffic Lights model demonstrates a smart intersection where light states are controlled through MQTT topics. Students study how exposed publish access can force unsafe signal combinations and how defenders validate and restore safe traffic control.",
     features: ["Signal state monitoring", "MQTT topic mapping", "Manual dashboard control", "Intersection safety workflow"],
+    featureDetails: [
+          "Signal state monitoring tracks red, yellow, and green light changes at the intersection.",
+          "MQTT topic mapping teaches how each light command is represented on the broker.",
+          "Manual dashboard control gives operators a safe way to test and restore signal states.",
+          "Intersection safety workflow focuses on detecting impossible all-green or conflicting signals."
+    ],
     steps: ["Traffic light states are controlled from the dashboard.", "MQTT topics carry red, yellow, and green commands.", "Cyber drills test false green-light publishing in an approved lab setup.", "Blue Team validates safe signal state and hardens MQTT access."],
     red: "Test MQTT exposure, wildcard topic discovery, traffic-light topic mapping, false green-light publishing, and unsafe intersection state impact.",
     blue: "Monitor MQTT publishers, signal topic changes, impossible all-green states, dashboard/manual control mismatch, and intersection recovery actions.",
@@ -318,10 +384,10 @@ function openDomain(id) {
   document.getElementById("detail-overview").textContent = currentDomain.overview;
   document.getElementById("detail-red").textContent = currentDomain.red;
   document.getElementById("detail-blue").textContent = currentDomain.blue;
-  document.getElementById("detail-features").innerHTML = currentDomain.features.map((feature) => `
+  document.getElementById("detail-features").innerHTML = currentDomain.features.map((feature, index) => `
     <article class="feature-item reveal">
       <h4>${feature}</h4>
-      <p>Mapped to physical model signals, dashboard readings, training observations, and documentation notes.</p>
+      <p>${currentDomain.featureDetails?.[index] || "Connected to the model dashboard, physical state, and training evidence for this scenario."}</p>
     </article>
   `).join("");
 
@@ -718,7 +784,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCyberScope();
   drawCanvas();
   drawHomeMatrix();
-  document.querySelectorAll(".overview-grid article, .hero-panel, .content-card, .feature-item, .cyber-card, .metric-grid div, .photo-placeholder, .photo-notes").forEach((el, index) => {
+  document.querySelectorAll(".overview-grid article, .hero-panel, .content-card, .feature-item, .cyber-card, .metric-grid div, .photo-placeholder, .photo-notes, .security-hero, .security-card, .tool-strip article").forEach((el, index) => {
     el.classList.add("reveal");
     el.style.setProperty("--reveal-delay", `${Math.min(index * 45, 360)}ms`);
   });
@@ -772,5 +838,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const hashPage = window.location.hash.replace("#", "");
   if (hashPage === "models") showPage("domains");
+  if (hashPage === "security") showPage("security");
   if (hashPage === "cyber") showPage("cyber");
 });

@@ -25,7 +25,8 @@
     <ul class="nav-links" id="nav-links">
       <li><button class="nav-btn active" data-page="home">Home</button></li>
       <li><button class="nav-btn" data-page="domains">Models</button></li>
-      <li><button class="nav-btn" data-page="cyber">Cybersecurity Leaderboard</button></li>
+      <li><button class="nav-btn" data-page="security">Cybersecurity</button></li>
+      <li><button class="nav-btn" data-page="cyber">Hackathon Leaderboards</button></li>
       <li><a class="nav-btn" href="/faq">FAQ</a></li>
       <li><a class="nav-btn" href="/login.html" data-auth-action>Login</a></li>
       <li><a class="nav-btn" href="/admin.html" data-admin-link>Admin</a></li>
@@ -163,9 +164,104 @@
       </div>
     </section>
 
+    <section class="page" id="page-security">
+      <div class="page-head">
+        <p class="section-kicker">Cybersecurity Insights</p>
+        <h2>Start Here Before The CTF.</h2>
+        <p>Use this page as a beginner guide for the tools, devices, and industrial protocols used inside the Phygital Lab hackathon rooms.</p>
+      </div>
+
+      <div class="security-hero">
+        <div>
+          <span>Learning Path</span>
+          <h3>From model to attack surface</h3>
+          <p>Students first learn what the physical device is, then identify its protocol, inspect traffic, test safe lab commands, and finally document how to defend it.</p>
+        </div>
+        <img src="/static/images/datacenter.jpeg" alt="Data center phygital lab model">
+      </div>
+
+      <div class="security-grid">
+        <article class="security-card">
+          <img src="/static/images/industry.jpeg" alt="Industrial monitoring model">
+          <div>
+            <span>Core Devices</span>
+            <h3>PLC</h3>
+            <p>A Programmable Logic Controller runs logic for machines, pumps, gates, HVAC, traffic lights, and other physical processes. In the lab, PLC exposure helps students understand why OT networks need strong segmentation.</p>
+          </div>
+        </article>
+        <article class="security-card">
+          <img src="/static/images/lift-house-model.jpeg" alt="Lift house sensor model">
+          <div>
+            <span>Core Devices</span>
+            <h3>Raspberry Pi</h3>
+            <p>A small Linux computer used as a gateway, sensor node, dashboard host, or automation bridge. It is useful for learning because students can see how software connects physical sensors to network services.</p>
+          </div>
+        </article>
+        <article class="security-card">
+          <img src="/static/images/water.jpg" alt="Water treatment model">
+          <div>
+            <span>Industrial Protocol</span>
+            <h3>Modbus</h3>
+            <p>Modbus is a common industrial protocol for reading and writing coils or registers. The CTF rooms use Modbus concepts to teach port discovery, register mapping, safe writes, and why unauthenticated control traffic is risky.</p>
+          </div>
+        </article>
+        <article class="security-card">
+          <img src="/static/images/Airport.jpg" alt="Airport model">
+          <div>
+            <span>Industrial Protocol</span>
+            <h3>OPC UA</h3>
+            <p>OPC UA lets clients browse industrial objects and read or write values. In airport scenarios, it explains how door and baggage systems can expose objects, attributes, and weak authentication paths.</p>
+          </div>
+        </article>
+        <article class="security-card">
+          <img src="/static/images/IMG_0888.jpeg" alt="Building and sensor model">
+          <div>
+            <span>IoT Protocol</span>
+            <h3>MQTT</h3>
+            <p>MQTT is a lightweight publish/subscribe protocol. Students learn how topics, wildcards, publishers, subscribers, authentication, and ACLs affect sensor dashboards and false-data injection risks.</p>
+          </div>
+        </article>
+        <article class="security-card">
+          <img src="/static/images/power plant.jpeg" alt="Power grid model">
+          <div>
+            <span>Monitoring</span>
+            <h3>SCADA And Node-RED</h3>
+            <p>SCADA dashboards show live plant state. Node-RED is often used to connect sensors, protocols, and dashboards. These views help students compare cyber activity with real physical model behavior.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="tool-strip">
+        <article>
+          <strong>Kali Linux</strong>
+          <p>Attacker workstation used for scanning, packet analysis, and lab-only command testing.</p>
+        </article>
+        <article>
+          <strong>Nmap</strong>
+          <p>Discovers live hosts, open ports, and service names before any deeper testing.</p>
+        </article>
+        <article>
+          <strong>Wireshark</strong>
+          <p>Captures packets so students can understand protocol traffic and payload formats.</p>
+        </article>
+        <article>
+          <strong>Metasploit</strong>
+          <p>Provides modules such as Modbus clients for controlled register read/write labs.</p>
+        </article>
+        <article>
+          <strong>Netcat</strong>
+          <p>Sends or receives raw TCP data, useful for safe lab payload delivery and testing.</p>
+        </article>
+        <article>
+          <strong>Blue Team</strong>
+          <p>Focuses on segmentation, authentication, ACLs, logging, alerting, and recovery.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="page" id="page-cyber">
       <div class="page-head">
-        <p class="section-kicker">Cybersecurity Leaderboard</p>
+        <p class="section-kicker">Hackathon Leaderboards</p>
         <h2>Model CTF Rooms And Scores</h2>
         <p>Open model CTF rooms, view leaderboards, and track Red Team / Blue Team challenge progress for every Phygital Lab model.</p>
       </div>
