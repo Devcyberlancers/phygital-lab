@@ -273,6 +273,8 @@ window.CTF = (function () {
           ? renderWaterTreatmentTaskRoom(challenges)
           : category === 'industry'
           ? renderIndustryTaskRoom(challenges)
+          : category === 'hospital'
+          ? renderHospitalTaskRoom(challenges)
           : `<div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
               ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
             </div>`}`;
@@ -585,6 +587,50 @@ window.CTF = (function () {
       </div>`;
   }
 
+  function renderHospitalTaskRoom(challenges) {
+    const definitions = [
+      ['1', 'Network Discovery', 'Identify the Windows-based Hospital server inside the approved 172.16.17.0/24 lab network.'],
+      ['2', 'Port And Service Enumeration', 'Enumerate exposed services and record the web stack and database service.'],
+      ['3', 'Web Application Discovery', 'Inspect the landing page, robots.txt, and hidden directories to locate the EHR application and exposed clues.'],
+      ['4', 'Credential Discovery', 'Use the onboarding evidence to identify the weak temporary-account policy and obtain the room flag.'],
+      ['5', 'OpenEMR Access', 'Authenticate to the EHR with the credentials recovered during enumeration.'],
+      ['6', 'Vulnerability Identification', 'Confirm the installed OpenEMR version and identify the approved authenticated RCE research path.'],
+      ['7', 'Remote Code Execution', 'Use the authorized lab PoC, identify the uploaded web-shell behavior, and confirm the execution context.'],
+      ['8', 'Database Credential Discovery', 'Use command execution to locate phpMyAdmin configuration evidence and recover the lab database credential.'],
+      ['9', 'phpMyAdmin Access', 'Access the database console, locate the OpenEMR database, and identify the dummy patient.'],
+      ['10', 'Medication Record Manipulation', 'Locate the prescription table and verify the controlled dummy-patient medication change.'],
+      ['11', 'Cyber-Physical Impact', 'Observe how the physical Hospital model reflects the backend medication change.'],
+      ['12', 'Defensive Analysis', 'Identify the access-control, upload, database, and monitoring failures that enabled the attack chain.']
+    ];
+    const groups = definitions.map(([no, title, intro]) => ({
+      no,
+      title,
+      intro,
+      items: challenges.filter((challenge) => challenge.title.startsWith(`Task ${no} `))
+    })).filter((group) => group.items.length);
+    const completedGroups = groups.filter((group) => group.items.every((item) => item.solved)).length;
+
+    return `
+      <div class="ctf-dc-target">
+        <div>
+          <span>Target IP</span>
+          <strong>172.16.17.217</strong>
+        </div>
+        <div>
+          <span>Application</span>
+          <strong>OpenEMR</strong>
+        </div>
+        <p>This is an authorized lab environment. Work only against the designated Hospital target and restore the dummy patient record after testing.</p>
+      </div>
+      <div class="ctf-task-list-head">
+        <h3>Tasks</h3>
+        <span>${completedGroups} / ${groups.length} complete</span>
+      </div>
+      <div class="ctf-task-list">
+        ${groups.map((group) => renderDataCenterTaskGroup(group)).join('')}
+      </div>`;
+  }
+
   function renderDataCenterTaskGroup(group) {
     const complete = group.items.every((item) => item.solved);
     return `
@@ -677,9 +723,9 @@ window.CTF = (function () {
         tags: ['OPC UA', 'MQTT', 'HTTP MITM', 'FTP Billboard']
       },
       hospital: {
-        title: 'Hospital OpenEMR Authenticated RCE',
-        description: 'Investigate a Hospital OpenEMR 5.0.1 application where authenticated RCE can lead to host access, phpMyAdmin credential exposure, and medication-record tampering risk. Complete enumeration, impact analysis, recovery, and Blue Team hardening tasks.',
-        tags: ['OpenEMR', 'TCP/80', 'Authenticated RCE', 'Red + Blue Team']
+        title: 'Hospital EHR Compromise',
+        description: 'Move from network and web enumeration to OpenEMR access, authenticated RCE validation, phpMyAdmin discovery, dummy-patient medication manipulation, and cyber-physical impact analysis.',
+        tags: ['OpenEMR 5.0.1', 'Windows + PHP', 'Authenticated RCE', 'Patient Safety']
       },
       'lift-house': {
         title: 'Lift House Gas, Fire, And Elevator Intrusion',
@@ -793,7 +839,7 @@ window.CTF = (function () {
         resEl.textContent = result.msg;
       }
       if (result.correct) {
-        if (category === 'data-center' || category === 'water-treatment' || category === 'industry') {
+        if (category === 'data-center' || category === 'water-treatment' || category === 'industry' || category === 'hospital') {
           markQuestionSolvedInPlace(id);
         } else {
           setTimeout(() => renderBoard(category, containerId), 900);

