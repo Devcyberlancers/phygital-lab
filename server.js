@@ -137,7 +137,14 @@ const legacyHospitalChallengeIds = new Set([
   "hospital_room_007",
   "hospital_room_008",
   "hospital_room_009",
-  "hospital_room_010"
+  "hospital_room_010",
+  "hospital_ehr_room_034",
+  "hospital_ehr_room_035",
+  "hospital_ehr_room_036",
+  "hospital_ehr_room_037",
+  "hospital_ehr_room_038",
+  "hospital_ehr_room_039",
+  "hospital_ehr_room_040"
 ]);
 const legacyPowerGridChallengeIds = new Set([
   "power-grid_001",
@@ -511,14 +518,7 @@ seedChallenges.hospital = [
   ["030", 10, "Prescription Table", "Which table is used to store prescription records?", 150, "prescriptions", "Search for table names containing pres or med."],
   ["031", 10, "Inserted Medication", "What medication name was inserted for the dummy patient?", 150, "HACKED_MEDICATION", "Verify the inserted prescription row for patient_id 1."],
   ["032", 10, "Inserted Dosage", "What dosage value was inserted?", 150, "999mg", "Read the dosage column in the new prescription row."],
-  ["033", 10, "Medication Flag", "Submit the final medication-manipulation flag.", 300, "FLAG{patient_medication_altered}", "The final flag is stored in the prescription note field."],
-  ["034", 11, "Patient Display", "What patient-facing display component reflects the medication change?", 100, "OLED display", "Observe the physical hospital model after the database change."],
-  ["035", 11, "ECG Impact", "What happens to the ECG graph after successful medication tampering?", 150, "goes flatline", "Describe the visible graph state in a short phrase."],
-  ["036", 11, "Final Physical Impact", "What is the final impact of this attack?", 200, "dummy patient medication modified", "Summarize the cyber-physical outcome."],
-  ["037", 12, "Leaked-Clue Folder", "Which exposed folder leaked the initial access clue?", 100, "/backup/", "The onboarding file was exposed beneath this path."],
-  ["038", 12, "Exposed Management Tool", "Which exposed management tool allowed direct database access?", 100, "phpMyAdmin", "It was discovered during directory enumeration."],
-  ["039", 12, "Credential Protection", "Which security control could have reduced the risk of weak credentials?", 150, "MFA", "Add a second factor so a guessed temporary password is insufficient."],
-  ["040", 12, "Upload Execution Control", "Which security control could have prevented direct execution of uploaded PHP files?", 200, "disable script execution in upload directories", "Uploaded documents should be stored outside executable web paths."]
+  ["033", 10, "Medication Flag", "Submit the final medication-manipulation flag.", 300, "FLAG{patient_medication_altered}", "The final flag is stored in the prescription note field."]
 ].map(([id, task, title, description, points, flag, hint]) => ({
   id: `hospital_ehr_room_${id}`,
   category: "hospital",

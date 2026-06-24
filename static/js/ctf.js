@@ -598,9 +598,7 @@ window.CTF = (function () {
       ['7', 'Remote Code Execution', 'Use the authorized lab PoC, identify the uploaded web-shell behavior, and confirm the execution context.'],
       ['8', 'Database Credential Discovery', 'Use command execution to locate phpMyAdmin configuration evidence and recover the lab database credential.'],
       ['9', 'phpMyAdmin Access', 'Access the database console, locate the OpenEMR database, and identify the dummy patient.'],
-      ['10', 'Medication Record Manipulation', 'Locate the prescription table and verify the controlled dummy-patient medication change.'],
-      ['11', 'Cyber-Physical Impact', 'Observe how the physical Hospital model reflects the backend medication change.'],
-      ['12', 'Defensive Analysis', 'Identify the access-control, upload, database, and monitoring failures that enabled the attack chain.']
+      ['10', 'Medication Record Manipulation', 'Locate the prescription table and verify the controlled dummy-patient medication change.']
     ];
     const groups = definitions.map(([no, title, intro]) => ({
       no,
