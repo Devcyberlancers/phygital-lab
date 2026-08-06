@@ -73,7 +73,7 @@ window.CTF = (function () {
         <div class="ctf-student-modal" role="dialog" aria-modal="true" aria-labelledby="ctf-student-title">
           <button class="ctf-student-close" type="button" aria-label="Close">&times;</button>
           <div class="ctf-student-kicker">Student Entry</div>
-          <h2 id="ctf-student-title">Join the CTF</h2>
+          <h2 id="ctf-student-title">Phygital Lab Infrastructure Experience</h2>
           <p>Enter your name and email once. Your score and rank will continue from the same email.</p>
           <label for="ctf-student-name">Name</label>
           <input id="ctf-student-name" type="text" autocomplete="name" placeholder="Student name" />

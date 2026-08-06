@@ -191,9 +191,9 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
 
 .hero-inner h1 {
   font-family: "Inter", system-ui, sans-serif;
-  font-size: clamp(4rem, 10vw, 8.5rem);
-  line-height: 0.86;
-  letter-spacing: -0.05em;
+  font-size: clamp(3.4rem, 7.2vw, 6.4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
   margin: 0.35rem 0 1.25rem;
 }
 .hero-kicker { animation: fadeRise 0.7s 0.1s ease both; }
@@ -1111,13 +1111,14 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
 .login-card h1,
 .login-card h2 {
   margin: 0;
-  line-height: 1;
+  line-height: 1.08;
 }
 .login-card h1 {
-  font-size: clamp(2.35rem, 6vw, 4.6rem);
+  font-size: clamp(2.1rem, 4.1vw, 3.4rem);
+  max-width: 560px;
 }
 .login-card h2 {
-  font-size: clamp(1.85rem, 4vw, 3rem);
+  font-size: clamp(1.75rem, 3.2vw, 2.65rem);
 }
 .login-card p {
   max-width: 620px;
@@ -1689,7 +1690,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; co
   .nav-logo-img { width: 210px; max-width: 58vw; height: 42px; }
   .overview-grid, .domain-grid, .feature-grid, .cyber-scope-grid, .security-grid, .tool-strip { grid-template-columns: 1fr; }
   .hero { padding-top: 2rem; }
-  .hero-inner h1 { font-size: clamp(3.2rem, 18vw, 5rem); }
+  .hero-inner h1 { font-size: clamp(2.8rem, 13vw, 4.2rem); }
   .detail-banner { min-height: 280px; }
   .domain-visual { right: -120px; bottom: 8vh; width: 520px; height: 320px; opacity: 0.16; }
   .cyber-card span { font-size: clamp(1.5rem, 12vw, 2.45rem); }
