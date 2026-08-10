@@ -1738,15 +1738,31 @@ function adminChallenge(ch) {
   };
 }
 
+function getTaskNumber(title, id) {
+  const match = String(title || "").match(/Task\s+(\d+)/i);
+  if (match) return parseInt(match[1], 10);
+  const idMatch = String(id || "").match(/_(\d+)$/);
+  if (idMatch) return parseInt(idMatch[1], 10);
+  return 9999;
+}
+
+function sortChallenges(list) {
+  return list.slice().sort((a, b) => {
+    const catComp = (a.category || "").localeCompare(b.category || "");
+    if (catComp !== 0) return catComp;
+    const numA = getTaskNumber(a.title, a.id);
+    const numB = getTaskNumber(b.title, b.id);
+    if (numA !== numB) return numA - numB;
+    return (a.id || "").localeCompare(b.id || "");
+  });
+}
+
 function groupedChallenges(db, includeFlag = false) {
   const grouped = Object.fromEntries(domainIds.map((id) => [id, []]));
-  db.challenges
-    .slice()
-    .sort((a, b) => a.category.localeCompare(b.category) || a.id.localeCompare(b.id))
-    .forEach((ch) => {
-      if (!grouped[ch.category]) grouped[ch.category] = [];
-      grouped[ch.category].push(includeFlag ? adminChallenge(ch) : ch);
-    });
+  sortChallenges(db.challenges).forEach((ch) => {
+    if (!grouped[ch.category]) grouped[ch.category] = [];
+    grouped[ch.category].push(includeFlag ? adminChallenge(ch) : ch);
+  });
   return grouped;
 }
 
@@ -1830,13 +1846,13 @@ async function handleApi(req, res, url) {
     return sendJson(res, 200, { ok: true, student });
   }
 
-  if (req.method === "GET" && url.pathname === "/api/challenges") {
+  if (req.method === "GET" && (pathname === "/api/challenges" || url.pathname === "/api/challenges")) {
     const category = requireCategory(url.searchParams.get("category"));
     const studentId = Number(url.searchParams.get("studentId") || 0);
     if (!category) return sendJson(res, 400, { ok: false, msg: "Invalid category." });
-    const challenges = db.challenges
-      .filter((ch) => ch.category === category)
-      .map((ch) => publicChallenge(ch, db, studentId));
+    const challenges = sortChallenges(
+      db.challenges.filter((ch) => ch.category === category)
+    ).map((ch) => publicChallenge(ch, db, studentId));
     return sendJson(res, 200, { ok: true, challenges });
   }
 

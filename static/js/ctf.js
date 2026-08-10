@@ -793,7 +793,8 @@ window.CTF = (function () {
   function renderChallenge(ch, index = 0, roomStyle = false) {
     const solved = !!ch.solved;
     const attempts = ch.attempts || 0;
-    const taskNo = String(index + 1).padStart(2, '0');
+    const match = String(ch.title || '').match(/^Task\s+(\d+)/i);
+    const taskNo = match ? String(match[1]).padStart(2, '0') : String(index + 1).padStart(2, '0');
     return `
       <div class="ctf-card ${roomStyle ? 'ctf-room-card' : ''} ${solved ? 'ctf-card-solved' : ''}" id="ctf-card-${ch.id}">
         ${roomStyle ? `<div class="ctf-room-step ${solved ? 'done' : ''}">${solved ? 'OK' : taskNo}</div>` : ''}
