@@ -1799,8 +1799,9 @@ function overallLeaderboard(db, studentId) {
 
 async function handleApi(req, res, url) {
   const db = readDb();
+  const pathname = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, "") : url.pathname;
 
-  if (req.method === "GET" && url.pathname === "/api/domains") {
+  if (req.method === "GET" && pathname === "/api/domains") {
     return sendJson(res, 200, {
       ok: true,
       maintenance: db.maintenance || {},
@@ -1910,7 +1911,7 @@ async function handleApi(req, res, url) {
     return sendJson(res, 401, { ok: false, msg: "Admin login required." });
   }
 
-  if (req.method === "GET" && url.pathname === "/api/admin/challenges") {
+  if (req.method === "GET" && (pathname === "/api/admin/challenges")) {
     return sendJson(res, 200, {
       ok: true,
       maintenance: db.maintenance || {},
@@ -1923,7 +1924,7 @@ async function handleApi(req, res, url) {
     });
   }
 
-  if (req.method === "POST" && url.pathname === "/api/admin/maintenance") {
+  if (req.method === "POST" && (pathname === "/api/admin/maintenance")) {
     const payload = await readBody(req);
     const domainId = String(payload.domainId || "").trim();
     if (!domainId || !domainIds.includes(domainId)) {
