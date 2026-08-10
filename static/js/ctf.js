@@ -275,9 +275,9 @@ window.CTF = (function () {
           ? renderIndustryTaskRoom(challenges)
           : category === 'hospital'
           ? renderHospitalTaskRoom(challenges)
-          : `<div class="ctf-challenges ${isGuidedRoom ? 'ctf-room-tasks' : ''}">
-              ${challenges.map((challenge, index) => renderChallenge(challenge, index, isGuidedRoom)).join('')}
-            </div>`}`;
+          : category === 'lift-house'
+          ? renderLiftHouseTaskRoom(challenges)
+          : renderGenericTaskRoom(category, challenges)}`;
 
       bindBoard(container, category, containerId);
     } catch (e) {
@@ -627,6 +627,164 @@ window.CTF = (function () {
       <div class="ctf-task-list">
         ${groups.map((group) => renderDataCenterTaskGroup(group)).join('')}
       </div>`;
+  }
+
+  const roomTargets = {
+    'lift-house': { ip: '172.16.17.129', protocol: 'Modbus TCP / WebSocket / CoAP' },
+    airport: { ip: '172.16.17.123 - .125, .130', protocol: 'OPC UA / MQTT' },
+    'power-grid': { ip: '172.16.17.128', protocol: 'ISO-TSAP / S7COMM (TCP/102)' },
+    'toll-plaza': { ip: '172.16.17.131', protocol: 'RFID MIFARE' },
+    'stock-market': { ip: '172.16.17.132', protocol: 'HTTP / FTP' },
+    metro: { ip: '172.16.17.127', protocol: 'Modbus TCP (TCP/502)' },
+    'traffic-lights': { ip: '172.16.17.134', protocol: 'MQTT (TCP/1883)' }
+  };
+
+  function renderLiftHouseTaskRoom(challenges) {
+    const groups = [
+      {
+        no: '1',
+        title: 'Reconnaissance - Confirm the Attack Surface',
+        intro: 'Identify the Lift House target IP (172.16.17.129) and scan exposed ports for Modbus TCP, WebSocket, and CoAP services.',
+        items: challenges.filter(c => {
+          const match = c.title.match(/^Task\s+(\d+)/i);
+          const num = match ? parseInt(match[1], 10) : 0;
+          return num === 1 || num === 2 || num === 11 || num === 12;
+        })
+      },
+      {
+        no: '2',
+        title: 'Protocol Analysis - WebSocket & CoAP Sensors',
+        intro: 'Inspect false-data injection paths for gas sensors over WebSocket and CoAP fire sensor MITM traffic filters.',
+        items: challenges.filter(c => {
+          const match = c.title.match(/^Task\s+(\d+)/i);
+          const num = match ? parseInt(match[1], 10) : 0;
+          return (num >= 3 && num <= 9) || num === 13;
+        })
+      },
+      {
+        no: '3',
+        title: 'Exploitation - Modbus TCP Elevator Coils',
+        intro: 'Correlate physical elevator movement with Modbus Coils (Coil 0 = UP, Coil 1 = DOWN) and discrete input sensor events.',
+        items: challenges.filter(c => {
+          const match = c.title.match(/^Task\s+(\d+)/i);
+          const num = match ? parseInt(match[1], 10) : 0;
+          return num === 14 || num === 15;
+        })
+      },
+      {
+        no: '4',
+        title: 'Blue Team - Detection And Remediation',
+        intro: 'Implement network segmentation, prevent ARP spoofing, restrict TCP/502 and CoAP ports, and document elevator hardening controls.',
+        items: challenges.filter(c => {
+          const match = c.title.match(/^Task\s+(\d+)/i);
+          const num = match ? parseInt(match[1], 10) : 0;
+          return num === 10 || num === 16;
+        })
+      }
+    ];
+
+    const assigned = new Set(groups.flatMap(g => g.items.map(i => i.id)));
+    const unassigned = challenges.filter(c => !assigned.has(c.id));
+    if (unassigned.length) {
+      unassigned.forEach(c => {
+        const match = c.title.match(/^Task\s+(\d+)/i);
+        const taskNum = match ? parseInt(match[1], 10) : 1;
+        let g = groups.find(group => group.no == taskNum);
+        if (!g) {
+          g = { no: String(taskNum), title: `Task ${taskNum} - Exercise`, intro: 'Complete the challenges for this task phase.', items: [] };
+          groups.push(g);
+        }
+        g.items.push(c);
+      });
+    }
+
+    groups.sort((a, b) => parseInt(a.no) - parseInt(b.no));
+    const validGroups = groups.filter(g => g.items.length);
+    const completedGroups = validGroups.filter((g) => g.items.every((item) => item.solved)).length;
+
+    return `
+      <div class="ctf-dc-target">
+        <div>
+          <span>Target IP</span>
+          <strong>172.16.17.129</strong>
+        </div>
+        <div>
+          <span>Protocol</span>
+          <strong>Modbus TCP / WebSocket / CoAP</strong>
+        </div>
+        <p>This is an authorized lab environment. Perform targeted analysis against the Lift House elevator PLC and restore safe state after testing.</p>
+      </div>
+      <div class="ctf-task-list-head">
+        <h3>Tasks</h3>
+        <span>${completedGroups} / ${validGroups.length} complete</span>
+      </div>
+      <div class="ctf-task-list">
+        ${validGroups.map((group) => renderDataCenterTaskGroup(group)).join('')}
+      </div>`;
+  }
+
+  function renderGenericTaskRoom(category, challenges) {
+    const targetInfo = roomTargets[category] || { ip: '172.16.17.X', protocol: 'Industrial / IoT Protocol' };
+    const groupsMap = {};
+
+    challenges.forEach((c) => {
+      const match = c.title.match(/^Task\s+(\d+)/i);
+      let num = match ? match[1] : '1';
+      if (parseInt(num) > 4) {
+        if (parseInt(num) <= 8) num = '2';
+        else if (parseInt(num) <= 14) num = '3';
+        else num = '4';
+      }
+
+      if (!groupsMap[num]) {
+        groupsMap[num] = {
+          no: num,
+          title: getGroupTitle(category, num, c.title),
+          intro: 'Complete the challenges for this task phase.',
+          items: []
+        };
+      }
+      groupsMap[num].items.push(c);
+    });
+
+    let groups = Object.values(groupsMap).sort((a, b) => parseInt(a.no) - parseInt(b.no));
+    if (groups.length === 0) {
+      groups = [{ no: '1', title: 'Task 1 - Challenges', intro: 'Complete the tasks in this room.', items: challenges }];
+    }
+
+    const completedGroups = groups.filter((g) => g.items.every((item) => item.solved)).length;
+
+    return `
+      <div class="ctf-dc-target">
+        <div>
+          <span>Target IP</span>
+          <strong>${targetInfo.ip}</strong>
+        </div>
+        <div>
+          <span>Protocol</span>
+          <strong>${targetInfo.protocol}</strong>
+        </div>
+        <p>This is an authorized lab environment. Complete all tasks for this room and restore safe operational state after testing.</p>
+      </div>
+      <div class="ctf-task-list-head">
+        <h3>Tasks</h3>
+        <span>${completedGroups} / ${groups.length} complete</span>
+      </div>
+      <div class="ctf-task-list">
+        ${groups.map((group) => renderDataCenterTaskGroup(group)).join('')}
+      </div>`;
+  }
+
+  function getGroupTitle(category, num, firstTitle) {
+    const cleanTitle = firstTitle.replace(/^Task\s+\d+\s*[-:]?\s*/i, '').trim();
+    if (cleanTitle) return cleanTitle;
+    const defaultTitles = {
+      '1': 'Reconnaissance - Confirm the Attack Surface',
+      '2': 'Protocol Analysis - Understand the Attack Vector',
+      '3': 'Exploitation - Inject & Correlate Physical State',
+      '4': 'Blue Team - Detection And Remediation'
+    };
+    return defaultTitles[num] || `Task ${num} - Exercise`;
   }
 
   function renderDataCenterTaskGroup(group) {
