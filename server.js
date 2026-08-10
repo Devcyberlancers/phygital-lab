@@ -530,149 +530,194 @@ seedChallenges.hospital = [
 }));
 
 seedChallenges["lift-house"] = [
+  // Task 1 — Reconnaissance: Discover the Elevator Controller
   {
-    id: "lift_house_room_001",
+    id: "lift_house_q1_1",
     category: "lift-house",
-    title: "Task 1 - Lift House Room Briefing",
-    description: "You are investigating the Lift House model where gas sensor data is transported over WebSocket and fire sensor data can be observed over CoAP. Open the Lift House Red Team scenario page and identify the two gas sensor IP addresses.",
-    points: 50,
-    flag: "FLAG{lift_house_room_started}",
-    hint: "The gas sensor section lists two IP addresses."
-  },
-  {
-    id: "lift_house_room_002",
-    category: "lift-house",
-    title: "Task 2 - Gas Sensor Targets",
-    description: "Identify the two IP addresses involved in the Lift House gas sensor WebSocket attack path.",
+    title: "Task 1 - Modbus Port",
+    description: "What TCP port is being used for Modbus communication?",
     points: 100,
-    flag: "FLAG{lift_house_gas_207_104}",
-    hint: "The target pair ends in .207 and .104."
+    flag: "502",
+    hint: "Look for the standard Modbus TCP service in the Nmap results."
   },
   {
-    id: "lift_house_room_003",
+    id: "lift_house_q1_2",
     category: "lift-house",
-    title: "Task 3 - WebSocket Endpoint",
-    description: "Identify the WebSocket endpoint path used in the sample gas sensor false-data injection program.",
-    points: 150,
-    flag: "FLAG{lift_house_ws_gas_h2}",
-    hint: "Look at the URI in the sample WebSocket program."
-  },
-  {
-    id: "lift_house_room_004",
-    category: "lift-house",
-    title: "Task 4 - Fake Gas Payload",
-    description: "Identify the sample fake payload used to simulate a very high H2 gas reading.",
-    points: 150,
-    flag: "FLAG{lift_house_h2_99_99}",
-    hint: "The payload starts with H2 and contains the high value 99.99."
-  },
-  {
-    id: "lift_house_room_005",
-    category: "lift-house",
-    title: "Task 5 - Fire Sensor Protocol",
-    description: "Identify the protocol and port used by the Lift House fire sensor MITM exercise.",
-    points: 150,
-    flag: "FLAG{lift_house_coap_5684}",
-    hint: "The fire sensor section lists CoAP and the port."
-  },
-  {
-    id: "lift_house_room_006",
-    category: "lift-house",
-    title: "Task 6 - Fire Sensor Server",
-    description: "Identify the server IP address used as target 1 during the fire sensor CoAP MITM exercise.",
-    points: 150,
-    flag: "FLAG{lift_house_fire_server_172_16_17_113}",
-    hint: "The fire sensor section labels this IP as Server."
-  },
-  {
-    id: "lift_house_room_007",
-    category: "lift-house",
-    title: "Task 7 - CoAP Packet Filter",
-    description: "Identify the Wireshark display filter used to focus only on CoAP traffic during the fire sensor exercise.",
-    points: 150,
-    flag: "FLAG{lift_house_wireshark_coap}",
-    hint: "The scenario says to apply this filter in Wireshark."
-  },
-  {
-    id: "lift_house_room_008",
-    category: "lift-house",
-    title: "Task 8 - Ettercap Filter Logic",
-    description: "Identify the value replacement shown in the sample ettercap filter for the fire sensor MITM drill.",
-    points: 200,
-    flag: "FLAG{lift_house_true_to_false}",
-    hint: "The sample filter replaces one boolean value with another."
-  },
-  {
-    id: "lift_house_room_009",
-    category: "lift-house",
-    title: "Task 9 - Filter Compilation",
-    description: "Identify the command-line tool used to compile coap_filter.ecf into coap_filter.ef.",
-    points: 150,
-    flag: "FLAG{lift_house_etterfilter}",
-    hint: "The command starts with this tool name."
-  },
-  {
-    id: "lift_house_room_010",
-    category: "lift-house",
-    title: "Task 10 - Lift House Hardening Plan",
-    description: "Recommend protections for Lift House sensors: prevent ARP spoofing, segment sensor networks, authenticate WebSocket publishers, protect CoAP traffic, validate sensor ranges, and alert on impossible gas or fire-state changes.",
-    points: 250,
-    flag: "FLAG{lift_house_sensor_hardening}",
-    hint: "Use the Lift House Blue Team hardening checklist."
-  },
-  {
-    id: "lift_house_elevator_001",
-    category: "lift-house",
-    title: "Task 11 - Elevator PLC Discovery",
-    description: "Identify the Lift House elevator PLC target and the protocol used for the elevator control drill.",
+    title: "Task 1 - Nmap Service Name",
+    description: "What service name does Nmap display for port 502?",
     points: 100,
-    flag: "FLAG{lift_house_elevator_modbus_plc}",
-    hint: "The Elevator section lists a PLC IP and Modbus Application Protocol."
+    flag: "mbap",
+    hint: "Check the SERVICE column corresponding to TCP port 502."
   },
   {
-    id: "lift_house_elevator_002",
+    id: "lift_house_q1_3",
     category: "lift-house",
-    title: "Task 12 - Modbus Port Discovery",
-    description: "Run the approved port scan against the elevator PLC and identify the TCP port exposing Modbus Application Protocol.",
+    title: "Task 1 - Web Server Version",
+    description: "What web server was detected on TCP port 80?",
     points: 100,
-    flag: "FLAG{lift_house_elevator_tcp_502}",
-    hint: "The scan command targets the standard Modbus TCP port."
+    flag: "KOS Web Server 2.0",
+    hint: "Review the VERSION column of the Nmap service-detection results."
   },
   {
-    id: "lift_house_elevator_003",
+    id: "lift_house_q1_4",
     category: "lift-house",
-    title: "Task 13 - Modbus Client Module",
-    description: "Identify the Metasploit auxiliary module used to read Lift House elevator Modbus register values.",
-    points: 150,
-    flag: "FLAG{lift_house_modbusclient_module}",
-    hint: "The module path ends with scada/modbusclient."
+    title: "Task 1 - Target MAC Address",
+    description: "What MAC address was identified for the target controller?",
+    points: 100,
+    flag: "8C:F3:19:55:53:CA",
+    hint: "Look near the bottom of the Nmap output."
   },
   {
-    id: "lift_house_elevator_004",
+    id: "lift_house_q1_5",
     category: "lift-house",
-    title: "Task 14 - Floor Register Mapping",
-    description: "Capture elevator register values while someone controls the elevator and identify the register addresses tested for different floors.",
-    points: 200,
-    flag: "FLAG{lift_house_floor_registers_0_1_2_3_4}",
-    hint: "The exercise repeats data_address values from 0 through 4."
+    title: "Task 1 - MAC Vendor",
+    description: "Which industrial automation vendor was associated with the MAC address?",
+    points: 100,
+    flag: "Siemens Industrial Automation Products, Chengdu",
+    hint: "Nmap displays the detected vendor beside the MAC address."
+  },
+
+  // Task 2 — Modbus Service Enumeration
+  {
+    id: "lift_house_q2_1",
+    category: "lift-house",
+    title: "Task 2 - Metasploit Module",
+    description: "Which Metasploit auxiliary module can be used to communicate with the Modbus service?",
+    points: 100,
+    flag: "auxiliary/scanner/scada/modbusclient",
+    hint: "Look under Metasploit's SCADA scanner modules."
   },
   {
-    id: "lift_house_elevator_005",
+    id: "lift_house_q2_2",
     category: "lift-house",
-    title: "Task 15 - Safe Write Validation",
-    description: "Explain why students should only use captured safe floor values when testing write_register actions against the elevator PLC.",
+    title: "Task 2 - Discrete Inputs Action",
+    description: "Which ACTION is used to retrieve the controller's discrete inputs?",
+    points: 100,
+    flag: "READ_DISCRETE_INPUTS",
+    hint: "Discrete inputs normally represent binary field/sensor states."
+  },
+  {
+    id: "lift_house_q2_3",
+    category: "lift-house",
+    title: "Task 2 - Coils Action",
+    description: "Which ACTION is used to retrieve the controller's coils?",
+    points: 100,
+    flag: "READ_COILS",
+    hint: "The movement states were discovered by observing this Modbus data area."
+  },
+
+  // Task 3 — Analyze Elevator Movement
+  {
+    id: "lift_house_q3_1",
+    category: "lift-house",
+    title: "Task 3 - Upward Movement Coil",
+    description: "Which coil becomes active while the elevator moves upward?",
+    points: 100,
+    flag: "Coil 0",
+    hint: "Look for the bit that changes from 0 to 1 during upward movement."
+  },
+  {
+    id: "lift_house_q3_2",
+    category: "lift-house",
+    title: "Task 3 - Downward Movement Coil",
+    description: "Which coil becomes active while the elevator moves downward?",
+    points: 100,
+    flag: "Coil 1",
+    hint: "Compare the DOWN movement with the UP movement."
+  },
+  {
+    id: "lift_house_q3_3",
+    category: "lift-house",
+    title: "Task 3 - Idle Coil Values",
+    description: "What are the first two coil values when the elevator is idle?",
+    points: 100,
+    flag: "0,0",
+    hint: "Both movement states become inactive after the elevator stops."
+  },
+  {
+    id: "lift_house_q3_4",
+    category: "lift-house",
+    title: "Task 3 - Upward Coil Values",
+    description: "What are the first two coil values during upward movement?",
+    points: 100,
+    flag: "1,0",
+    hint: "Coil 0 becomes active during upward movement."
+  },
+  {
+    id: "lift_house_q3_5",
+    category: "lift-house",
+    title: "Task 3 - Downward Coil Values",
+    description: "What are the first two coil values during downward movement?",
+    points: 100,
+    flag: "0,1",
+    hint: "Coil 1 becomes active during downward movement."
+  },
+
+  // Task 4 — Investigate Elevator Sensors
+  {
+    id: "lift_house_q4_1",
+    category: "lift-house",
+    title: "Task 4 - Sensor Reading 1",
+    description: "Which discrete input was observed active in the response [0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0]?",
+    points: 100,
+    flag: "DI 2",
+    hint: "Count the 1-indexed position in the array."
+  },
+  {
+    id: "lift_house_q4_2",
+    category: "lift-house",
+    title: "Task 4 - Sensor Reading 2",
+    description: "Which discrete input was observed active in the response [0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]?",
+    points: 100,
+    flag: "DI 3",
+    hint: "Count the 1-indexed position in the array."
+  },
+  {
+    id: "lift_house_q4_3",
+    category: "lift-house",
+    title: "Task 4 - Position Sensor Inputs",
+    description: "Which two discrete inputs were therefore identified as position/limit sensor events during the experiment?",
+    points: 100,
+    flag: "DI 2, DI 3",
+    hint: "Compare the discrete-input readings captured during elevator travel."
+  },
+
+  // Task 5 — Complete the Investigation
+  {
+    id: "lift_house_q5_1",
+    category: "lift-house",
+    title: "Task 5 - Coil 0 Mapping",
+    description: "Complete the mapping: Coil 0 = ?",
+    points: 100,
+    flag: "UP",
+    hint: "Coil 0 represents elevator direction."
+  },
+  {
+    id: "lift_house_q5_2",
+    category: "lift-house",
+    title: "Task 5 - Coil 1 Mapping",
+    description: "Complete the mapping: Coil 1 = ?",
+    points: 100,
+    flag: "DOWN",
+    hint: "Coil 1 represents elevator direction."
+  },
+  {
+    id: "lift_house_q5_3",
+    category: "lift-house",
+    title: "Task 5 - Industrial Protocol",
+    description: "Which industrial protocol exposed these operational states?",
+    points: 100,
+    flag: "Modbus TCP",
+    hint: "Identified on TCP port 502."
+  },
+  {
+    id: "lift_house_q5_4",
+    category: "lift-house",
+    title: "Task 5 - Final Flag",
+    description: "Submit the final flag.",
     points: 250,
-    flag: "FLAG{lift_house_safe_floor_write_only}",
-    hint: "The safe value must come from observed dashboard-driven elevator behavior."
-  },
-  {
-    id: "lift_house_elevator_006",
-    category: "lift-house",
-    title: "Task 16 - Elevator Blue Team Hardening",
-    description: "Recommend protections for the elevator PLC: restrict TCP/502, segment the PLC network, allow only trusted HMI/SCADA hosts, log register activity, and alert on write_register operations or unexpected floor changes.",
-    points: 250,
-    flag: "FLAG{lift_house_elevator_modbus_hardening}",
-    hint: "Use the Elevator Blue Team response checklist."
+    flag: "FLAG{MODBUS_COIL0_UP_COIL1_DOWN}",
+    hint: "Submit the final room flag."
   }
 ];
 
@@ -1648,7 +1693,8 @@ function readDb() {
   const removedLegacyWarehouse = db.challenges.filter((challenge) => legacyWarehouseChallengeIds.has(challenge.id) || challenge.category === "warehouse").map((challenge) => challenge.id);
   const removedLegacyTrafficLights = db.challenges.filter((challenge) => legacyTrafficLightsChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
   const removedLegacyBanking = db.challenges.filter((challenge) => legacyBankingChallengeIds.has(challenge.id) || challenge.category === "banking").map((challenge) => challenge.id);
-  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter, ...removedLegacyWaterTreatment, ...removedLegacyAirport, ...removedLegacyHospital, ...removedLegacyPowerGrid, ...removedLegacyTollPlaza, ...removedLegacyStockMarket, ...removedLegacyMetro, ...removedLegacyWarehouse, ...removedLegacyTrafficLights, ...removedLegacyBanking];
+  const removedLegacyLiftHouse = db.challenges.filter((challenge) => challenge.category === "lift-house" && !challenge.id.startsWith("lift_house_q")).map((challenge) => challenge.id);
+  const removedLegacy = [...removedLegacyIndustry, ...removedLegacyDataCenter, ...removedLegacyWaterTreatment, ...removedLegacyAirport, ...removedLegacyHospital, ...removedLegacyPowerGrid, ...removedLegacyTollPlaza, ...removedLegacyStockMarket, ...removedLegacyMetro, ...removedLegacyWarehouse, ...removedLegacyTrafficLights, ...removedLegacyBanking, ...removedLegacyLiftHouse];
   if (removedLegacy.length) {
     const removed = new Set(removedLegacy);
     db.challenges = db.challenges.filter((challenge) => !removed.has(challenge.id));
