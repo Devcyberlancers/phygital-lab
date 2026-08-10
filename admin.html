@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
   <style>
     :root { --bg:#07090d; --panel:#101722; --panel2:#172232; --line:rgba(255,255,255,.11); --text:#eff6f6; --muted:#9fb0b5; --cyan:#4dd8ff; --green:#78d56f; --red:#ff6d61; --amber:#f0b64a; }
     * { box-sizing:border-box; margin:0; padding:0; }
@@ -235,13 +236,27 @@
 
     function renderTabs() {
       document.getElementById("tabs").innerHTML = domains.map((d) =>
-        `<button class="tab" id="tab-${d.id}" onclick="switchDomain('${d.id}')">${escapeHtml(d.title)}</button>`
+        `<button class="tab ${d.isMaintenance ? 'tab-maintenance' : ''}" id="tab-${d.id}" onclick="switchDomain('${d.id}')">
+          ${escapeHtml(d.title)} ${d.isMaintenance ? '<span style="color:#fcd34d; font-size:0.85em; margin-left:0.25rem;">🛠️</span>' : ''}
+        </button>`
       ).join("");
     }
 
     function renderPanels() {
       document.getElementById("panels").innerHTML = domains.map((d) => `
         <section class="panel" id="panel-${d.id}">
+          <div class="maintenance-toggle-bar">
+            <div>
+              <strong style="color: #f1f5f9; font-size: 1.05rem;">${escapeHtml(d.title)} Model Status:</strong>
+              <span style="margin-left: 0.5rem; font-size: 0.88rem; color: ${d.isMaintenance ? '#fcd34d' : '#34d399'}; font-weight: 600;">
+                ${d.isMaintenance ? '🛠️ Under Maintenance Mode' : '✅ Active & Operational'}
+              </span>
+            </div>
+            <button type="button" class="btn-maintenance ${d.isMaintenance ? 'active-warning' : ''}" onclick="toggleMaintenance('${d.id}')">
+              ${d.isMaintenance ? '🛠️ Remove Maintenance Mode' : '⚠️ Put Under Maintenance'}
+            </button>
+          </div>
+
           <div class="grid">
             <form class="card" onsubmit="addQuestion(event,'${d.id}')">
               <h2>Add Challenge - ${escapeHtml(d.title)}</h2>
@@ -258,7 +273,16 @@
               </div>
               <div class="err" id="${d.id}-msg"></div>
             </form>
-            <div class="card">
+            <div class="card" style="position: relative; overflow: hidden; min-height: 220px;">
+              ${d.isMaintenance ? `
+                <div class="model-maintenance-overlay">
+                  <div class="maintenance-badge-container">
+                    <span class="maintenance-dot"></span>
+                    <span>🛠️ Under Maintenance</span>
+                  </div>
+                  <div class="maintenance-subtitle">Students see transparent overlay on this model</div>
+                </div>
+              ` : ''}
               <h2>${escapeHtml(d.title)} Summary</h2>
               <div class="stats" id="${d.id}-stats"></div>
               <p class="muted">Questions added here appear immediately on the student CTF board for this domain.</p>
@@ -267,6 +291,24 @@
           <div id="${d.id}-list"></div>
         </section>
       `).join("");
+    }
+
+    async function toggleMaintenance(domainId) {
+      const domain = domains.find((d) => d.id === domainId);
+      if (!domain) return;
+      const newStatus = !domain.isMaintenance;
+      try {
+        const res = await api("/api/admin/maintenance", {
+          method: "POST",
+          body: JSON.stringify({ domainId, isMaintenance: newStatus })
+        });
+        domain.isMaintenance = res.isMaintenance;
+        renderTabs();
+        renderPanels();
+        switchDomain(domainId);
+      } catch (err) {
+        alert("Failed to update maintenance mode: " + err.message);
+      }
     }
 
     function switchDomain(id) {

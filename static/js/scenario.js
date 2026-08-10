@@ -2140,10 +2140,27 @@ function renderCommands(commandText) {
   }).join("");
 }
 
+async function checkScenarioMaintenance(domain) {
+  try {
+    const res = await fetch("/api/domains");
+    const data = await res.json();
+    if (data.ok && data.maintenance && data.maintenance[domain]) {
+      const banner = document.createElement("div");
+      banner.className = "detail-maintenance-banner";
+      banner.style.margin = "1rem auto";
+      banner.style.width = "min(1180px, calc(100% - 2rem))";
+      banner.innerHTML = `<span class="maintenance-dot"></span><span>🛠️ THIS MODEL (${domain.toUpperCase().replace("-", " ")}) IS CURRENTLY UNDER MAINTENANCE</span>`;
+      const container = document.querySelector("main") || document.body;
+      container.insertBefore(banner, container.firstChild);
+    }
+  } catch (e) {}
+}
+
 function renderScenario() {
   const params = new URLSearchParams(window.location.search);
   const domain = params.get("domain") || "industry";
   const mode = params.get("mode") || "red";
+  checkScenarioMaintenance(domain);
   const showPythonCode = false;
   const scenario = getScenario(domain, mode);
   const { isStudent } = currentRole();

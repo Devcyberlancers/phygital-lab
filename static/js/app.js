@@ -339,18 +339,46 @@ function showPage(pageName) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+let maintenanceData = {};
+
+async function fetchDomainMaintenance() {
+  try {
+    const res = await fetch("/api/domains");
+    const data = await res.json();
+    if (data.ok && data.maintenance) {
+      maintenanceData = data.maintenance;
+      domains.forEach((domain) => {
+        domain.isMaintenance = Boolean(data.maintenance[domain.id]);
+      });
+    }
+  } catch (e) {
+    console.warn("Could not fetch domain maintenance info:", e);
+  }
+}
+
 function renderDomains(filter = "all") {
   const grid = document.getElementById("domain-grid");
+  if (!grid) return;
   grid.innerHTML = "";
   domains
     .filter((domain) => filter === "all" || domain.group === filter)
     .forEach((domain) => {
       const card = document.createElement("article");
-      card.className = "domain-card reveal";
+      const isMaint = Boolean(domain.isMaintenance || maintenanceData[domain.id]);
+      card.className = `domain-card reveal ${isMaint ? 'is-maintenance' : ''}`;
       card.style.setProperty("--accent", domain.accent);
       card.style.setProperty("--reveal-delay", `${Math.min(grid.children.length * 55, 420)}ms`);
       card.tabIndex = 0;
       card.innerHTML = `
+        ${isMaint ? `
+          <div class="model-maintenance-overlay">
+            <div class="maintenance-badge-container">
+              <span class="maintenance-dot"></span>
+              <span>🛠️ UNDER MAINTENANCE</span>
+            </div>
+            <div class="maintenance-subtitle">System updates in progress</div>
+          </div>
+        ` : ''}
         <h3>${domain.title}</h3>
         <p>${domain.summary}</p>
         <div class="tag-row">
@@ -377,6 +405,19 @@ function openDomain(id) {
   document.getElementById("detail-category").textContent = currentDomain.group.replace("-", " ");
   document.getElementById("detail-title").textContent = currentDomain.title;
   document.getElementById("detail-summary").textContent = currentDomain.summary;
+
+  const isMaint = Boolean(currentDomain.isMaintenance || maintenanceData[currentDomain.id]);
+  let maintBanner = document.getElementById("detail-maintenance-banner");
+  if (!maintBanner) {
+    maintBanner = document.createElement("div");
+    maintBanner.id = "detail-maintenance-banner";
+    maintBanner.className = "detail-maintenance-banner";
+    maintBanner.innerHTML = `<span class="maintenance-dot"></span><span>🛠️ THIS MODEL IS CURRENTLY UNDER MAINTENANCE</span>`;
+    const titleBlock = document.querySelector(".detail-title-block");
+    if (titleBlock) titleBlock.appendChild(maintBanner);
+  }
+  maintBanner.style.display = isMaint ? "flex" : "none";
+
   document.getElementById("next-model-btn").textContent = `Next: ${nextDomain.title}`;
   const visual = document.getElementById("detail-visual");
   visual.className = `domain-visual visual-${currentDomain.id}`;
@@ -599,15 +640,28 @@ function switchTab(tabName) {
 
 function renderCyberScope() {
   const grid = document.getElementById("cyber-scope-grid");
-  grid.innerHTML = domains.map((domain) => `
-    <article class="cyber-scope-card reveal">
-      <h3>${domain.title}</h3>
-      <p>${domain.red}</p>
-      <div class="cyber-actions">
-        <button class="primary-action" type="button" data-icon="ctf" onclick="openCtfBoard('${domain.id}')">Open Leaderboard</button>
-      </div>
-    </article>
-  `).join("");
+  if (!grid) return;
+  grid.innerHTML = domains.map((domain) => {
+    const isMaint = Boolean(domain.isMaintenance || maintenanceData[domain.id]);
+    return `
+      <article class="cyber-scope-card reveal ${isMaint ? 'is-maintenance' : ''}" style="position: relative; overflow: hidden;">
+        ${isMaint ? `
+          <div class="model-maintenance-overlay">
+            <div class="maintenance-badge-container">
+              <span class="maintenance-dot"></span>
+              <span>🛠️ UNDER MAINTENANCE</span>
+            </div>
+            <div class="maintenance-subtitle">Scenarios & CTF board undergoing maintenance</div>
+          </div>
+        ` : ''}
+        <h3>${domain.title}</h3>
+        <p>${domain.red}</p>
+        <div class="cyber-actions">
+          <button class="primary-action" type="button" data-icon="ctf" onclick="openCtfBoard('${domain.id}')">Open Leaderboard</button>
+        </div>
+      </article>
+    `;
+  }).join("");
   [...grid.children].forEach((card, index) => card.style.setProperty("--reveal-delay", `${Math.min(index * 50, 400)}ms`));
   observeReveals(grid);
 }
@@ -775,9 +829,10 @@ function drawHomeMatrix() {
   requestAnimationFrame(draw);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   if (!requireSiteAccess()) return;
   applyAccessState();
+  await fetchDomainMaintenance();
   renderDomains();
   renderCyberScope();
   drawCanvas();

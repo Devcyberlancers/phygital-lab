@@ -1616,7 +1616,8 @@ function emptyDb() {
     })),
     submissions: [],
     solves: [],
-    hints: []
+    hints: [],
+    maintenance: {}
   };
 }
 
@@ -1633,6 +1634,7 @@ function readDb() {
   db.submissions ||= [];
   db.solves ||= [];
   db.hints ||= [];
+  db.maintenance ||= {};
   let changed = false;
   const removedLegacyIndustry = db.challenges.filter((challenge) => legacyIndustryChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
   const removedLegacyDataCenter = db.challenges.filter((challenge) => legacyDataCenterChallengeIds.has(challenge.id)).map((challenge) => challenge.id);
@@ -1799,7 +1801,15 @@ async function handleApi(req, res, url) {
   const db = readDb();
 
   if (req.method === "GET" && url.pathname === "/api/domains") {
-    return sendJson(res, 200, { ok: true, domains: domains.map(([id, title]) => ({ id, title })) });
+    return sendJson(res, 200, {
+      ok: true,
+      maintenance: db.maintenance || {},
+      domains: domains.map(([id, title]) => ({
+        id,
+        title,
+        isMaintenance: Boolean(db.maintenance && db.maintenance[id])
+      }))
+    });
   }
 
   if (req.method === "POST" && url.pathname === "/api/students") {
@@ -1901,7 +1911,34 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/admin/challenges") {
-    return sendJson(res, 200, { ok: true, domains: domains.map(([id, title]) => ({ id, title })), questions: groupedChallenges(db, true) });
+    return sendJson(res, 200, {
+      ok: true,
+      maintenance: db.maintenance || {},
+      domains: domains.map(([id, title]) => ({
+        id,
+        title,
+        isMaintenance: Boolean(db.maintenance && db.maintenance[id])
+      })),
+      questions: groupedChallenges(db, true)
+    });
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/admin/maintenance") {
+    const payload = await readBody(req);
+    const domainId = String(payload.domainId || "").trim();
+    if (!domainId || !domainIds.includes(domainId)) {
+      return sendJson(res, 400, { ok: false, msg: "Valid domainId is required." });
+    }
+    const isMaintenance = Boolean(payload.isMaintenance);
+    db.maintenance ||= {};
+    db.maintenance[domainId] = isMaintenance;
+    writeDb(db);
+    return sendJson(res, 200, {
+      ok: true,
+      domainId,
+      isMaintenance,
+      maintenance: db.maintenance
+    });
   }
 
   if (req.method === "POST" && url.pathname === "/api/admin/challenges") {
