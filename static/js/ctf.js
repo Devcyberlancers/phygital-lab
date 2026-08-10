@@ -729,18 +729,14 @@ window.CTF = (function () {
 
     challenges.forEach((c) => {
       const match = c.title.match(/^Task\s+(\d+)/i);
-      let num = match ? match[1] : '1';
-      if (parseInt(num) > 4) {
-        if (parseInt(num) <= 8) num = '2';
-        else if (parseInt(num) <= 14) num = '3';
-        else num = '4';
-      }
+      const num = match ? match[1] : '1';
 
       if (!groupsMap[num]) {
+        const cleanTitle = c.title.replace(/^Task\s+\d+\s*[-:]?\s*/i, '').trim() || `Task ${num}`;
         groupsMap[num] = {
           no: num,
-          title: getGroupTitle(category, num, c.title),
-          intro: 'Complete the challenges for this task phase.',
+          title: cleanTitle,
+          intro: `Complete the challenges for Task ${num}.`,
           items: []
         };
       }
