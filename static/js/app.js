@@ -284,6 +284,19 @@ function requireSiteAccess() {
   const role = localStorage.getItem(ROLE_KEY) || "";
   const hasAdminToken = Boolean(localStorage.getItem(ADMIN_TOKEN_KEY));
   const hasStudent = Boolean(localStorage.getItem(STUDENT_KEY));
+
+  if (path.endsWith("/login.html") || path.endsWith("/login")) {
+    if (role === "student" && hasStudent) {
+      window.location.replace("/student.html");
+      return false;
+    }
+    if (role === "admin" && hasAdminToken) {
+      window.location.replace("/index.html");
+      return false;
+    }
+    return true;
+  }
+
   if (role === "student" && hasStudent) {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     if (!path.endsWith("/student.html")) {
@@ -796,7 +809,7 @@ function drawHomeMatrix() {
   };
 
   const draw = (time) => {
-    const homeVisible = document.getElementById("page-home")?.classList.contains("active");
+    const homeVisible = document.getElementById("page-home")?.classList.contains("active") || document.body.classList.contains("login-page") || window.location.pathname.endsWith("student.html");
     if (homeVisible && time - lastFrame > 38) {
       lastFrame = time;
       const width = canvas.clientWidth;
